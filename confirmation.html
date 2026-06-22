@@ -56,7 +56,7 @@ body { background: var(--black); }
         <div class="oc-items" id="oc-items"><div class="oc-empty">No recent order found. <a href="shop.html">Shop now →</a></div></div>
         <div class="oc-totals" id="oc-totals" style="display:none;">
             <div class="row"><span>Subtotal</span><span>RM<span id="oc-sub">0.00</span></span></div>
-            <div class="row"><span>Shipping</span><span id="oc-ship">—</span></div>
+            <div class="row"><span id="oc-ship-label">Shipping</span><span id="oc-ship">—</span></div>
             <div class="row grand"><span>Total</span><span>RM<span id="oc-tot">0.00</span></span></div>
         </div>
     </div>
@@ -87,7 +87,13 @@ body { background: var(--black); }
                 <div class="p">RM${(i.price*i.qty).toFixed(2)}</div>
             </div>`).join('');
         document.getElementById('oc-sub').textContent = order.subtotal.toFixed(2);
-        document.getElementById('oc-ship').textContent = 'RM' + (order.shipping||0).toFixed(2);
+        if (order.method === 'pickup') {
+            document.getElementById('oc-ship-label').textContent = 'Pickup';
+            document.getElementById('oc-ship').textContent = 'Free';
+        } else {
+            document.getElementById('oc-ship-label').textContent = 'Shipping';
+            document.getElementById('oc-ship').textContent = 'RM' + (order.shipping||0).toFixed(2);
+        }
         document.getElementById('oc-tot').textContent = order.total.toFixed(2);
         document.getElementById('oc-totals').style.display = 'block';
     }
