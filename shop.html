@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop All Fragrances — D'Vaaw</title>
+<meta name="description" content="Browse the full D'Vaaw collection — For Her, For Him, Unisex, and the Borneo Edition.">
+<link rel="stylesheet" href="styles.css">
+<style>
+.shop-filters {
+    position: sticky;
+    top: 64px;
+    z-index: 40;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.2rem var(--pad-x);
+    flex-wrap: wrap;
+}
+.filter-btn {
+    padding: 0.6rem 1.4rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-radius: 2rem;
+    transition: all 0.25s;
+}
+.filter-btn:hover { color: var(--text); }
+.filter-btn.active { background: var(--black); color: #fff; }
+
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(1rem, 2vw, 1.8rem);
+    padding: clamp(2.5rem, 5vw, 4rem) var(--pad-x);
+    min-height: 50vh;
+}
+.prod-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    transition: border-color 0.3s, transform 0.3s var(--ease), box-shadow 0.3s;
+}
+.prod-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,0.07); }
+.pc-img { aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; overflow: hidden; }
+.pc-img img { max-height: 100%; object-fit: contain; transition: transform 0.5s var(--ease); }
+.prod-card:hover .pc-img img { transform: scale(1.05); }
+.pc-img .ph { width: 100%; height: 100%; background: var(--mist); display: flex; align-items: center; justify-content: center; font-family: var(--display); font-style: italic; color: var(--muted); padding: 1rem; text-align: center; }
+.pc-cat { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+.pc-name { font-family: var(--display); font-size: 1.3rem; margin-bottom: 0.4rem; }
+.pc-notes { font-size: 0.72rem; color: var(--muted); margin-bottom: 1rem; min-height: 2rem; }
+.pc-price { font-size: 0.85rem; font-weight: 500; margin-bottom: 1.1rem; }
+.pc-actions { margin-top: auto; display: flex; flex-direction: column; gap: 0.6rem; }
+.pc-size { display: flex; gap: 0.4rem; }
+.pc-size button { flex: 1; padding: 0.55rem; font-size: 0.68rem; letter-spacing: 0.08em; border: 1px solid var(--line); transition: all 0.2s; color: var(--text); }
+.pc-size button.sel { background: var(--black); color: #fff; border-color: var(--black); }
+.pc-add { width: 100%; padding: 0.8rem; background: var(--black); color: #fff; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; transition: background 0.25s; }
+.pc-add:hover { background: var(--gold); color: var(--black); }
+.pc-card-hidden { display: none; }
+
+.recently { background: var(--mist); padding: clamp(2.5rem,5vw,4rem) var(--pad-x); }
+.recently h3 { text-align: center; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 2rem; font-family: var(--body); font-weight: 500; }
+.recently-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1rem; max-width: 1100px; margin: 0 auto; }
+.rv-mini { background: #fff; border: 1px solid var(--line); padding: 1rem; text-align: center; transition: border-color 0.3s, transform 0.3s; cursor: pointer; }
+.rv-mini:hover { border-color: var(--gold); transform: translateY(-3px); }
+.rv-mini img { aspect-ratio: 3/4; object-fit: contain; width: 100%; margin-bottom: 0.6rem; }
+.rv-mini .ph { aspect-ratio: 3/4; background: var(--mist); display: flex; align-items: center; justify-content: center; font-family: var(--display); font-style: italic; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.6rem; }
+.rv-mini .n { font-size: 0.7rem; font-weight: 500; }
+
+@media (max-width: 900px) {
+    .shop-grid { grid-template-columns: repeat(2, 1fr); }
+    .shop-filters { top: 56px; }
+    .recently-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 540px) {
+    .shop-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .prod-card { padding: 1rem; }
+    .pc-name { font-size: 1.1rem; }
+    .recently-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<section class="page-intro">
+    <span class="eyebrow">25 Fragrances</span>
+    <h1>The Collection</h1>
+    <p>Every scent is Halal-certified, crafted with Gula Apong, and made to last. Available in 10ml and 35ml.</p>
+</section>
+
+<div class="shop-filters" id="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="her">For Her</button>
+    <button class="filter-btn" data-filter="him">For Him</button>
+    <button class="filter-btn" data-filter="unisex">Unisex</button>
+    <button class="filter-btn" data-filter="borneo">Borneo Edition</button>
+</div>
+
+<div class="shop-grid" id="grid"></div>
+
+<section class="recently" id="recently" style="display:none;">
+    <h3>Recently Viewed</h3>
+    <div class="recently-grid" id="recentlyGrid"></div>
+</section>
+
+<script src="app.js"></script>
+<script>
+(function () {
+    const { CATALOG, SIZES, CAT_LABEL } = window.DVAAW;
+    const grid = document.getElementById('grid');
+
+    grid.innerHTML = CATALOG.map(p => `
+        <article class="prod-card reveal" data-id="${p.id}" data-cat="${p.cat}">
+            <div class="pc-img">
+                <img src="${p.img}" alt="${p.name}" onerror="this.outerHTML='<div class=&quot;ph&quot;>${p.name}</div>'">
+            </div>
+            <div class="pc-cat">${CAT_LABEL[p.cat]}</div>
+            <div class="pc-name">${p.name}</div>
+            <div class="pc-notes">${p.notes}</div>
+            <div class="pc-price" data-price>RM79.00</div>
+            <div class="pc-actions">
+                <div class="pc-size">
+                    ${SIZES.map((s,i) => `<button data-size="${s.size}" data-price="${s.price}" class="${i===1?'sel':''}">${s.size}</button>`).join('')}
+                </div>
+                <button class="pc-add">Add to Cart</button>
+            </div>
+        </article>`).join('');
+
+    // Wire up each card
+    grid.querySelectorAll('.prod-card').forEach(card => {
+        let size = '35ml', price = 79;
+        const priceEl = card.querySelector('[data-price]');
+        card.querySelectorAll('.pc-size button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                card.querySelectorAll('.pc-size button').forEach(b => b.classList.remove('sel'));
+                btn.classList.add('sel');
+                size = btn.dataset.size; price = +btn.dataset.price;
+                priceEl.textContent = 'RM' + price.toFixed(2);
+            });
+        });
+        card.querySelector('.pc-add').addEventListener('click', () => {
+            window.DVAAW.addToCart(card.dataset.id, size, price);
+        });
+        card.querySelector('.pc-img').addEventListener('click', () => window.DVAAW.trackViewed(card.dataset.id));
+    });
+
+    // Filtering
+    function applyFilter(f) {
+        grid.querySelectorAll('.prod-card').forEach(c => {
+            c.classList.toggle('pc-card-hidden', f !== 'all' && c.dataset.cat !== f);
+        });
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
+    }
+    document.querySelectorAll('.filter-btn').forEach(b => {
+        b.addEventListener('click', () => {
+            applyFilter(b.dataset.filter);
+            history.replaceState(null, '', b.dataset.filter === 'all' ? 'shop.html' : 'shop.html?cat=' + b.dataset.filter);
+        });
+    });
+
+    // Honor ?cat= from URL
+    const urlCat = new URLSearchParams(location.search).get('cat');
+    if (urlCat && ['her','him','unisex','borneo'].includes(urlCat)) applyFilter(urlCat);
+
+    // Recently viewed
+    const viewed = window.DVAAW.getViewed();
+    if (viewed.length) {
+        const sec = document.getElementById('recently');
+        const rg = document.getElementById('recentlyGrid');
+        rg.innerHTML = viewed.map(id => {
+            const p = CATALOG.find(x => x.id === id);
+            if (!p) return '';
+            return `<div class="rv-mini" data-id="${p.id}">
+                <img src="${p.img}" alt="${p.name}" onerror="this.outerHTML='<div class=&quot;ph&quot;>${p.name}</div>'">
+                <div class="n">${p.name}</div></div>`;
+        }).join('');
+        sec.style.display = 'block';
+    }
+
+    window.DVAAW.observeReveals();
+})();
+</script>
+</body>
+</html>

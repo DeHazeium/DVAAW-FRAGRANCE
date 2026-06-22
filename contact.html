@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — D'Vaaw</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.contact-wrap { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(2rem,6vw,5rem); max-width: 1100px; margin: 0 auto; align-items: start; }
+.contact-methods .method { display: flex; gap: 1.2rem; align-items: flex-start; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--line); }
+.contact-methods .method:last-child { border: none; }
+.method .m-icon { width: 44px; height: 44px; flex-shrink: 0; border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+.method h3 { font-family: var(--display); font-size: 1.25rem; font-weight: 500; margin-bottom: 0.3rem; }
+.method p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+.method a { color: var(--gold); }
+.wa-direct { margin-top: 1rem; }
+
+.field { margin-bottom: 1.2rem; }
+.field-row { display: flex; gap: 1rem; }
+.field-row .field { flex: 1; }
+label { display: block; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+input, select, textarea { width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--line); background: #fff; font-family: var(--body); font-size: 0.9rem; color: var(--text); transition: border-color 0.2s; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); }
+textarea { resize: vertical; min-height: 120px; }
+select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23999' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; }
+.contact-form .btn { width: 100%; margin-top: 0.5rem; }
+
+.hours { background: var(--mist); text-align: center; padding: 2rem var(--pad-x); }
+.hours strong { color: var(--text); }
+.hours span { color: var(--muted); }
+
+@media (max-width: 760px) { .contact-wrap { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<section class="page-intro">
+    <span class="eyebrow">We'd Love to Hear From You</span>
+    <h1>Get in Touch</h1>
+    <p>Questions about a scent, an order, or a custom request? Reach us anytime.</p>
+</section>
+
+<section class="section">
+    <div class="contact-wrap">
+        <div class="contact-methods reveal">
+            <div class="method">
+                <div class="m-icon">💬</div>
+                <div>
+                    <h3>WhatsApp</h3>
+                    <p>Fastest way to reach us. Tap to start a chat.</p>
+                    <a class="btn btn-wa wa-direct" href="https://wa.me/601118866239" target="_blank" rel="noopener">Chat Now</a>
+                </div>
+            </div>
+            <div class="method">
+                <div class="m-icon">📍</div>
+                <div>
+                    <h3>Location</h3>
+                    <p>Kota Samarahan,<br>Sarawak, Malaysia</p>
+                </div>
+            </div>
+            <div class="method">
+                <div class="m-icon">📷</div>
+                <div>
+                    <h3>Social</h3>
+                    <p>Follow us <a href="https://instagram.com" target="_blank" rel="noopener">@dvaaw</a> for new drops and stories.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-form reveal">
+            <div class="field"><label>Name</label><input type="text" id="c-name" placeholder="Your name"></div>
+            <div class="field-row">
+                <div class="field"><label>WhatsApp</label><input type="tel" id="c-phone" placeholder="011-1234 5678"></div>
+                <div class="field">
+                    <label>Topic</label>
+                    <select id="c-topic">
+                        <option>General enquiry</option>
+                        <option>Order status</option>
+                        <option>Product question</option>
+                        <option>Wholesale / bulk</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field"><label>Message</label><textarea id="c-msg" placeholder="How can we help?"></textarea></div>
+            <button class="btn btn-dark" onclick="sendContact()">Send via WhatsApp</button>
+        </div>
+    </div>
+</section>
+
+<div class="hours">
+    <strong>Operating Hours</strong> &nbsp;·&nbsp; <span>Mon–Sat, 9am–6pm (MYT) · We reply within a few hours</span>
+</div>
+
+<script src="app.js"></script>
+<script>
+function sendContact() {
+    const name = document.getElementById('c-name').value.trim() || 'Customer';
+    const phone = document.getElementById('c-phone').value.trim() || 'Not provided';
+    const topic = document.getElementById('c-topic').value;
+    const msg = document.getElementById('c-msg').value.trim() || 'No message';
+    let text = `*ENQUIRY — D'VAAW*\n\nName: ${name}\nPhone: ${phone}\nTopic: ${topic}\n\nMessage:\n${msg}`;
+    window.location.href = 'https://wa.me/' + window.DVAAW.WHATSAPP + '?text=' + encodeURIComponent(text);
+}
+</script>
+</body>
+</html>

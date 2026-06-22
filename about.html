@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Story — D'Vaaw</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.story-hero { background: var(--black); color: #fff; text-align: center; padding: clamp(5rem,11vw,8rem) var(--pad-x); position: relative; overflow: hidden; }
+.story-hero .glow { position: absolute; top: -20%; left: 50%; transform: translateX(-50%); width: 60vw; height: 60vw; max-width: 700px; max-height: 700px; background: radial-gradient(circle, rgba(200,169,106,0.15) 0%, transparent 65%); pointer-events: none; }
+.story-hero .eyebrow { display: block; margin-bottom: 1.4rem; position: relative; }
+.story-hero h1 { font-size: clamp(2.6rem, 7vw, 5rem); font-weight: 300; line-height: 1.05; position: relative; }
+.story-hero h1 em { font-style: italic; color: var(--gold); }
+.story-hero p { color: rgba(255,255,255,0.55); max-width: 54ch; margin: 1.6rem auto 0; position: relative; font-size: 1.05rem; }
+
+.split { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 0; }
+.split.flip .split-text { order: 2; }
+.split-img { aspect-ratio: 4/5; overflow: hidden; }
+.split-img img { width: 100%; height: 100%; object-fit: cover; }
+.split-img .ph { width:100%; height:100%; background: linear-gradient(135deg,#1a1a1a,#2c2c2c); display:flex; align-items:center; justify-content:center; color:var(--gold); font-family:var(--display); font-style:italic; font-size:1.6rem; }
+.split-text { padding: clamp(2.5rem, 7vw, 6rem); }
+.split-text .eyebrow { display: block; margin-bottom: 1.2rem; }
+.split-text h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 300; margin-bottom: 1.4rem; line-height: 1.1; }
+.split-text p { color: var(--muted); margin-bottom: 1.1rem; line-height: 1.9; }
+.split.dark { background: var(--black); }
+.split.dark .split-text h2 { color: #fff; }
+.split.dark .split-text p { color: rgba(255,255,255,0.55); }
+
+.values { background: var(--mist); }
+.values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 1100px; margin: 0 auto; }
+.value { background: #fff; border: 1px solid var(--line); padding: 3rem 2rem; text-align: center; transition: transform 0.3s var(--ease), border-color 0.3s, box-shadow 0.3s; }
+.value:hover { transform: translateY(-6px); border-color: var(--gold); box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
+.value .v-icon { font-size: 2rem; margin-bottom: 1.4rem; }
+.value h3 { font-family: var(--display); font-size: 1.5rem; font-weight: 500; margin-bottom: 0.8rem; }
+.value p { font-size: 0.85rem; color: var(--muted); line-height: 1.8; }
+
+.quote-sec { background: var(--black); color: #fff; text-align: center; padding: clamp(4rem,9vw,7rem) var(--pad-x); }
+.quote-sec .eyebrow { display: block; margin-bottom: 2rem; }
+.quote-sec blockquote { max-width: 40ch; margin: 0 auto; font-family: var(--display); font-size: clamp(1.5rem, 3.5vw, 2.4rem); font-weight: 300; font-style: italic; line-height: 1.4; }
+.quote-sec cite { display: block; margin-top: 2rem; font-family: var(--body); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; font-style: normal; color: var(--gold); }
+
+.about-cta { text-align: center; padding: clamp(4rem,9vw,7rem) var(--pad-x); }
+.about-cta h2 { font-size: clamp(2rem,5vw,3.2rem); font-weight: 300; margin-bottom: 1.2rem; }
+.about-cta p { color: var(--muted); max-width: 46ch; margin: 0 auto 2rem; }
+.about-cta .btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+@media (max-width: 900px) {
+    .split { grid-template-columns: 1fr; }
+    .split.flip .split-text { order: 0; }
+    .split-img { order: -1; aspect-ratio: 16/10; }
+    .values-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<section class="story-hero">
+    <div class="glow"></div>
+    <span class="eyebrow">Est. 2024 · Kota Samarahan, Sarawak</span>
+    <h1>Born from the <em>heart</em><br>of Borneo.</h1>
+    <p>A fragrance house built to smell extraordinary — and to do extraordinary things for the people who make it possible.</p>
+</section>
+
+<section class="split">
+    <div class="split-text reveal">
+        <span class="eyebrow">Our Origin</span>
+        <h2>Why Gula Apong?</h2>
+        <p>Gula Apong — Nypa palm sugar — is one of Sarawak's most treasured natural gifts. Gentle, long-lasting, deeply rooted in the land. The very qualities we wanted in every bottle.</p>
+        <p>Choosing it wasn't just picking an ingredient. It was a declaration: luxury doesn't have to come from elsewhere. It can come from here. From Borneo.</p>
+    </div>
+    <div class="split-img reveal">
+        <img src="image/gula-apong.png" alt="Gula Apong" onerror="this.outerHTML='<div class=&quot;ph&quot;>Gula Apong</div>'">
+    </div>
+</section>
+
+<section class="split dark flip">
+    <div class="split-text reveal">
+        <span class="eyebrow">Our Mission</span>
+        <h2>Uplift. Empower. Inspire.</h2>
+        <p>D'Vaaw exists to create meaningful livelihoods for single mothers and students in Sarawak. Every bottle sold contributes to this mission.</p>
+        <p>When someone wears D'Vaaw, they wear proof that community, resilience, and beauty can share the same breath.</p>
+    </div>
+    <div class="split-img reveal">
+        <img src="image/community.png" alt="Our community" onerror="this.outerHTML='<div class=&quot;ph&quot;>Our Community</div>'">
+    </div>
+</section>
+
+<section class="section values">
+    <div class="section-head reveal">
+        <span class="eyebrow">What We Stand For</span>
+        <h2>Woven into every bottle</h2>
+    </div>
+    <div class="values-grid">
+        <div class="value reveal"><div class="v-icon">🌿</div><h3>Authenticity</h3><p>Real Borneo ingredients, no imitation. What you smell is what Sarawak truly offers.</p></div>
+        <div class="value reveal"><div class="v-icon">🤝</div><h3>Community</h3><p>We uplift single mothers and students. Your purchase backs people building a better future.</p></div>
+        <div class="value reveal"><div class="v-icon">✨</div><h3>Accessible Luxury</h3><p>Halal-certified quality at a price that never asks you to choose between smelling good and living well.</p></div>
+    </div>
+</section>
+
+<section class="quote-sec reveal">
+    <span class="eyebrow">A Word From Us</span>
+    <blockquote>We wanted a scent that carries the spirit of our land wherever life takes you.</blockquote>
+    <cite>— The D'Vaaw Team, Sarawak</cite>
+</section>
+
+<section class="about-cta reveal">
+    <h2>Wear the story</h2>
+    <p>Every fragrance is an invitation to carry a piece of Borneo with you.</p>
+    <div class="btns">
+        <a href="shop.html" class="btn btn-gold">Shop the Collection</a>
+        <a href="shop.html?cat=borneo" class="btn btn-ghost">Borneo Edition</a>
+    </div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>

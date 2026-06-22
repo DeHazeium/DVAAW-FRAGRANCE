@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shipping — D'Vaaw</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.rates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 980px; margin: 0 auto; }
+.rate {
+    border: 1px solid var(--line);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: border-color 0.3s, transform 0.3s var(--ease);
+}
+.rate:hover { border-color: var(--gold); transform: translateY(-4px); }
+.rate .eyebrow { display: block; margin-bottom: 1rem; }
+.rate .amt { font-family: var(--display); font-size: 3rem; font-weight: 300; line-height: 1; margin-bottom: 0.3rem; }
+.rate .amt small { font-size: 1rem; color: var(--muted); }
+.rate .desc { font-size: 0.82rem; color: var(--muted); line-height: 1.7; margin-top: 0.8rem; }
+
+.my-only {
+    background: var(--black);
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+    padding: 2.5rem var(--pad-x);
+    display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap;
+}
+.my-only .flag { font-size: 1.8rem; }
+.my-only strong { color: var(--gold); }
+
+.calc-wrap { display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(2rem,5vw,4rem); max-width: 1100px; margin: 0 auto; align-items: start; }
+.field { margin-bottom: 1.2rem; }
+.field-row { display: flex; gap: 1rem; }
+.field-row .field { flex: 1; }
+label { display: block; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+input, select, textarea {
+    width: 100%; padding: 0.85rem 1rem;
+    border: 1px solid var(--line); background: #fff;
+    font-family: var(--body); font-size: 0.9rem; color: var(--text);
+    transition: border-color 0.2s;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); }
+select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23999' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; }
+
+.calc-summary { background: var(--mist); padding: 2rem; position: sticky; top: 88px; }
+.calc-summary h3 { font-family: var(--display); font-size: 1.4rem; font-weight: 500; margin-bottom: 1.4rem; }
+.cs-line { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem; }
+.cs-zone { margin-top: 1.2rem; padding: 1rem; background: #fff; border-left: 2px solid var(--gold); font-size: 0.76rem; color: var(--text); line-height: 1.7; display: none; }
+.calc-summary .btn { width: 100%; margin-top: 1.4rem; }
+
+@media (max-width: 900px) {
+    .rates { grid-template-columns: 1fr; max-width: 420px; }
+    .calc-wrap { grid-template-columns: 1fr; }
+    .calc-summary { position: static; }
+}
+</style>
+</head>
+<body>
+
+<section class="page-intro">
+    <span class="eyebrow">Malaysia Delivery Only</span>
+    <h1>Shipping</h1>
+    <p>Calculated by zone and confirmed personally on WhatsApp before you pay.</p>
+</section>
+
+<section class="section">
+    <div class="rates">
+        <div class="rate reveal">
+            <span class="eyebrow">Sarawak</span>
+            <div class="amt">RM10</div>
+            <div class="desc">Flat rate per 1kg parcel<br>2–4 working days</div>
+        </div>
+        <div class="rate reveal">
+            <span class="eyebrow">Semenanjung</span>
+            <div class="amt">RM15<small>/kg</small></div>
+            <div class="desc">West Malaysia<br>3–7 working days</div>
+        </div>
+        <div class="rate reveal">
+            <span class="eyebrow">Sabah · Labuan</span>
+            <div class="amt">Quote</div>
+            <div class="desc">Message us for a rate<br>before ordering</div>
+        </div>
+    </div>
+</section>
+
+<div class="my-only">
+    <span class="flag">🇲🇾</span>
+    <p>D'Vaaw ships <strong>within Malaysia only</strong>. No international delivery at this time.</p>
+</div>
+
+<section class="section">
+    <div class="section-head reveal">
+        <span class="eyebrow">Delivery Details</span>
+        <h2>Where are we sending it?</h2>
+    </div>
+    <div class="calc-wrap">
+        <div class="reveal">
+            <div class="field"><label>Full Name</label><input type="text" id="f-name" placeholder="Recipient name"></div>
+            <div class="field"><label>WhatsApp Number</label><input type="tel" id="f-phone" placeholder="e.g. 011-1234 5678"></div>
+            <div class="field"><label>Address</label><input type="text" id="f-addr" placeholder="House no., street, taman"></div>
+            <div class="field-row">
+                <div class="field"><label>Postcode</label><input type="text" id="f-postcode" maxlength="5" placeholder="94300"></div>
+                <div class="field"><label>City</label><input type="text" id="f-city" placeholder="Kota Samarahan"></div>
+            </div>
+            <div class="field">
+                <label>State</label>
+                <select id="f-state" onchange="updateZone()">
+                    <option value="">Select state…</option>
+                    <option value="sarawak">Sarawak</option>
+                    <option value="sabah">Sabah</option>
+                    <option value="sabah">Labuan</option>
+                    <optgroup label="Semenanjung">
+                        <option value="semenanjung">Johor</option>
+                        <option value="semenanjung">Kedah</option>
+                        <option value="semenanjung">Kelantan</option>
+                        <option value="semenanjung">Melaka</option>
+                        <option value="semenanjung">Negeri Sembilan</option>
+                        <option value="semenanjung">Pahang</option>
+                        <option value="semenanjung">Penang</option>
+                        <option value="semenanjung">Perak</option>
+                        <option value="semenanjung">Perlis</option>
+                        <option value="semenanjung">Selangor</option>
+                        <option value="semenanjung">Terengganu</option>
+                        <option value="semenanjung">Kuala Lumpur</option>
+                        <option value="semenanjung">Putrajaya</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+        <aside class="calc-summary reveal">
+            <h3>Your Estimate</h3>
+            <div class="cs-line"><span>Subtotal</span><span>RM<span id="cs-subtotal">0.00</span></span></div>
+            <div class="cs-line"><span id="cs-ship-label">Shipping</span><span id="cs-ship-val">—</span></div>
+            <div class="cs-line" style="color:var(--text);font-weight:500;border-top:1px solid var(--line);padding-top:0.8rem;margin-top:0.4rem;"><span>Est. Total</span><span id="cs-total">—</span></div>
+            <div class="cs-zone" id="cs-zone"></div>
+            <button class="btn btn-wa" onclick="submitAddress()">Confirm via WhatsApp</button>
+        </aside>
+    </div>
+</section>
+
+<script src="app.js"></script>
+<script>
+function money(n){ return 'RM' + n.toFixed(2); }
+
+function getZone() {
+    const sel = document.getElementById('f-state');
+    return sel.value;
+}
+
+function updateZone() {
+    const cart = window.DVAAW.getCart();
+    const subtotal = cart.reduce((s,i) => s + i.price*i.qty, 0);
+    document.getElementById('cs-subtotal').textContent = subtotal.toFixed(2);
+
+    const zone = getZone();
+    const label = document.getElementById('cs-ship-label');
+    const val = document.getElementById('cs-ship-val');
+    const tot = document.getElementById('cs-total');
+    const note = document.getElementById('cs-zone');
+
+    if (!zone) { val.textContent='—'; tot.textContent='—'; note.style.display='none'; return; }
+    note.style.display = 'block';
+
+    if (zone === 'sarawak') {
+        label.textContent = 'Shipping (Sarawak)';
+        val.textContent = money(10);
+        tot.textContent = money(subtotal + 10);
+        note.textContent = 'Flat RM10 per 1kg parcel. Delivered in 2–4 working days.';
+    } else if (zone === 'semenanjung') {
+        label.textContent = 'Shipping (Semenanjung)';
+        val.textContent = 'RM15/kg';
+        tot.textContent = money(subtotal + 15) + '+';
+        note.textContent = 'RM15 per kg. Final cost confirmed on WhatsApp. Delivered in 3–7 working days.';
+    } else {
+        label.textContent = 'Shipping (Sabah/Labuan)';
+        val.textContent = 'Quote';
+        tot.textContent = '—';
+        note.textContent = 'Please message us on WhatsApp for a shipping quote to Sabah / Labuan before ordering.';
+    }
+}
+
+function submitAddress() {
+    const name = document.getElementById('f-name').value.trim();
+    const phone = document.getElementById('f-phone').value.trim();
+    const addr = document.getElementById('f-addr').value.trim();
+    const postcode = document.getElementById('f-postcode').value.trim();
+    const city = document.getElementById('f-city').value.trim();
+    const stateSel = document.getElementById('f-state');
+    const state = stateSel.options[stateSel.selectedIndex]?.text || '';
+    const zone = getZone();
+
+    if (!name || !phone || !addr || !postcode || !city || !zone) {
+        window.DVAAW.showToast('Please fill in all address fields'); return;
+    }
+
+    const cart = window.DVAAW.getCart();
+    const subtotal = cart.reduce((s,i) => s + i.price*i.qty, 0);
+    const shipText = zone==='sarawak' ? 'RM10 (Sarawak)' : zone==='semenanjung' ? 'RM15/kg (Semenanjung, to confirm)' : 'Quote needed (Sabah/Labuan)';
+
+    let msg = "*SHIPPING DETAILS — D'VAAW* 📦\n\n";
+    msg += `Name: ${name}\nPhone: ${phone}\nAddress: ${addr}, ${postcode} ${city}, ${state}\n\n`;
+    if (cart.length) {
+        msg += "*ORDER*\n";
+        cart.forEach(i => { msg += `▪️ ${i.qty}× ${i.name} (${i.size}) — RM${(i.price*i.qty).toFixed(2)}\n`; });
+        msg += `\nSubtotal: RM${subtotal.toFixed(2)}\nShipping: ${shipText}\n\n`;
+    }
+    msg += "Please confirm my shipping and total. Thank you!";
+
+    window.location.href = 'https://wa.me/' + window.DVAAW.WHATSAPP + '?text=' + encodeURIComponent(msg);
+}
+
+updateZone();
+</script>
+</body>
+</html>

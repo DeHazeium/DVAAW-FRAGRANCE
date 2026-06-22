@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy & Terms — D'Vaaw</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.legal { max-width: 760px; margin: 0 auto; padding: clamp(3rem,6vw,5rem) var(--pad-x); }
+.legal-nav { display: flex; gap: 1rem; justify-content: center; margin-bottom: 3rem; flex-wrap: wrap; }
+.legal-nav a { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 0.5rem 1.2rem; border: 1px solid var(--line); border-radius: 2rem; transition: all 0.2s; }
+.legal-nav a:hover { border-color: var(--gold); color: var(--text); }
+.legal h2 { font-size: clamp(1.6rem,3.5vw,2.4rem); font-weight: 300; margin: 3rem 0 1.2rem; padding-top: 1.5rem; }
+.legal h2:first-child { margin-top: 0; padding-top: 0; }
+.legal h3 { font-family: var(--body); font-size: 0.95rem; font-weight: 600; margin: 1.8rem 0 0.6rem; }
+.legal p, .legal li { color: var(--muted); line-height: 1.9; margin-bottom: 1rem; font-size: 0.92rem; }
+.legal ul { padding-left: 1.4rem; }
+.legal li { margin-bottom: 0.5rem; }
+.legal .updated { font-size: 0.78rem; color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+
+<section class="page-intro">
+    <span class="eyebrow">The Fine Print</span>
+    <h1>Privacy & Terms</h1>
+</section>
+
+<section class="legal">
+    <div class="legal-nav">
+        <a href="#privacy">Privacy</a>
+        <a href="#cookies">Cookies</a>
+        <a href="#terms">Terms</a>
+        <a href="#returns">Returns</a>
+    </div>
+
+    <h2 id="privacy">Privacy</h2>
+    <p class="updated">Last updated: June 2026</p>
+    <p>D'Vaaw is based in Kota Samarahan, Sarawak, Malaysia. We respect your privacy and only collect what we need to fulfil your order.</p>
+    <h3>What we collect</h3>
+    <ul>
+        <li>Details you send us on WhatsApp (name, phone, delivery address) to process and ship your order.</li>
+        <li>Order records stored securely in our database (Firebase) for fulfilment and record-keeping.</li>
+        <li>Your shopping cart, saved locally in your own browser — never sent to us until you choose to order.</li>
+    </ul>
+    <h3>What we never do</h3>
+    <p>We don't sell your data, run advertising trackers, or share your information with third parties beyond what's needed to deliver your parcel.</p>
+
+    <h2 id="cookies">Cookies & Local Storage</h2>
+    <p>We don't use tracking cookies. We use your browser's local storage to remember your cart and recently viewed items between visits. You can clear this anytime in your browser settings.</p>
+
+    <h2 id="terms">Terms of Sale</h2>
+    <ul>
+        <li>All orders are confirmed personally via WhatsApp before any payment is made.</li>
+        <li>Prices are in Malaysian Ringgit (RM) and include applicable taxes.</li>
+        <li>We reserve the right to decline or cancel an order if a product is unavailable.</li>
+        <li>Fragrance descriptions are guides — scent is personal and may vary by individual.</li>
+    </ul>
+
+    <h2 id="returns">Shipping & Returns</h2>
+    <p>We ship within Malaysia only. Sarawak: RM10 flat (1kg). Semenanjung: RM15/kg. Sabah & Labuan: quote on request.</p>
+    <p>As fragrances are personal-care items, we accept returns only for damaged or incorrect items. Message us on WhatsApp within 3 days of delivery with a photo and we'll make it right.</p>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>

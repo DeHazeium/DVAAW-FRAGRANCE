@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Sent — D'Vaaw</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+body { background: var(--black); }
+.conf { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: clamp(4rem,9vw,7rem) var(--pad-x); color: #fff; }
+.conf-ring { width: 96px; height: 96px; border-radius: 50%; border: 1px solid rgba(200,169,106,0.25); display: flex; align-items: center; justify-content: center; margin-bottom: 2rem; position: relative; animation: ring 3s ease-in-out infinite; }
+.conf-ring::before { content:''; position:absolute; inset:-10px; border-radius:50%; border:1px solid rgba(200,169,106,0.12); animation: ring 3s ease-in-out infinite 0.4s; }
+@keyframes ring { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(1.06); opacity:0.6; } }
+.conf-ring .tick { font-size: 2.2rem; color: var(--gold); animation: pop 0.6s var(--ease) both; }
+@keyframes pop { from { transform:scale(0); opacity:0; } to { transform:scale(1); opacity:1; } }
+.conf .eyebrow { display: block; margin-bottom: 1.2rem; }
+.conf h1 { font-size: clamp(2.4rem,6vw,4rem); font-weight: 300; margin-bottom: 1rem; }
+.conf h1 em { font-style: italic; color: var(--gold); }
+.conf > p { color: rgba(255,255,255,0.55); max-width: 44ch; margin-bottom: 2.5rem; line-height: 1.8; }
+
+.order-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); max-width: 480px; width: 100%; margin-bottom: 2.5rem; text-align: left; }
+.oc-head { display: flex; justify-content: space-between; padding: 1rem 1.4rem; border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; }
+.oc-head .l { color: rgba(255,255,255,0.4); }
+.oc-head .r { color: var(--gold); }
+.oc-items { padding: 1.2rem 1.4rem; }
+.oc-item { display: flex; justify-content: space-between; margin-bottom: 0.8rem; font-size: 0.85rem; }
+.oc-item .n { color: rgba(255,255,255,0.8); }
+.oc-item .m { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+.oc-item .p { color: #fff; }
+.oc-totals { padding: 1rem 1.4rem; border-top: 1px solid rgba(255,255,255,0.08); }
+.oc-totals .row { display: flex; justify-content: space-between; font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-bottom: 0.5rem; }
+.oc-totals .grand { color: #fff; font-family: var(--display); font-size: 1.2rem; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); }
+.oc-empty { padding: 2rem; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.85rem; }
+.oc-empty a { color: var(--gold); }
+
+.steps { max-width: 480px; width: 100%; text-align: left; margin-bottom: 2.5rem; }
+.steps h3 { font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.4); text-align: center; margin-bottom: 1.4rem; font-family: var(--body); font-weight: 500; }
+.step { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+.step .num { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--gold); color: var(--gold); font-size: 0.7rem; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.step p { font-size: 0.82rem; color: rgba(255,255,255,0.55); line-height: 1.5; }
+.step p strong { color: rgba(255,255,255,0.85); font-weight: 500; }
+
+.conf-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+</style>
+</head>
+<body>
+
+<section class="conf">
+    <div class="conf-ring"><span class="tick">✓</span></div>
+    <span class="eyebrow">Order Submitted</span>
+    <h1>Thank <em>you</em>!</h1>
+    <p>Your order has been sent to us on WhatsApp. We'll confirm the details and payment shortly — usually within a couple of hours.</p>
+
+    <div class="order-card">
+        <div class="oc-head"><span class="l">Order Summary</span><span class="r" id="oc-date"></span></div>
+        <div class="oc-items" id="oc-items"><div class="oc-empty">No recent order found. <a href="shop.html">Shop now →</a></div></div>
+        <div class="oc-totals" id="oc-totals" style="display:none;">
+            <div class="row"><span>Subtotal</span><span>RM<span id="oc-sub">0.00</span></span></div>
+            <div class="row"><span>Shipping</span><span id="oc-ship">—</span></div>
+            <div class="row grand"><span>Total</span><span>RM<span id="oc-tot">0.00</span></span></div>
+        </div>
+    </div>
+
+    <div class="steps">
+        <h3>What Happens Next</h3>
+        <div class="step"><div class="num">1</div><p><strong>Check WhatsApp</strong> — we'll confirm your order and send payment details.</p></div>
+        <div class="step"><div class="num">2</div><p><strong>Make payment</strong> — bank transfer or QR Pay once confirmed.</p></div>
+        <div class="step"><div class="num">3</div><p><strong>We ship</strong> — dispatched in 1–2 business days with tracking.</p></div>
+    </div>
+
+    <div class="conf-btns">
+        <a href="shop.html" class="btn btn-gold">Continue Shopping</a>
+        <a href="https://wa.me/601118866239" target="_blank" rel="noopener" class="btn btn-ghost-light">Open WhatsApp</a>
+    </div>
+</section>
+
+<script src="app.js"></script>
+<script>
+(function () {
+    document.getElementById('oc-date').textContent = new Date().toLocaleDateString('en-MY', { day:'numeric', month:'short', year:'numeric' });
+    let order;
+    try { order = JSON.parse(localStorage.getItem('dvaaw_last_order')); } catch { order = null; }
+    if (order && order.items && order.items.length) {
+        document.getElementById('oc-items').innerHTML = order.items.map(i => `
+            <div class="oc-item">
+                <div><div class="n">${i.name}</div><div class="m">${i.size} × ${i.qty}</div></div>
+                <div class="p">RM${(i.price*i.qty).toFixed(2)}</div>
+            </div>`).join('');
+        document.getElementById('oc-sub').textContent = order.subtotal.toFixed(2);
+        document.getElementById('oc-ship').textContent = 'RM' + (order.shipping||0).toFixed(2);
+        document.getElementById('oc-tot').textContent = order.total.toFixed(2);
+        document.getElementById('oc-totals').style.display = 'block';
+    }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D'Vaaw — Halal Luxury Fragrances from Borneo</title>
+<meta name="description" content="Halal luxury lifestyle fragrances crafted with Gula Apong, rooted in the soul of Sarawak, Borneo.">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ── HERO ── */
+.hero {
+    position: relative;
+    background: var(--black);
+    color: #fff;
+    min-height: 92vh;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem var(--pad-x) 4rem;
+    overflow: hidden;
+}
+.hero-glow {
+    position: absolute;
+    top: 50%; right: 8%;
+    width: 50vw; height: 50vw;
+    max-width: 680px; max-height: 680px;
+    background: radial-gradient(circle, rgba(200,169,106,0.22) 0%, transparent 65%);
+    transform: translateY(-50%);
+    animation: breathe 7s ease-in-out infinite;
+    pointer-events: none;
+}
+@keyframes breathe { 0%,100% { opacity:0.7; transform:translateY(-50%) scale(1); } 50% { opacity:1; transform:translateY(-50%) scale(1.08); } }
+
+.hero-content { position: relative; z-index: 2; max-width: 36rem; }
+.hero-content .eyebrow { display: block; margin-bottom: 1.6rem; opacity: 0; animation: rise 1s var(--ease) 0.2s forwards; }
+.hero-content h1 {
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 300;
+    line-height: 0.98;
+    margin-bottom: 1.8rem;
+    opacity: 0;
+    animation: rise 1s var(--ease) 0.35s forwards;
+}
+.hero-content h1 em { font-style: italic; color: var(--gold); }
+.hero-content p {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.6);
+    max-width: 40ch;
+    margin-bottom: 2.4rem;
+    opacity: 0;
+    animation: rise 1s var(--ease) 0.5s forwards;
+}
+.hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; opacity: 0; animation: rise 1s var(--ease) 0.65s forwards; }
+@keyframes rise { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:none; } }
+
+.hero-visual { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; }
+.hero-visual img {
+    max-height: 70vh;
+    object-fit: contain;
+    filter: drop-shadow(0 30px 60px rgba(0,0,0,0.5));
+    animation: float 6s ease-in-out infinite;
+}
+@keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-18px); } }
+.hero-visual .fallback {
+    width: 320px; height: 440px;
+    border: 1px solid rgba(200,169,106,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display); font-style: italic; font-size: 2rem;
+    color: var(--gold);
+}
+.hero-scroll {
+    position: absolute;
+    bottom: 2rem; left: var(--pad-x);
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    display: flex; align-items: center; gap: 0.6rem;
+    z-index: 2;
+}
+.hero-scroll::after { content: ''; width: 40px; height: 1px; background: var(--gold); animation: scrollLine 2s ease-in-out infinite; transform-origin: left; }
+@keyframes scrollLine { 0%,100% { transform:scaleX(0.3); opacity:0.4; } 50% { transform:scaleX(1); opacity:1; } }
+
+/* ── MARQUEE ── */
+.marquee { background: var(--gold); color: var(--black); padding: 0.9rem 0; overflow: hidden; white-space: nowrap; }
+.marquee-track { display: inline-flex; gap: 3rem; animation: scroll 28s linear infinite; }
+.marquee span { font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; }
+@keyframes scroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+
+/* ── CATEGORIES ── */
+.cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); }
+.cat-tile {
+    position: relative;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    background: var(--ink);
+    display: flex;
+    align-items: flex-end;
+    padding: 2rem;
+    transition: flex 0.4s;
+}
+.cat-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.55; transition: opacity 0.5s var(--ease), transform 0.7s var(--ease); }
+.cat-tile:hover img { opacity: 0.75; transform: scale(1.06); }
+.cat-tile-label { position: relative; z-index: 2; color: #fff; }
+.cat-tile-label .eyebrow { display: block; margin-bottom: 0.4rem; }
+.cat-tile-label h3 { font-size: 1.6rem; font-weight: 400; }
+.cat-tile-label span { font-style: italic; }
+
+/* ── FEATURED PRODUCTS ── */
+.prod-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1rem, 2vw, 1.8rem); }
+.prod-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    transition: border-color 0.3s, transform 0.3s var(--ease), box-shadow 0.3s;
+}
+.prod-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,0.07); }
+.prod-card .pc-img { aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; overflow: hidden; }
+.prod-card .pc-img img { max-height: 100%; object-fit: contain; transition: transform 0.5s var(--ease); }
+.prod-card:hover .pc-img img { transform: scale(1.05); }
+.prod-card .pc-img .ph { width: 100%; height: 100%; background: var(--mist); display: flex; align-items: center; justify-content: center; font-family: var(--display); font-style: italic; color: var(--muted); }
+.pc-cat { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
+.pc-name { font-family: var(--display); font-size: 1.3rem; margin-bottom: 0.4rem; }
+.pc-notes { font-size: 0.72rem; color: var(--muted); margin-bottom: 1rem; min-height: 2rem; }
+.pc-price { font-size: 0.85rem; font-weight: 500; margin-bottom: 1.1rem; }
+.pc-actions { margin-top: auto; display: flex; flex-direction: column; gap: 0.6rem; }
+.pc-size { display: flex; gap: 0.4rem; }
+.pc-size button {
+    flex: 1; padding: 0.55rem; font-size: 0.68rem; letter-spacing: 0.08em;
+    border: 1px solid var(--line); transition: all 0.2s; color: var(--text);
+}
+.pc-size button.sel { background: var(--black); color: #fff; border-color: var(--black); }
+.pc-add { width: 100%; padding: 0.8rem; background: var(--black); color: #fff; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; transition: background 0.25s; }
+.pc-add:hover { background: var(--gold); color: var(--black); }
+
+/* ── STORY STRIP ── */
+.story { background: var(--mist); display: grid; grid-template-columns: 1fr 1fr; align-items: center; }
+.story-img { aspect-ratio: 4/3; overflow: hidden; }
+.story-img img { width: 100%; height: 100%; object-fit: cover; }
+.story-img .ph { width:100%; height:100%; background: linear-gradient(135deg,#1a1a1a,#2a2a2a); display:flex; align-items:center; justify-content:center; color: var(--gold); font-family: var(--display); font-style: italic; font-size: 1.5rem; }
+.story-text { padding: clamp(2.5rem, 6vw, 6rem); }
+.story-text .eyebrow { display: block; margin-bottom: 1.2rem; }
+.story-text h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 300; margin-bottom: 1.4rem; }
+.story-text p { color: var(--muted); margin-bottom: 1rem; line-height: 1.8; }
+.story-text .btn { margin-top: 1rem; }
+
+@media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; text-align: center; min-height: auto; padding-top: 3rem; }
+    .hero-content { margin: 0 auto; }
+    .hero-cta { justify-content: center; }
+    .hero-visual { order: -1; margin-bottom: 1rem; }
+    .hero-visual img { max-height: 42vh; }
+    .hero-scroll { display: none; }
+    .cats { grid-template-columns: repeat(2, 1fr); }
+    .prod-grid { grid-template-columns: repeat(2, 1fr); }
+    .story { grid-template-columns: 1fr; }
+    .story-img { order: -1; aspect-ratio: 16/10; }
+}
+@media (max-width: 540px) {
+    .prod-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .prod-card { padding: 1rem; }
+    .pc-name { font-size: 1.1rem; }
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+        <span class="eyebrow">Gula Apong · Authentic Borneo</span>
+        <h1>Wear the <em>scent</em> of Sarawak.</h1>
+        <p>Halal luxury fragrances crafted with Nypa palm sugar — long-lasting, distinctive, and rooted in the soul of Borneo.</p>
+        <div class="hero-cta">
+            <a href="shop.html" class="btn btn-gold">Shop the Collection</a>
+            <a href="about.html" class="btn btn-ghost-light">Our Story</a>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <img src="image/hero.png" alt="D'Vaaw signature fragrance bottle"
+             onerror="this.outerHTML='<div class=&quot;fallback&quot;>D\'Vaaw</div>'">
+    </div>
+    <div class="hero-scroll">Scroll</div>
+</section>
+
+<div class="marquee">
+    <div class="marquee-track">
+        <span>Halal Certified</span><span>·</span><span>Made in Sarawak</span><span>·</span>
+        <span>Gula Apong Infused</span><span>·</span><span>Long Lasting</span><span>·</span>
+        <span>Uplifting Our Community</span><span>·</span>
+        <span>Halal Certified</span><span>·</span><span>Made in Sarawak</span><span>·</span>
+        <span>Gula Apong Infused</span><span>·</span><span>Long Lasting</span><span>·</span>
+        <span>Uplifting Our Community</span><span>·</span>
+    </div>
+</div>
+
+<section class="cats">
+    <a href="shop.html?cat=her" class="cat-tile">
+        <img src="image/cat-her.png" alt="" onerror="this.style.display='none'">
+        <div class="cat-tile-label"><span class="eyebrow">01</span><h3>For <span>Her</span></h3></div>
+    </a>
+    <a href="shop.html?cat=him" class="cat-tile">
+        <img src="image/cat-him.png" alt="" onerror="this.style.display='none'">
+        <div class="cat-tile-label"><span class="eyebrow">02</span><h3>For <span>Him</span></h3></div>
+    </a>
+    <a href="shop.html?cat=unisex" class="cat-tile">
+        <img src="image/cat-unisex.png" alt="" onerror="this.style.display='none'">
+        <div class="cat-tile-label"><span class="eyebrow">03</span><h3><span>Unisex</span></h3></div>
+    </a>
+    <a href="shop.html?cat=borneo" class="cat-tile">
+        <img src="image/cat-borneo.png" alt="" onerror="this.style.display='none'">
+        <div class="cat-tile-label"><span class="eyebrow">04</span><h3><span>Borneo</span></h3></div>
+    </a>
+</section>
+
+<section class="section">
+    <div class="section-head reveal">
+        <span class="eyebrow">The Collection</span>
+        <h2>Signature Fragrances</h2>
+        <p>Four house favourites, each a story bottled.</p>
+    </div>
+    <div class="prod-grid" id="featured"></div>
+    <div style="text-align:center; margin-top:3rem;" class="reveal">
+        <a href="shop.html" class="btn btn-ghost">View All 25 Fragrances</a>
+    </div>
+</section>
+
+<section class="story">
+    <div class="story-img reveal">
+        <img src="image/gula-apong.png" alt="Gula Apong, Nypa palm sugar"
+             onerror="this.outerHTML='<div class=&quot;ph&quot;>Gula Apong</div>'">
+    </div>
+    <div class="story-text reveal">
+        <span class="eyebrow">Rooted in Heritage</span>
+        <h2>The soul of Borneo, in every bottle.</h2>
+        <p>We chose Gula Apong — Nypa palm sugar — as the heart of D'Vaaw. Gentle, lasting, and unmistakably Sarawakian.</p>
+        <p>Every spray supports single mothers and students in our community. Luxury that gives back.</p>
+        <a href="about.html" class="btn btn-dark">Read Our Story</a>
+    </div>
+</section>
+
+<script src="app.js"></script>
+<script>
+(function () {
+    const { CATALOG, SIZES, CAT_LABEL } = window.DVAAW;
+    const featured = ['red-gorgeous','hottest-guy','obsession','rentap-ridge'];
+    const grid = document.getElementById('featured');
+
+    grid.innerHTML = featured.map(id => {
+        const p = CATALOG.find(x => x.id === id);
+        return `
+        <article class="prod-card reveal" data-id="${p.id}">
+            <a href="shop.html" class="pc-img">
+                <img src="${p.img}" alt="${p.name}" onerror="this.outerHTML='<div class=&quot;ph&quot;>${p.name}</div>'">
+            </a>
+            <div class="pc-cat">${CAT_LABEL[p.cat]}</div>
+            <div class="pc-name">${p.name}</div>
+            <div class="pc-notes">${p.notes}</div>
+            <div class="pc-price" data-price>RM79.00</div>
+            <div class="pc-actions">
+                <div class="pc-size">
+                    ${SIZES.map((s,i) => `<button data-size="${s.size}" data-price="${s.price}" class="${i===1?'sel':''}">${s.size}</button>`).join('')}
+                </div>
+                <button class="pc-add">Add to Cart</button>
+            </div>
+        </article>`;
+    }).join('');
+
+    // Size selection + add to cart
+    grid.querySelectorAll('.prod-card').forEach(card => {
+        let size = '35ml', price = 79;
+        const priceEl = card.querySelector('[data-price]');
+        card.querySelectorAll('.pc-size button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                card.querySelectorAll('.pc-size button').forEach(b => b.classList.remove('sel'));
+                btn.classList.add('sel');
+                size = btn.dataset.size;
+                price = +btn.dataset.price;
+                priceEl.textContent = 'RM' + price.toFixed(2);
+            });
+        });
+        card.querySelector('.pc-add').addEventListener('click', () => {
+            window.DVAAW.addToCart(card.dataset.id, size, price);
+        });
+    });
+
+    window.DVAAW.observeReveals();
+})();
+</script>
+</body>
+</html>

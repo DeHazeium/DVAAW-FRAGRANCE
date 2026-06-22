@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page Not Found — D'Vaaw</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+body { background: var(--black); }
+.nf { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: clamp(4rem,9vw,7rem) var(--pad-x); color: #fff; position: relative; overflow: hidden; }
+.nf .glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 60vw; height: 60vw; max-width: 600px; max-height: 600px; background: radial-gradient(circle, rgba(200,169,106,0.12) 0%, transparent 65%); pointer-events: none; }
+.nf-num { font-family: var(--display); font-size: clamp(7rem,22vw,16rem); font-weight: 300; line-height: 0.9; color: transparent; -webkit-text-stroke: 1px var(--gold); position: relative; }
+.nf .eyebrow { display: block; margin: 1rem 0 1.4rem; position: relative; }
+.nf h1 { font-size: clamp(1.8rem,4vw,2.6rem); font-weight: 300; margin-bottom: 1rem; position: relative; }
+.nf h1 em { font-style: italic; color: var(--gold); }
+.nf p { color: rgba(255,255,255,0.5); max-width: 40ch; margin-bottom: 2.4rem; position: relative; }
+.nf-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; position: relative; }
+</style>
+</head>
+<body>
+
+<section class="nf">
+    <div class="glow"></div>
+    <div class="nf-num">404</div>
+    <span class="eyebrow">Lost the Scent</span>
+    <h1>This page has <em>drifted</em> away.</h1>
+    <p>The page you're looking for doesn't exist or has moved. Let's get you back to something beautiful.</p>
+    <div class="nf-btns">
+        <a href="index.html" class="btn btn-gold">Back Home</a>
+        <a href="shop.html" class="btn btn-ghost-light">Shop Fragrances</a>
+    </div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
