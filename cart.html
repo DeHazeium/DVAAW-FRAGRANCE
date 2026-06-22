@@ -47,17 +47,80 @@
 .summary {
     background: var(--ink);
     color: #fff;
-    padding: clamp(1.8rem, 3vw, 2.6rem);
+    padding: clamp(1.8rem, 3vw, 2.4rem);
     position: sticky;
     top: 88px;
 }
-.summary h2 { font-size: 1.6rem; font-weight: 400; margin-bottom: 1.8rem; padding-bottom: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.summary h2 { font-size: 1.6rem; font-weight: 400; margin-bottom: 1.4rem; padding-bottom: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+/* Delivery method toggle */
+.method-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.4rem; }
+.method-toggle button {
+    padding: 0.9rem 0.6rem;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.6);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.25s;
+    display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
+}
+.method-toggle button .ic { font-size: 1.1rem; }
+.method-toggle button.sel { background: var(--gold); color: var(--black); border-color: var(--gold); }
+
+/* Address form inside cart */
+.ship-form { margin-bottom: 1.4rem; display: none; }
+.ship-form.show { display: block; animation: fade 0.35s var(--ease); }
+.ship-form .fld { margin-bottom: 0.8rem; }
+.ship-form .fld-row { display: flex; gap: 0.6rem; }
+.ship-form .fld-row .fld { flex: 1; }
+.ship-form label { display: block; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 0.3rem; }
+.ship-form input, .ship-form select {
+    width: 100%; padding: 0.6rem 0.7rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff; font-family: var(--body); font-size: 0.82rem;
+    transition: border-color 0.2s;
+}
+.ship-form input:focus, .ship-form select:focus { outline: none; border-color: var(--gold); }
+.ship-form input::placeholder { color: rgba(255,255,255,0.3); }
+.ship-form select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23999' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.7rem center; padding-right: 2rem; }
+.ship-form select option { background: var(--ink); color: #fff; }
+
+.pickup-note { display: none; margin-bottom: 1.4rem; padding: 0.9rem 1rem; background: rgba(200,169,106,0.1); border-left: 2px solid var(--gold); font-size: 0.76rem; color: rgba(255,255,255,0.7); line-height: 1.6; }
+.pickup-note.show { display: block; animation: fade 0.35s var(--ease); }
+
 .sum-row { display: flex; justify-content: space-between; font-size: 0.88rem; color: rgba(255,255,255,0.65); margin-bottom: 1rem; }
-.sum-total { display: flex; justify-content: space-between; font-size: 1.3rem; font-family: var(--display); color: #fff; margin-top: 1.4rem; padding-top: 1.4rem; border-top: 1px solid rgba(255,255,255,0.1); }
+.sum-total { display: flex; justify-content: space-between; font-size: 1.3rem; font-family: var(--display); color: #fff; margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,0.1); }
 .sum-note { font-size: 0.72rem; color: rgba(255,255,255,0.4); margin-top: 0.5rem; line-height: 1.6; }
-.checkout-btn { width: 100%; margin-top: 1.8rem; }
+.checkout-btn { width: 100%; margin-top: 1.6rem; }
 .checkout-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 .secure { text-align: center; font-size: 0.68rem; color: rgba(255,255,255,0.4); margin-top: 1rem; letter-spacing: 0.04em; }
+
+/* Countdown overlay */
+.cd-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,10,10,0.97);
+    z-index: 10000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    color: #fff;
+}
+.cd-overlay.show { display: flex; animation: fade 0.3s ease; }
+.cd-overlay .eyebrow { display: block; margin-bottom: 1.2rem; }
+.cd-overlay h2 { font-family: var(--display); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 300; margin-bottom: 0.6rem; }
+.cd-overlay h2 em { font-style: italic; color: var(--gold); }
+.cd-overlay > p { color: rgba(255,255,255,0.55); max-width: 38ch; margin-bottom: 2.5rem; line-height: 1.7; }
+.cd-ring { position: relative; width: 130px; height: 130px; margin-bottom: 2.5rem; }
+.cd-ring svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+.cd-ring .track { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 4; }
+.cd-ring .prog { fill: none; stroke: var(--gold); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.cd-ring .num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-size: 3.2rem; color: var(--gold); }
+.cd-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
 
 @media (max-width: 900px) {
     .cart-wrap { grid-template-columns: 1fr; }
@@ -76,15 +139,60 @@
     <h1>Your Cart</h1>
 </section>
 
-<section class="cart-wrap" id="cartWrap">
+<section class="cart-wrap">
     <div class="cart-items" id="cartItems"></div>
     <aside class="summary">
         <h2>Summary</h2>
+
+        <div class="method-toggle">
+            <button id="m-ship" class="sel" onclick="setMethod('ship')"><span class="ic">📦</span>Shipping</button>
+            <button id="m-pickup" onclick="setMethod('pickup')"><span class="ic">🏬</span>Pickup</button>
+        </div>
+
+        <!-- Shipping address form -->
+        <div class="ship-form show" id="shipForm">
+            <div class="fld"><label>Full Name</label><input type="text" id="f-name" placeholder="Recipient name"></div>
+            <div class="fld"><label>WhatsApp Number</label><input type="tel" id="f-phone" placeholder="011-1234 5678"></div>
+            <div class="fld"><label>Address</label><input type="text" id="f-addr" placeholder="House no., street, taman"></div>
+            <div class="fld-row">
+                <div class="fld"><label>Postcode</label><input type="text" id="f-postcode" maxlength="5" placeholder="94300"></div>
+                <div class="fld"><label>City</label><input type="text" id="f-city" placeholder="Kota Samarahan"></div>
+            </div>
+            <div class="fld">
+                <label>State</label>
+                <select id="f-state" onchange="render()">
+                    <option value="">Select state…</option>
+                    <option value="sarawak">Sarawak</option>
+                    <option value="sabah">Sabah</option>
+                    <option value="sabah">Labuan</option>
+                    <option value="semenanjung">Johor</option>
+                    <option value="semenanjung">Kedah</option>
+                    <option value="semenanjung">Kelantan</option>
+                    <option value="semenanjung">Melaka</option>
+                    <option value="semenanjung">Negeri Sembilan</option>
+                    <option value="semenanjung">Pahang</option>
+                    <option value="semenanjung">Penang</option>
+                    <option value="semenanjung">Perak</option>
+                    <option value="semenanjung">Perlis</option>
+                    <option value="semenanjung">Selangor</option>
+                    <option value="semenanjung">Terengganu</option>
+                    <option value="semenanjung">Kuala Lumpur</option>
+                    <option value="semenanjung">Putrajaya</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Pickup note -->
+        <div class="pickup-note" id="pickupNote">
+            🏬 Self-pickup — we'll arrange the time and place with you on WhatsApp. No shipping fee.
+        </div>
+
         <div class="sum-row"><span>Subtotal</span><span>RM<span id="subtotal">0.00</span></span></div>
-        <div class="sum-row"><span>Shipping (Sarawak)</span><span>RM<span id="shipping">0.00</span></span></div>
-        <div class="sum-total"><span>Total</span><span>RM<span id="total">0.00</span></span></div>
-        <p class="sum-note">Sarawak rate shown. Final shipping for other states is confirmed on WhatsApp.</p>
-        <button class="btn btn-wa checkout-btn" id="checkoutBtn" onclick="checkout()">
+        <div class="sum-row"><span id="ship-label">Shipping</span><span id="ship-val">—</span></div>
+        <div class="sum-total"><span>Total</span><span id="total-display">—</span></div>
+        <p class="sum-note" id="sum-note">Select your state for the shipping rate.</p>
+
+        <button class="btn btn-wa checkout-btn" id="checkoutBtn" onclick="startCheckout()">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.8 1-.1.2-.3.2-.5.1-.7-.3-1.4-.6-2-1.1-.5-.5-.9-1-1.3-1.6-.1-.2 0-.4.1-.5.1-.1.2-.3.4-.4.1-.1.2-.2.2-.4.1-.1 0-.3 0-.4-.1-.1-.6-1.4-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.7.7-.9 1.5-.9 2.5 0 1.5 1.1 2.9 1.2 3.1.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.1-1.4-.1-.1-.3-.2-.6-.3M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2"/></svg>
             Order via WhatsApp
         </button>
@@ -92,8 +200,51 @@
     </aside>
 </section>
 
+<!-- Countdown overlay -->
+<div class="cd-overlay" id="cdOverlay">
+    <span class="eyebrow">Order Ready</span>
+    <h2>Sending you to <em>WhatsApp</em></h2>
+    <p>Your order details are prepared. Just tap send when WhatsApp opens.</p>
+    <div class="cd-ring">
+        <svg viewBox="0 0 100 100">
+            <circle class="track" cx="50" cy="50" r="46"></circle>
+            <circle class="prog" id="cdProg" cx="50" cy="50" r="46"></circle>
+        </svg>
+        <div class="num" id="cdNum">5</div>
+    </div>
+    <div class="cd-btns">
+        <button class="btn btn-gold" onclick="goNow()">Go to WhatsApp Now</button>
+        <button class="btn btn-ghost-light" onclick="cancelCheckout()">Cancel</button>
+    </div>
+</div>
+
 <script src="app.js"></script>
 <script>
+let method = 'ship';
+let cdTimer = null, cdInterval = null, waUrl = '';
+
+function setMethod(m) {
+    method = m;
+    document.getElementById('m-ship').classList.toggle('sel', m === 'ship');
+    document.getElementById('m-pickup').classList.toggle('sel', m === 'pickup');
+    document.getElementById('shipForm').classList.toggle('show', m === 'ship');
+    document.getElementById('pickupNote').classList.toggle('show', m === 'pickup');
+    render();
+}
+
+function getZone() {
+    return document.getElementById('f-state').value;
+}
+
+function shippingCost(subtotal) {
+    if (method === 'pickup') return { fee: 0, label: 'Pickup', note: 'Self-pickup — free. We\u2019ll arrange details on WhatsApp.', exact: true };
+    const zone = getZone();
+    if (!zone) return { fee: 0, label: 'Shipping', note: 'Select your state for the shipping rate.', exact: false, missing: true };
+    if (zone === 'sarawak') return { fee: 10, label: 'Shipping (Sarawak)', note: 'Flat RM10 per 1kg parcel. 2\u20134 working days.', exact: true };
+    if (zone === 'semenanjung') return { fee: 15, label: 'Shipping (Semenanjung)', note: 'From RM15/kg. Final cost confirmed on WhatsApp. 3\u20137 working days.', exact: false };
+    return { fee: 0, label: 'Shipping (Sabah/Labuan)', note: 'Quote needed — we\u2019ll confirm your rate on WhatsApp.', exact: false, quote: true };
+}
+
 function render() {
     const cart = window.DVAAW.getCart();
     const wrap = document.getElementById('cartItems');
@@ -107,8 +258,8 @@ function render() {
                 <a href="shop.html" class="btn btn-dark">Browse Fragrances</a>
             </div>`;
         document.getElementById('subtotal').textContent = '0.00';
-        document.getElementById('shipping').textContent = '0.00';
-        document.getElementById('total').textContent = '0.00';
+        document.getElementById('ship-val').textContent = '—';
+        document.getElementById('total-display').textContent = '—';
         btn.disabled = true;
         return;
     }
@@ -134,10 +285,12 @@ function render() {
         </div>`).join('');
 
     const subtotal = cart.reduce((s, it) => s + it.price * it.qty, 0);
-    const shipping = 10;
+    const ship = shippingCost(subtotal);
     document.getElementById('subtotal').textContent = subtotal.toFixed(2);
-    document.getElementById('shipping').textContent = shipping.toFixed(2);
-    document.getElementById('total').textContent = (subtotal + shipping).toFixed(2);
+    document.getElementById('ship-label').textContent = ship.label;
+    document.getElementById('ship-val').textContent = ship.quote ? 'Quote' : ('RM' + ship.fee.toFixed(2));
+    document.getElementById('total-display').textContent = ship.quote ? '—' : ('RM' + (subtotal + ship.fee).toFixed(2) + (ship.exact ? '' : '+'));
+    document.getElementById('sum-note').textContent = ship.note;
 }
 
 function changeQty(i, d) {
@@ -148,7 +301,6 @@ function changeQty(i, d) {
     window.DVAAW.setCart(cart);
     render();
 }
-
 function removeRow(i) {
     const cart = window.DVAAW.getCart();
     cart.splice(i, 1);
@@ -156,34 +308,98 @@ function removeRow(i) {
     render();
 }
 
-function checkout() {
+function buildMessage() {
     const cart = window.DVAAW.getCart();
-    if (!cart.length) return;
-
-    const btn = document.getElementById('checkoutBtn');
-    btn.disabled = true;
-    btn.textContent = 'Opening WhatsApp…';
-
     const subtotal = cart.reduce((s, it) => s + it.price * it.qty, 0);
-    const shipping = 10;
-    const total = subtotal + shipping;
+    const ship = shippingCost(subtotal);
 
     let msg = "*NEW ORDER — D'VAAW PERFUME* ✨\n\n*ITEMS*\n";
     cart.forEach(it => { msg += `▪️ ${it.qty}× ${it.name} (${it.size}) — RM${(it.price*it.qty).toFixed(2)}\n`; });
-    msg += `\n*SUMMARY*\nSubtotal: RM${subtotal.toFixed(2)}\nShipping (Sarawak): RM${shipping.toFixed(2)}\n*Total: RM${total.toFixed(2)}*\n\n`;
-    msg += "Hi! I'd like to place this order. Please confirm shipping for my address and share payment details.";
 
-    // Save for confirmation page
+    msg += `\n*DELIVERY*\n`;
+    if (method === 'pickup') {
+        msg += `Method: Self-pickup\n`;
+    } else {
+        const name = document.getElementById('f-name').value.trim();
+        const phone = document.getElementById('f-phone').value.trim();
+        const addr = document.getElementById('f-addr').value.trim();
+        const postcode = document.getElementById('f-postcode').value.trim();
+        const city = document.getElementById('f-city').value.trim();
+        const stateSel = document.getElementById('f-state');
+        const state = stateSel.options[stateSel.selectedIndex]?.text || '';
+        msg += `Method: Shipping\nName: ${name}\nPhone: ${phone}\nAddress: ${addr}, ${postcode} ${city}, ${state}\n`;
+    }
+
+    msg += `\n*SUMMARY*\nSubtotal: RM${subtotal.toFixed(2)}\n`;
+    msg += `${ship.label}: ${ship.quote ? 'Quote needed' : 'RM' + ship.fee.toFixed(2)}\n`;
+    if (!ship.quote) msg += `*Total: RM${(subtotal + ship.fee).toFixed(2)}${ship.exact ? '' : '+'}*\n`;
+    msg += `\nHi! I'd like to place this order. Please confirm and share payment details.`;
+
+    return { msg, subtotal, ship };
+}
+
+function validateShipping() {
+    if (method !== 'ship') return true;
+    const reqd = ['f-name','f-phone','f-addr','f-postcode','f-city','f-state'];
+    for (const id of reqd) {
+        if (!document.getElementById(id).value.trim()) {
+            window.DVAAW.showToast('Please complete your shipping address');
+            document.getElementById(id).focus();
+            return false;
+        }
+    }
+    return true;
+}
+
+function startCheckout() {
+    const cart = window.DVAAW.getCart();
+    if (!cart.length) return;
+    if (!validateShipping()) return;
+
+    const { msg, subtotal, ship } = buildMessage();
+    waUrl = 'https://wa.me/' + window.DVAAW.WHATSAPP + '?text=' + encodeURIComponent(msg);
+
+    // Save order for confirmation page
     localStorage.setItem('dvaaw_last_order', JSON.stringify({
-        items: cart, subtotal, shipping, total, date: new Date().toISOString()
+        items: cart, subtotal, shipping: ship.fee, total: subtotal + ship.fee,
+        method: method, date: new Date().toISOString()
     }));
+    if (window.dvaawSaveOrder) window.dvaawSaveOrder(cart, subtotal, ship.fee, subtotal + ship.fee);
 
-    // Firebase logging (optional, never blocks)
-    if (window.dvaawSaveOrder) window.dvaawSaveOrder(cart, subtotal, shipping, total);
+    // Start countdown overlay
+    const overlay = document.getElementById('cdOverlay');
+    const numEl = document.getElementById('cdNum');
+    const prog = document.getElementById('cdProg');
+    const C = 2 * Math.PI * 46;
+    prog.style.strokeDasharray = C;
+    prog.style.strokeDashoffset = 0;
+    overlay.classList.add('show');
 
+    let n = 5;
+    numEl.textContent = n;
+    // kick off ring animation
+    requestAnimationFrame(() => { prog.style.strokeDashoffset = C; });
+
+    cdInterval = setInterval(() => {
+        n--;
+        if (n >= 0) numEl.textContent = n;
+    }, 1000);
+
+    cdTimer = setTimeout(goNow, 5000);
+}
+
+function goNow() {
+    clearTimeout(cdTimer);
+    clearInterval(cdInterval);
     localStorage.removeItem('dvaaw_cart');
-    window.location.href = 'https://wa.me/' + window.DVAAW.WHATSAPP + '?text=' + encodeURIComponent(msg);
+    window.location.href = waUrl;
     setTimeout(() => { window.location.href = 'confirmation.html'; }, 1200);
+}
+
+function cancelCheckout() {
+    clearTimeout(cdTimer);
+    clearInterval(cdInterval);
+    document.getElementById('cdOverlay').classList.remove('show');
 }
 
 render();
