@@ -56,7 +56,21 @@
         try {
             const c = JSON.parse(localStorage.getItem('dvaaw_cart'));
             if (!Array.isArray(c)) return [];
-            return c.filter(i => i && i.id && typeof i.price === 'number' && i.qty > 0);
+            let changed = false;
+            const cleaned = c.map(i => {
+                if (!i || typeof i !== 'object') { changed = true; return null; }
+                // Migrate old-format items (title/variant/category) to new format
+                if (!i.name && i.title) { i.name = i.title; changed = true; }
+                if (!i.size && i.variant) { i.size = i.variant; changed = true; }
+                if (!i.cat && i.category) { i.cat = i.category; changed = true; }
+                if (!i.key) { i.key = (i.id || i.name) + '-' + (i.size || ''); changed = true; }
+                return i;
+            }).filter(i =>
+                i && i.name && i.size && typeof i.price === 'number' && i.qty > 0
+            );
+            if (cleaned.length !== c.length) changed = true;
+            if (changed) localStorage.setItem('dvaaw_cart', JSON.stringify(cleaned));
+            return cleaned;
         } catch { return []; }
     }
     function setCart(c) { localStorage.setItem('dvaaw_cart', JSON.stringify(c)); paintCount(); }
