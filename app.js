@@ -231,7 +231,7 @@
         const ck = document.createElement('div');
         ck.id = 'cookie';
         ck.innerHTML = `
-            <p>We use local storage to remember your cart. No tracking cookies. <a href="info.html">Privacy</a></p>
+            <p>We remember your cart for a smoother experience. No tracking cookies. <a href="info.html">Privacy</a></p>
             <div class="cookie-btns">
                 <button class="cookie-ok">Got it</button>
                 <button class="cookie-no">Dismiss</button>
