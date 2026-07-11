@@ -11,34 +11,34 @@
     /* ───── PRODUCT CATALOG (single source of truth) ───── */
     const CATALOG = [
         // For Her
-        { id:'red-gorgeous', name:'Red Gorgeous', cat:'her', notes:'Sweet · Fruity · Rose', img:'image/red-gorgeous.png' },
-        { id:'candy', name:'Candy', cat:'her', notes:'Sweet · Vanilla · Lactonic', img:'image/candy.png' },
-        { id:'the-goddess', name:'The Goddess', cat:'her', notes:'Vanilla · Amber · Powdery', img:'image/the-goddess.png' },
-        { id:'selena-secret', name:'Selena Secret', cat:'her', notes:'Chocolate · Vanilla · Tropical', img:'image/selena-secret.png' },
-        { id:'lady-boss', name:'Lady Boss', cat:'her', notes:'Fruity · Tropical · White Floral', img:'image/lady-boss.png' },
-        { id:'demure-opium', name:'Demure Opium', cat:'her', notes:'Coffee · Vanilla · Balsamic', img:'image/demure-opium.png' },
-        { id:'miss-bloom', name:'Miss Bloom', cat:'her', notes:'White Floral · Citrus · Woody', img:'image/miss-bloom.png' },
-        { id:'love-sick', name:'Love Sick', cat:'her', notes:'Sweet · Fruity · Sour', img:'image/love-sick.png' },
-        { id:'sweet-vanilla', name:'Sweet Vanilla', cat:'her', notes:'Vanilla · Woody · Amber', img:'image/sweet-vanilla.png' },
-        { id:'glamorous', name:'Glamorous', cat:'her', notes:'Fruity · Chocolate · Aquatic', img:'image/glamorous.png' },
-        { id:'roses-potion', name:'Roses Potion', cat:'her', notes:'Roses · Champagne · Amber', img:'image/roses-potion.png' },
-        { id:'ms-classy', name:'Ms. Classy', cat:'her', notes:'Floral · Patchouli · Powdery', img:'image/ms-classy.png' },
-        { id:'sweet-dew', name:'Sweet Dew', cat:'her', notes:'Ozonic · Rock Melon', img:'image/sweet-dew.png' },
+        { id:'red-gorgeous', name:'Red Gorgeous', cat:'her', notes:'Sweet Fruity · Vanilla · Rose', img:'image/red-gorgeous.png' },
+        { id:'candy', name:'Candy', cat:'her', notes:'Sweet Vanilla · Fruity Powdery · Lactonic', img:'image/candy.png' },
+        { id:'the-goddess', name:'The Goddess', cat:'her', notes:'Vanilla · Warm Spicy Cacao · Amber Powdery', img:'image/the-goddess.png' },
+        { id:'selena-secret', name:'Selena Secret', cat:'her', notes:'Chocolate Vanilla · Fruity Sweet · Tropical', img:'image/selena-secret.png' },
+        { id:'lady-boss', name:'Lady Boss', cat:'her', notes:'Fruity Fresh · Citrus Floral · White Floral', img:'image/lady-boss.png' },
+        { id:'demure-opium', name:'Demure Opium', cat:'her', notes:'Coffee Vanilla · Warm Spicy Woods · Balsamic', img:'image/demure-opium.png' },
+        { id:'miss-bloom', name:'Miss Bloom', cat:'her', notes:'White Floral · Patchouli Lactonic · Citrus Woody', img:'image/miss-bloom.png' },
+        { id:'love-sick', name:'Love Sick', cat:'her', notes:'Sweet Fruity · Floral Rose · Fresh Sour', img:'image/love-sick.png' },
+        { id:'sweet-vanilla', name:'Sweet Vanilla', cat:'her', notes:'Vanilla · Almond Powdery · Woody Amber', img:'image/sweet-vanilla.png' },
+        { id:'glamorous', name:'Glamorous', cat:'her', notes:'Fruity Vanilla · Sweet Floral · Chocolate Aquatic', img:'image/glamorous.png' },
+        { id:'roses-potion', name:'Roses Potion', cat:'her', notes:'Roses Champagne · Sweet Musky · Woody Amber', img:'image/roses-potion.png' },
+        { id:'ms-classy', name:'Ms. Classy', cat:'her', notes:'Floral Fruity · Rose Aquatic · Green Patchouli', img:'image/ms-classy.png' },
+        { id:'sweet-dew', name:'Sweet Dew', cat:'her', notes:'Ozonic · Aquatic Fresh · Rock Melon', img:'image/sweet-dew.png' },
         // For Him
-        { id:'hottest-guy', name:'Hottest Guy', cat:'him', notes:'Fresh Spicy · Amber · Lavender', img:'image/hottest-guy.png' },
-        { id:'the-zillion', name:'The Zillion', cat:'him', notes:'Cinnamon · Rose · Leather', img:'image/the-zillion.png' },
-        { id:'great-man', name:'Great Man', cat:'him', notes:'Bergamot · Musky · Mossy', img:'image/great-man.png' },
-        { id:'vip-scent', name:'VIP Scent', cat:'him', notes:'Aromatic · Citrus · Fruity', img:'image/vip-scent.png' },
-        { id:'perfect-men', name:'Perfect Men', cat:'him', notes:'Citrus · Marine · Floral', img:'image/perfect-men.png' },
-        { id:'the-gentleman', name:'The Gentleman', cat:'him', notes:'Aquatic · Lavender · Spicy', img:'image/the-gentleman.png' },
-        { id:'the-eros-men', name:'The Eros Men', cat:'him', notes:'Aromatic · Citrus · Powdery', img:'image/the-eros-men.png' },
-        { id:'titan-x', name:'Titan-X', cat:'him', notes:'Ginger · Bourbon Vanilla', img:'image/titan-x.png' },
+        { id:'hottest-guy', name:'Hottest Guy', cat:'him', notes:'Fresh Spicy Citrus · Aromatic Woods · Herbal Lavender', img:'image/hottest-guy.png' },
+        { id:'the-zillion', name:'The Zillion', cat:'him', notes:'Cinnamon Citrus · Amber Patchouli · Rose Leather', img:'image/the-zillion.png' },
+        { id:'great-man', name:'Great Man', cat:'him', notes:'Bergamot Fruity · Smoky Woods · Musky Moss', img:'image/great-man.png' },
+        { id:'vip-scent', name:'VIP Scent', cat:'him', notes:'Aromatic Vodka · Spicy Green Woods · Citrus Fruity', img:'image/vip-scent.png' },
+        { id:'perfect-men', name:'Perfect Men', cat:'him', notes:'Citrus Marine · Fruity Amber · Sweet Floral', img:'image/perfect-men.png' },
+        { id:'the-gentleman', name:'The Gentleman', cat:'him', notes:'Aquatic Citrus · Marine Woods · Fresh Lavender', img:'image/the-gentleman.png' },
+        { id:'the-eros-men', name:'The Eros Men', cat:'him', notes:'Aromatic Citrus · Vanilla Amber · Powdery Sweet', img:'image/the-eros-men.png' },
+        { id:'titan-x', name:'Titan-X', cat:'him', notes:'Red Ginger · Woody Notes · Bourbon Vanilla', img:'image/titan-x.png' },
         // Unisex
-        { id:'obsession', name:'Obsession', cat:'unisex', notes:'Amber · Saffron · Musky', img:'image/obsession.png' },
-        { id:'valora', name:'Valora', cat:'unisex', notes:'Vanilla · Black Pepper · Marine', img:'image/valora.png' },
+        { id:'obsession', name:'Obsession', cat:'unisex', notes:'Amber Saffron · Warm Spicy Nutty · Musky Floral', img:'image/obsession.png' },
+        { id:'valora', name:'Valora', cat:'unisex', notes:'Vanilla Salty · Woody Amber · Black Pepper Marine', img:'image/valora.png' },
         // Borneo Edition
-        { id:'rentap-ridge', name:'Rentap Ridge', cat:'borneo', notes:'Shorea Macrophylia · Warm Spicy', img:'image/rentap-ridge.png' },
-        { id:'borneo-luxe', name:'Borneo Luxe', cat:'borneo', notes:'Sweet · Woody · Borneo Nut', img:'image/borneo-luxe.png' },
+        { id:'rentap-ridge', name:'Rentap Ridge', cat:'borneo', notes:'Shorea Macrophylia · Herbal Lavender · Warm Spicy', img:'image/rentap-ridge.png' },
+        { id:'borneo-luxe', name:'Borneo Luxe', cat:'borneo', notes:'Sweet Woody · Vanilla Powdery · Borneo Nut', img:'image/borneo-luxe.png' },
     ];
 
     const SIZES = [
@@ -199,7 +199,7 @@
         <div class="footer-top">
             <div class="footer-brand">
                 <a href="index.html" class="brand">D'Vaaw</a>
-                <p>Halal luxury fragrances rooted in the soul of Borneo. Crafted with Gula Apong, made in Sarawak.</p>
+                <p>"Where Value Meets Authenticity" — Halal luxury fragrances crafted with Gula Apong, made in Sarawak, Borneo.</p>
             </div>
             <div class="footer-col">
                 <h4>Shop</h4>
