@@ -8,7 +8,7 @@ import {
     signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import {
-    initializeFirestore, doc, getDoc, setDoc, addDoc, collection,
+    initializeFirestore, doc, getDoc, setDoc, addDoc, deleteDoc, collection,
     getDocs, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 const app = initializeApp({
@@ -117,8 +117,34 @@ const DVFB = {
         return out;
     },
 
-    async saveProduct(p) {                       // {id,name,cat,notes,img?}
+    async saveProduct(p) {                       // {id,name,cat,notes,img?,stock?}
         await setDoc(doc(db, 'products', p.id), { ...p, updated: Date.now() }, { merge: true });
+    },
+
+    async deleteProduct(id) {                    // admin-added → gone; built-in → hidden
+        const builtIn = ['red-gorgeous','candy','the-goddess','selena-secret','lady-boss','demure-opium','miss-bloom','love-sick','sweet-vanilla','glamorous','roses-potion','ms-classy','sweet-dew','hottest-guy','the-zillion','great-man','vip-scent','perfect-men','the-gentleman','the-eros-men','titan-x','obsession','valora','rentap-ridge','borneo-luxe'];
+        if (builtIn.includes(id)) {
+            await setDoc(doc(db, 'products', id), { id, hidden: true, updated: Date.now() }, { merge: true });
+        } else {
+            await deleteDoc(doc(db, 'products', id));
+        }
+    },
+
+    async restoreProduct(id) {                   // un-hide a built-in
+        await setDoc(doc(db, 'products', id), { hidden: false, updated: Date.now() }, { merge: true });
+    },
+
+    async setStock(id, stock) {
+        await setDoc(doc(db, 'products', id), { id, stock: Math.max(0, stock|0), updated: Date.now() }, { merge: true });
+    },
+
+    /* ── Global size pricing (settings/pricing) ── */
+    async fetchPricing() {
+        const snap = await getDoc(doc(db, 'settings', 'pricing'));
+        return snap.exists() ? snap.data() : null;      // {p10, p35}
+    },
+    async savePricing(p10, p35) {
+        await setDoc(doc(db, 'settings', 'pricing'), { p10, p35, updated: Date.now() });
     },
 
     /* Compress the picture in the browser and store it inside the
