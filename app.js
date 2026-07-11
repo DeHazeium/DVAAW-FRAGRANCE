@@ -149,6 +149,17 @@
         <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>`;
     document.body.insertBefore(nav, document.body.firstChild);
 
+    // Paint greeting INSTANTLY from cached profile — no flicker while Firebase wakes up
+    (function instantGreeting() {
+        try {
+            const p = JSON.parse(localStorage.getItem('dvaaw_profile'));
+            if (p && p.name) {
+                const link = document.getElementById('accountLink');
+                if (link) link.textContent = 'Hello, ' + p.name.split(' ')[0];
+            }
+        } catch {}
+    })();
+
     const drawer = document.createElement('div');
     drawer.className = 'drawer';
     drawer.id = 'drawer';
