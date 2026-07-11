@@ -6,7 +6,7 @@
 <title>My Account — D'Vaaw</title>
 <link rel="stylesheet" href="styles.css">
 <style>
-.acct { max-width: 520px; margin: 0 auto; padding: clamp(2.5rem,6vw,4.5rem) var(--pad-x); flex: 1; width: 100%; }
+.acct { max-width: 560px; margin: 0 auto; padding: clamp(2.5rem,6vw,4.5rem) var(--pad-x); flex: 1; width: 100%; }
 .tabs { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 2rem; border: 1px solid var(--line); }
 .tabs button { padding: 1rem; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); transition: all 0.25s; }
 .tabs button.sel { background: var(--black); color: #fff; }
@@ -19,11 +19,12 @@
 label { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
 input, select { width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--line); background: #fff; font-family: var(--body); font-size: 0.9rem; transition: border-color 0.2s; }
 input:focus, select:focus { outline: none; border-color: var(--gold); }
+select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23999' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; }
 .prefs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .prefs label { display: inline-flex; align-items: center; gap: 0.45rem; border: 1px solid var(--line); padding: 0.55rem 0.9rem; cursor: pointer; font-size: 0.7rem; margin: 0; transition: all 0.2s; }
 .prefs label:has(input:checked) { background: var(--black); color: #fff; border-color: var(--black); }
 .prefs input { width: auto; }
-.pw-note { background: var(--mist); border-left: 2px solid var(--gold); padding: 0.8rem 1rem; font-size: 0.75rem; color: var(--text); line-height: 1.6; margin-bottom: 1.2rem; }
+.pw-note { background: var(--mist); border-left: 2px solid var(--gold); padding: 0.8rem 1rem; font-size: 0.75rem; line-height: 1.6; margin-bottom: 1.2rem; }
 .acct .btn { width: 100%; margin-top: 0.4rem; }
 .form-msg { font-size: 0.78rem; margin-top: 0.9rem; text-align: center; min-height: 1.2em; }
 .form-msg.err { color: #b3372f; }
@@ -31,14 +32,25 @@ input:focus, select:focus { outline: none; border-color: var(--gold); }
 .privacy-line { text-align: center; font-size: 0.72rem; color: var(--muted); margin-top: 1.4rem; }
 .privacy-line a { color: var(--gold); text-decoration: underline; }
 
-/* Logged-in view */
+/* Logged-in */
 .hello { text-align: center; margin-bottom: 2rem; }
 .hello .eyebrow { display: block; margin-bottom: 0.6rem; }
 .hello h2 { font-size: clamp(1.9rem,4.5vw,2.7rem); font-weight: 300; }
 .hello h2 em { font-style: italic; color: var(--gold); }
-.profile-card { border: 1px solid var(--line); padding: 1.6rem; margin-bottom: 1.4rem; }
-.profile-card h3 { font-family: var(--body); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; }
-.admin-cta { display: none; margin-bottom: 1rem; }
+.card { border: 1px solid var(--line); padding: 1.6rem; margin-bottom: 1.4rem; }
+.card h3 { font-family: var(--body); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; }
+.detail-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.7rem 0; border-bottom: 1px solid var(--mist); font-size: 0.88rem; }
+.detail-row:last-of-type { border: none; }
+.detail-row .k { color: var(--muted); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; padding-top: 0.15rem; }
+.detail-row .v { text-align: right; }
+.card .edit-area { display: none; }
+.card.editing .view-area { display: none; }
+.card.editing .edit-area { display: block; animation: fadeIn 0.3s var(--ease); }
+.btn-line { background: transparent; border: 1px solid var(--text); color: var(--text); }
+.btn-line:hover { background: var(--text); color: #fff; }
+.edit-btns { display: flex; gap: 0.7rem; }
+.edit-btns .btn { flex: 1; }
+.admin-cta { display: none; margin-bottom: 1.2rem; }
 .logout-btn { background: transparent; border: 1px solid var(--line); color: var(--muted); }
 .logout-btn:hover { border-color: var(--text); color: var(--text); }
 </style>
@@ -52,19 +64,17 @@ input:focus, select:focus { outline: none; border-color: var(--gold); }
 
 <section class="acct">
     <!-- Logged OUT -->
-    <div id="authArea">
+    <div id="authArea" style="display:none;">
         <div class="tabs">
             <button id="tabLogin" class="sel" onclick="showPane('login')">Sign In</button>
             <button id="tabReg" onclick="showPane('reg')">Create Account</button>
         </div>
-
         <div class="pane show" id="paneLogin">
             <div class="fld"><label>Email / Username / Phone</label><input type="text" id="li-id" placeholder="you@email.com or your username"></div>
             <div class="fld"><label>Password</label><input type="password" id="li-pw" placeholder="••••••••"></div>
             <button class="btn btn-dark" onclick="doLogin()">Sign In</button>
             <p class="form-msg" id="loginMsg"></p>
         </div>
-
         <div class="pane" id="paneReg">
             <div class="fld"><label>Full Name</label><input type="text" id="rg-name" placeholder="Your name"></div>
             <div class="fld-row">
@@ -96,26 +106,88 @@ input:focus, select:focus { outline: none; border-color: var(--gold); }
             <span class="eyebrow">Welcome back</span>
             <h2>Hello, <em id="helloName">friend</em>!</h2>
         </div>
+
         <a href="admin.html" class="btn btn-gold admin-cta" id="adminCta">⚙ Open Admin Panel</a>
-        <div class="profile-card">
+
+        <!-- MY DETAILS -->
+        <div class="card" id="detailsCard">
             <h3>My Details</h3>
-            <div class="fld"><label>Full Name</label><input type="text" id="pf-name"></div>
-            <div class="fld-row">
-                <div class="fld"><label>Age</label><input type="number" id="pf-age" min="13" max="120"></div>
-                <div class="fld"><label>Phone</label><input type="tel" id="pf-phone"></div>
+            <div class="view-area">
+                <div class="detail-row"><span class="k">Name</span><span class="v" id="v-name">—</span></div>
+                <div class="detail-row"><span class="k">Age</span><span class="v" id="v-age">—</span></div>
+                <div class="detail-row"><span class="k">Phone</span><span class="v" id="v-phone">—</span></div>
+                <div class="detail-row"><span class="k">Email</span><span class="v" id="v-email">—</span></div>
+                <div class="detail-row"><span class="k">Preferences</span><span class="v" id="v-prefs">—</span></div>
+                <button class="btn btn-line" onclick="toggleEdit('detailsCard', true)" style="margin-top:1rem;">Update Details</button>
             </div>
-            <div class="fld">
-                <label>Fragrance Preferences</label>
-                <div class="prefs" id="pf-prefs">
-                    <label><input type="checkbox" value="her">For Her</label>
-                    <label><input type="checkbox" value="him">For Him</label>
-                    <label><input type="checkbox" value="unisex">Unisex</label>
-                    <label><input type="checkbox" value="borneo">Borneo</label>
+            <div class="edit-area">
+                <div class="fld"><label>Full Name</label><input type="text" id="e-name"></div>
+                <div class="fld-row">
+                    <div class="fld"><label>Age</label><input type="number" id="e-age" min="13" max="120"></div>
+                    <div class="fld"><label>Phone</label><input type="tel" id="e-phone"></div>
                 </div>
+                <div class="fld">
+                    <label>Fragrance Preferences</label>
+                    <div class="prefs" id="e-prefs">
+                        <label><input type="checkbox" value="her">For Her</label>
+                        <label><input type="checkbox" value="him">For Him</label>
+                        <label><input type="checkbox" value="unisex">Unisex</label>
+                        <label><input type="checkbox" value="borneo">Borneo</label>
+                    </div>
+                </div>
+                <div class="edit-btns">
+                    <button class="btn btn-dark" onclick="saveDetails()">Save</button>
+                    <button class="btn btn-line" onclick="toggleEdit('detailsCard', false)">Cancel</button>
+                </div>
+                <p class="form-msg" id="dMsg"></p>
             </div>
-            <button class="btn btn-dark" onclick="saveProfile()">Save Changes</button>
-            <p class="form-msg" id="pfMsg"></p>
         </div>
+
+        <!-- DEFAULT DELIVERY ADDRESS -->
+        <div class="card" id="addrCard">
+            <h3>Default Delivery Address</h3>
+            <div class="view-area">
+                <div class="detail-row"><span class="k">Address</span><span class="v" id="v-addr">Not set</span></div>
+                <div class="detail-row"><span class="k">Postcode / City</span><span class="v" id="v-pc">—</span></div>
+                <div class="detail-row"><span class="k">State</span><span class="v" id="v-state">—</span></div>
+                <button class="btn btn-line" onclick="toggleEdit('addrCard', true)" style="margin-top:1rem;">Update Address</button>
+            </div>
+            <div class="edit-area">
+                <div class="fld"><label>Address</label><input type="text" id="e-addr" placeholder="House no., street, taman"></div>
+                <div class="fld-row">
+                    <div class="fld"><label>Postcode</label><input type="text" id="e-postcode" maxlength="5"></div>
+                    <div class="fld"><label>City</label><input type="text" id="e-city"></div>
+                </div>
+                <div class="fld">
+                    <label>State</label>
+                    <select id="e-state">
+                        <option value="">Select state…</option>
+                        <option value="sarawak">Sarawak</option>
+                        <option value="sabah">Sabah</option>
+                        <option value="sabah" data-name="Labuan">Labuan</option>
+                        <option value="semenanjung">Johor</option>
+                        <option value="semenanjung">Kedah</option>
+                        <option value="semenanjung">Kelantan</option>
+                        <option value="semenanjung">Melaka</option>
+                        <option value="semenanjung">Negeri Sembilan</option>
+                        <option value="semenanjung">Pahang</option>
+                        <option value="semenanjung">Penang</option>
+                        <option value="semenanjung">Perak</option>
+                        <option value="semenanjung">Perlis</option>
+                        <option value="semenanjung">Selangor</option>
+                        <option value="semenanjung">Terengganu</option>
+                        <option value="semenanjung">Kuala Lumpur</option>
+                        <option value="semenanjung">Putrajaya</option>
+                    </select>
+                </div>
+                <div class="edit-btns">
+                    <button class="btn btn-dark" onclick="saveAddress()">Save</button>
+                    <button class="btn btn-line" onclick="toggleEdit('addrCard', false)">Cancel</button>
+                </div>
+                <p class="form-msg" id="aMsg"></p>
+            </div>
+        </div>
+
         <button class="btn logout-btn" onclick="doLogout()">Sign Out</button>
         <p class="privacy-line">Your details are kept private and secure. <a href="info.html#privacy">Privacy Policy</a></p>
     </div>
@@ -123,6 +195,48 @@ input:focus, select:focus { outline: none; border-color: var(--gold); }
 
 <script src="app.js"></script>
 <script>
+/* ── INSTANT STATE: decide view from cache before Firebase loads (no flash) ── */
+(function () {
+    let cached = null;
+    try { cached = JSON.parse(localStorage.getItem('dvaaw_profile')); } catch {}
+    if (cached && cached.name) {
+        document.getElementById('profileArea').style.display = 'block';
+        paintProfile(cached);
+    } else {
+        document.getElementById('authArea').style.display = 'block';
+    }
+})();
+
+function paintProfile(p) {
+    document.getElementById('helloName').textContent = (p.name || 'friend').split(' ')[0];
+    document.getElementById('v-name').textContent = p.name || '—';
+    document.getElementById('v-age').textContent = p.age || '—';
+    document.getElementById('v-phone').textContent = p.phone || '—';
+    document.getElementById('v-email').textContent = p.email || '—';
+    const labels = { her:'For Her', him:'For Him', unisex:'Unisex', borneo:'Borneo' };
+    document.getElementById('v-prefs').textContent = (p.prefs || []).map(x => labels[x] || x).join(', ') || '—';
+    const a = p.address || {};
+    document.getElementById('v-addr').textContent = a.line || 'Not set';
+    document.getElementById('v-pc').textContent = (a.postcode || a.city) ? `${a.postcode || ''} ${a.city || ''}`.trim() : '—';
+    document.getElementById('v-state').textContent = a.stateName || '—';
+    // Prefill edit fields
+    document.getElementById('e-name').value = p.name || '';
+    document.getElementById('e-age').value = p.age || '';
+    document.getElementById('e-phone').value = p.phone || '';
+    document.querySelectorAll('#e-prefs input').forEach(c => c.checked = (p.prefs || []).includes(c.value));
+    document.getElementById('e-addr').value = a.line || '';
+    document.getElementById('e-postcode').value = a.postcode || '';
+    document.getElementById('e-city').value = a.city || '';
+    if (a.stateName) {
+        const sel = document.getElementById('e-state');
+        [...sel.options].forEach(o => { if (o.text === a.stateName) sel.value = o.value, o.selected = true; });
+    }
+}
+
+function toggleEdit(cardId, on) {
+    document.getElementById(cardId).classList.toggle('editing', on);
+}
+
 function showPane(p) {
     document.getElementById('paneLogin').classList.toggle('show', p === 'login');
     document.getElementById('paneReg').classList.toggle('show', p === 'reg');
@@ -131,12 +245,20 @@ function showPane(p) {
 }
 function msg(id, text, ok) {
     const el = document.getElementById(id);
-    el.textContent = text;
-    el.className = 'form-msg ' + (ok ? 'ok' : 'err');
+    el.textContent = text; el.className = 'form-msg ' + (ok ? 'ok' : 'err');
 }
 function fb() {
     if (!window.DVFB) { window.DVAAW.showToast('Connecting… try again in a second'); return null; }
     return window.DVFB;
+}
+function friendly(e) {
+    const m = (e && e.message) || 'Something went wrong.';
+    if (m.includes('permission') || m.includes('insufficient')) return 'Database rules are blocking this — publish the rules from SECURITY.txt section 8.';
+    if (m.includes('email-already-in-use')) return 'That email already has an account — try signing in.';
+    if (m.includes('invalid-credential') || m.includes('wrong-password') || m.includes('user-not-found')) return 'Wrong details — check and try again.';
+    if (m.includes('weak-password')) return 'Password too weak — use at least 6 characters.';
+    if (m.includes('invalid-email')) return 'That email doesn\'t look right.';
+    return m.replace('Firebase: ', '').replace(/\(auth.*\)\.?/, '').trim();
 }
 
 async function doLogin() {
@@ -147,7 +269,6 @@ async function doLogin() {
     try {
         msg('loginMsg', 'Signing in…', true);
         await f.login(id, pw);
-        msg('loginMsg', 'Welcome back!', true);
     } catch (e) { msg('loginMsg', friendly(e)); }
 }
 
@@ -165,52 +286,57 @@ async function doRegister() {
     try {
         msg('regMsg', 'Creating your account…', true);
         await f.register({ name, age, prefs, email, username, phone, password: pw });
-        msg('regMsg', 'Account created — welcome to D\'Vaaw!', true);
     } catch (e) { msg('regMsg', friendly(e)); }
 }
 
-async function saveProfile() {
+async function saveDetails() {
     const f = fb(); if (!f) return;
-    const prefs = [...document.querySelectorAll('#pf-prefs input:checked')].map(c => c.value);
+    const prefs = [...document.querySelectorAll('#e-prefs input:checked')].map(c => c.value);
     try {
-        await f.saveProfile({
-            name: document.getElementById('pf-name').value.trim(),
-            age: parseInt(document.getElementById('pf-age').value) || null,
-            phone: document.getElementById('pf-phone').value.trim(),
+        const p = await f.saveProfile({
+            name: document.getElementById('e-name').value.trim(),
+            age: parseInt(document.getElementById('e-age').value) || null,
+            phone: document.getElementById('e-phone').value.trim(),
             prefs
         });
-        msg('pfMsg', 'Saved!', true);
-        window.DVAAW.showToast('Profile updated');
-    } catch (e) { msg('pfMsg', friendly(e)); }
+        paintProfile(p);
+        toggleEdit('detailsCard', false);
+        window.DVAAW.showToast('Details updated');
+    } catch (e) { msg('dMsg', friendly(e)); }
+}
+
+async function saveAddress() {
+    const f = fb(); if (!f) return;
+    const sel = document.getElementById('e-state');
+    const opt = sel.options[sel.selectedIndex];
+    try {
+        const p = await f.saveProfile({
+            address: {
+                line: document.getElementById('e-addr').value.trim(),
+                postcode: document.getElementById('e-postcode').value.trim(),
+                city: document.getElementById('e-city').value.trim(),
+                stateZone: sel.value || '',
+                stateName: sel.value ? opt.text : ''
+            }
+        });
+        paintProfile(p);
+        toggleEdit('addrCard', false);
+        window.DVAAW.showToast('Address saved');
+    } catch (e) { msg('aMsg', friendly(e)); }
 }
 
 function doLogout() { if (window.DVFB) window.DVFB.logout(); }
 
-function friendly(e) {
-    const m = (e && e.message) || 'Something went wrong.';
-    if (m.includes('permission') || m.includes('insufficient')) return 'Database rules are blocking this — publish the rules from SECURITY.txt section 8 in Firebase Console.';
-    if (m.includes('email-already-in-use')) return 'That email already has an account — try signing in.';
-    if (m.includes('invalid-credential') || m.includes('wrong-password') || m.includes('user-not-found')) return 'Wrong details — check and try again.';
-    if (m.includes('weak-password')) return 'Password too weak — use at least 6 characters.';
-    if (m.includes('invalid-email')) return 'That email doesn\'t look right.';
-    return m.replace('Firebase: ', '').replace(/\(auth.*\)\.?/, '').trim();
-}
-
+/* Firebase confirms/corrects the instant state */
 window.addEventListener('dvaaw:auth', (e) => {
     const { user, profile } = e.detail || {};
     document.getElementById('authArea').style.display = user ? 'none' : 'block';
     document.getElementById('profileArea').style.display = user ? 'block' : 'none';
-    if (user && !profile) {
-        msg('pfMsg', 'Couldn\'t load your saved details — check Firestore rules (SECURITY.txt section 8), then refresh.');
-    }
     if (user && profile) {
-        document.getElementById('helloName').textContent = (profile.name || 'friend').split(' ')[0];
-        document.getElementById('pf-name').value = profile.name || '';
-        document.getElementById('pf-age').value = profile.age || '';
-        document.getElementById('pf-phone').value = profile.phone || '';
-        document.querySelectorAll('#pf-prefs input').forEach(c => c.checked = (profile.prefs || []).includes(c.value));
+        paintProfile(profile);
         document.getElementById('adminCta').style.display = window.DVFB && window.DVFB.isAdmin ? 'flex' : 'none';
     }
+    if (user && !profile) msg('dMsg', 'Couldn\'t load saved details — check Firestore rules, then refresh.');
 });
 </script>
 </body>
