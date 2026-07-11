@@ -8,7 +8,7 @@ import {
     signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import {
-    getFirestore, doc, getDoc, setDoc, addDoc, collection,
+    initializeFirestore, doc, getDoc, setDoc, addDoc, collection,
     getDocs, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import {
@@ -25,7 +25,9 @@ const app = initializeApp({
     appId: "1:176200300799:web:ee8893e3e3e6a4dd14b4ca"
 });
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db = initializeFirestore(app, {
+    experimentalAutoDetectLongPolling: true   // fixes "client is offline" on strict networks
+});
 const storage = getStorage(app);
 
 const ADMIN_USERNAME = 'dvaaw_nick';          // temporary — see SECURITY.txt
@@ -35,9 +37,16 @@ const norm = s => (s || '').trim().toLowerCase();
 async function resolveEmail(identifier) {
     const id = norm(identifier);
     if (id.includes('@')) return id;
-    const snap = await getDoc(doc(db, 'lookups', id.replace(/[^a-z0-9+]/g, '')));
-    if (snap.exists()) return snap.data().email;
-    throw new Error('No account found for that username / phone.');
+    try {
+        const snap = await getDoc(doc(db, 'lookups', id.replace(/[^a-z0-9+]/g, '')));
+        if (snap.exists()) return snap.data().email;
+        throw new Error('No account found for that username / phone.');
+    } catch (e) {
+        if ((e.message || '').includes('offline')) {
+            throw new Error('Connection issue — try signing in with your email instead.');
+        }
+        throw e;
+    }
 }
 
 const DVFB = {
@@ -53,6 +62,7 @@ const DVFB = {
         const profile = { name, age: age || null, prefs: prefs || [], email,
                           username: username || '', phone: phone || '', created: Date.now() };
         await setDoc(doc(db, 'users', uid), profile);
+        localStorage.setItem('dvaaw_profile', JSON.stringify({ uid, ...profile }));
         // lookups so people can log in with username or phone
         if (username) await setDoc(doc(db, 'lookups', norm(username).replace(/[^a-z0-9+]/g,'')), { email });
         if (phone)    await setDoc(doc(db, 'lookups', norm(phone).replace(/[^a-z0-9+]/g,'')),    { email });
@@ -66,18 +76,40 @@ const DVFB = {
         return cred.user;
     },
 
-    logout() { return signOut(auth); },
+    logout() {
+        localStorage.removeItem('dvaaw_profile');
+        return signOut(auth);
+    },
 
     async loadProfile(uid) {
-        const snap = await getDoc(doc(db, 'users', uid));
-        this.profile = snap.exists() ? snap.data() : null;
-        return this.profile;
+        // Try Firestore with one retry; fall back to cached copy
+        for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+                const snap = await getDoc(doc(db, 'users', uid));
+                if (snap.exists()) {
+                    this.profile = snap.data();
+                    localStorage.setItem('dvaaw_profile', JSON.stringify({ uid, ...this.profile }));
+                    return this.profile;
+                }
+                break;
+            } catch (e) {
+                if (attempt === 0) await new Promise(r => setTimeout(r, 800));
+            }
+        }
+        // Firestore unavailable → use cache so "Hello, name" still works
+        try {
+            const cached = JSON.parse(localStorage.getItem('dvaaw_profile'));
+            if (cached && cached.uid === uid) { this.profile = cached; return cached; }
+        } catch {}
+        this.profile = null;
+        return null;
     },
 
     async saveProfile(patch) {
         if (!this.user) throw new Error('Not logged in');
         this.profile = { ...(this.profile || {}), ...patch };
         await setDoc(doc(db, 'users', this.user.uid), this.profile, { merge: true });
+        localStorage.setItem('dvaaw_profile', JSON.stringify({ uid: this.user.uid, ...this.profile }));
         window.dispatchEvent(new CustomEvent('dvaaw:auth', { detail: { user: this.user, profile: this.profile } }));
         return this.profile;
     },
