@@ -269,6 +269,7 @@ async function doLogin() {
     try {
         msg('loginMsg', 'Signing in…', true);
         await f.login(id, pw);
+        window._greetOnAuth = true;               // cinematic welcome once profile loads
     } catch (e) { msg('loginMsg', friendly(e)); }
 }
 
@@ -286,6 +287,7 @@ async function doRegister() {
     try {
         msg('regMsg', 'Creating your account…', true);
         await f.register({ name, age, prefs, email, username, phone, password: pw });
+        if (window.DVAAW_GREET) window.DVAAW_GREET('Welcome to D\'Vaaw', name.split(' ')[0]);
     } catch (e) { msg('regMsg', friendly(e)); }
 }
 
@@ -335,6 +337,10 @@ window.addEventListener('dvaaw:auth', (e) => {
     if (user && profile) {
         paintProfile(profile);
         document.getElementById('adminCta').style.display = window.DVFB && window.DVFB.isAdmin ? 'flex' : 'none';
+        if (window._greetOnAuth) {
+            window._greetOnAuth = false;
+            if (window.DVAAW_GREET) window.DVAAW_GREET('Welcome back', (profile.name || 'friend').split(' ')[0]);
+        }
     }
     if (user && !profile) msg('dMsg', 'Couldn\'t load saved details — check Firestore rules, then refresh.');
 });
