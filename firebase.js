@@ -11,10 +11,6 @@ import {
     initializeFirestore, doc, getDoc, setDoc, addDoc, collection,
     getDocs, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import {
-    getStorage, ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
-
 const app = initializeApp({
     apiKey: "AIzaSyCxOigVTO2ZCeKYoVRJvU085fEiEL9EKOI",
     authDomain: "d-vaaw-perfume.firebaseapp.com",
@@ -28,7 +24,6 @@ const auth = getAuth(app);
 const db = initializeFirestore(app, {
     experimentalAutoDetectLongPolling: true   // fixes "client is offline" on strict networks
 });
-const storage = getStorage(app);
 
 const ADMIN_USERNAME = 'dvaaw_nick';          // temporary — see SECURITY.txt
 const norm = s => (s || '').trim().toLowerCase();
@@ -126,10 +121,29 @@ const DVFB = {
         await setDoc(doc(db, 'products', p.id), { ...p, updated: Date.now() }, { merge: true });
     },
 
+    /* Compress the picture in the browser and store it inside the
+       product document itself — no Firebase Storage (free plan). */
     async uploadProductImage(id, file) {
-        const r = ref(storage, 'products/' + id + '-' + Date.now());
-        await uploadBytes(r, file);
-        return await getDownloadURL(r);
+        if (file.size > 8 * 1024 * 1024) throw new Error('Image too large — pick one under 8MB.');
+        const dataUrl = await new Promise((resolve, reject) => {
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            img.onload = () => {
+                URL.revokeObjectURL(url);
+                const MAX = 700;                          // longest side
+                let { width: w, height: h } = img;
+                if (w > h && w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+                else if (h > MAX)     { w = Math.round(w * MAX / h); h = MAX; }
+                const c = document.createElement('canvas');
+                c.width = w; c.height = h;
+                c.getContext('2d').drawImage(img, 0, 0, w, h);
+                resolve(c.toDataURL('image/jpeg', 0.82));
+            };
+            img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not read that image.')); };
+            img.src = url;
+        });
+        if (dataUrl.length > 900000) throw new Error('Image still too big after compression — try a smaller photo.');
+        return dataUrl;                                   // stored in the product doc's img field
     },
 
     /* ── Discount (settings/discount) ── */
