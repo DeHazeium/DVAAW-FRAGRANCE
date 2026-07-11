@@ -6,30 +6,45 @@
 <title>Admin — D'Vaaw</title>
 <link rel="stylesheet" href="styles.css">
 <style>
-.admin { max-width: 900px; margin: 0 auto; padding: clamp(2.5rem,6vw,4rem) var(--pad-x); flex: 1; width: 100%; }
+.admin { max-width: 1000px; margin: 0 auto; padding: clamp(2rem,5vw,3.5rem) var(--pad-x); flex: 1; width: 100%; }
 .locked { text-align: center; padding: 5rem 1rem; }
 .locked .ic { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
 .locked p { color: var(--muted); margin-bottom: 1.6rem; }
-.admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
-.panel { border: 1px solid var(--line); padding: 1.8rem; }
-.panel h2 { font-size: 1.4rem; font-weight: 400; margin-bottom: 0.4rem; }
-.panel .sub { font-size: 0.76rem; color: var(--muted); margin-bottom: 1.4rem; }
+.panel { border: 1px solid var(--line); padding: 1.6rem; margin-bottom: 1.5rem; }
+.panel h2 { font-size: 1.35rem; font-weight: 400; margin-bottom: 0.3rem; }
+.panel .sub { font-size: 0.75rem; color: var(--muted); margin-bottom: 1.3rem; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
 .fld { margin-bottom: 1rem; }
 .fld-row { display: flex; gap: 0.7rem; }
 .fld-row .fld { flex: 1; }
-label { display: block; font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.35rem; }
-input, select, textarea { width: 100%; padding: 0.75rem 0.9rem; border: 1px solid var(--line); background: #fff; font-family: var(--body); font-size: 0.86rem; transition: border-color 0.2s; }
+label { display: block; font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.35rem; }
+input, select { width: 100%; padding: 0.7rem 0.85rem; border: 1px solid var(--line); background: #fff; font-family: var(--body); font-size: 0.85rem; }
 input:focus, select:focus { outline: none; border-color: var(--gold); }
-select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23999' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.9rem center; padding-right: 2.2rem; }
-.panel .btn { width: 100%; }
-.form-msg { font-size: 0.76rem; margin-top: 0.8rem; min-height: 1.1em; }
+select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23999' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.85rem center; padding-right: 2.1rem; }
+.form-msg { font-size: 0.75rem; margin-top: 0.7rem; min-height: 1.1em; }
 .form-msg.err { color: #b3372f; }
 .form-msg.ok { color: #2e7d32; }
-.img-preview { width: 90px; height: 110px; border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: var(--muted); margin-bottom: 0.8rem; overflow: hidden; }
+.img-preview { width: 84px; height: 104px; border: 1px dashed var(--line); display: flex; align-items: center; justify-content: center; font-size: 0.62rem; color: var(--muted); margin-bottom: 0.7rem; overflow: hidden; }
 .img-preview img { width: 100%; height: 100%; object-fit: contain; }
-.disc-status { padding: 0.9rem 1rem; background: var(--mist); font-size: 0.78rem; margin-bottom: 1.2rem; border-left: 2px solid var(--gold); }
-.temp-warn { background: #fff8e6; border: 1px solid #eadfa8; padding: 0.9rem 1.1rem; font-size: 0.74rem; line-height: 1.6; color: #6b5d1f; margin-bottom: 1.6rem; }
-@media (max-width: 820px) { .admin-grid { grid-template-columns: 1fr; } }
+.disc-status { padding: 0.85rem 1rem; background: var(--mist); font-size: 0.76rem; margin-bottom: 1.1rem; border-left: 2px solid var(--gold); }
+.temp-warn { background: #fff8e6; border: 1px solid #eadfa8; padding: 0.85rem 1rem; font-size: 0.72rem; line-height: 1.6; color: #6b5d1f; margin-bottom: 1.4rem; }
+
+/* Product table */
+.ptable { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.ptable th { text-align: left; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 0.5rem 0.4rem; border-bottom: 1px solid var(--line); font-weight: 500; }
+.ptable td { padding: 0.55rem 0.4rem; border-bottom: 1px solid var(--mist); vertical-align: middle; }
+.ptable .pname { font-weight: 500; }
+.ptable .pid { font-size: 0.66rem; color: var(--muted); }
+.stock-in { width: 64px; padding: 0.4rem 0.5rem; text-align: center; }
+.row-btn { font-size: 0.64rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.4rem 0.7rem; border: 1px solid var(--line); color: var(--text); transition: all 0.2s; margin-left: 0.3rem; white-space: nowrap; }
+.row-btn:hover { border-color: var(--gold); color: var(--gold); }
+.row-btn.danger:hover { border-color: #b3372f; color: #b3372f; }
+.stock-badge { font-size: 0.62rem; padding: 0.15rem 0.5rem; border-radius: 1rem; }
+.stock-badge.out { background: #fdecea; color: #b3372f; }
+.stock-badge.ok { background: #e8f5e9; color: #2e7d32; }
+.stock-badge.inf { background: var(--mist); color: var(--muted); }
+.table-scroll { overflow-x: auto; }
+@media (max-width: 820px) { .two-col { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -47,17 +62,25 @@ select { appearance: none; -webkit-appearance: none; background-image: url("data
     </div>
 
     <div id="adminView" style="display:none;">
-        <div class="temp-warn">⚠ <strong>Temporary admin login</strong> (Dvaaw_Nick / 12345) is for testing only. Before real launch: change the password in your account, and lock writes to your admin UID in the Firebase rules — see SECURITY.txt.</div>
+        <div class="temp-warn">⚠ <strong>Temporary admin login</strong> is for testing. Before launch: set a strong password and lock the Firestore rules to your admin UID (SECURITY.txt section 8).</div>
 
-        <div class="admin-grid">
-            <!-- ADD / UPDATE PRODUCT -->
+        <!-- PRODUCTS TABLE -->
+        <div class="panel">
+            <h2>Products</h2>
+            <p class="sub">Stock: set a number and press ✓. Leave stock empty = unlimited. Edit loads a product into the form below. Remove takes it off the shop.</p>
+            <div class="table-scroll">
+                <table class="ptable">
+                    <thead><tr><th>Product</th><th>Category</th><th>Stock</th><th style="text-align:right;">Actions</th></tr></thead>
+                    <tbody id="prodRows"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="two-col">
+            <!-- ADD / EDIT PRODUCT -->
             <div class="panel">
-                <h2>Add / Update Product</h2>
-                <p class="sub">Use an existing product's ID to update it (e.g. change its picture). A new ID creates a new product.</p>
-                <div class="fld">
-                    <label>Product</label>
-                    <select id="p-pick" onchange="pickProduct()"><option value="">— New product —</option></select>
-                </div>
+                <h2 id="formTitle">Add Product</h2>
+                <p class="sub">Editing an existing ID updates it. New ID = new product.</p>
                 <div class="fld-row">
                     <div class="fld"><label>ID (lowercase-hyphens)</label><input type="text" id="p-id" placeholder="midnight-oud"></div>
                     <div class="fld">
@@ -72,27 +95,43 @@ select { appearance: none; -webkit-appearance: none; background-image: url("data
                 </div>
                 <div class="fld"><label>Name</label><input type="text" id="p-name" placeholder="Midnight Oud"></div>
                 <div class="fld"><label>Scent Notes</label><input type="text" id="p-notes" placeholder="Oud · Amber · Vanilla"></div>
+                <div class="fld"><label>Stock (empty = unlimited)</label><input type="number" id="p-stock" min="0" placeholder="e.g. 20"></div>
                 <div class="fld">
-                    <label>Picture (upload new or leave empty to keep)</label>
+                    <label>Picture</label>
                     <div class="img-preview" id="p-preview">No image</div>
                     <input type="file" id="p-img" accept="image/*" onchange="previewImg()">
                 </div>
-                <button class="btn btn-gold" onclick="saveProduct()">Save Product</button>
+                <button class="btn btn-gold" onclick="saveProduct()" style="width:100%;">Save Product</button>
+                <button class="btn btn-ghost" onclick="clearForm()" style="width:100%;margin-top:0.6rem;">Clear Form</button>
                 <p class="form-msg" id="pMsg"></p>
             </div>
 
-            <!-- DISCOUNT -->
-            <div class="panel">
-                <h2>Launch a Discount</h2>
-                <p class="sub">Applies to every product sitewide. Shows a gold banner and adjusts prices at checkout.</p>
-                <div class="disc-status" id="discStatus">Loading current status…</div>
-                <div class="fld-row">
-                    <div class="fld"><label>Percent Off</label><input type="number" id="d-pct" min="1" max="90" placeholder="e.g. 20"></div>
-                    <div class="fld"><label>Label</label><input type="text" id="d-label" placeholder="Raya Sale"></div>
+            <div>
+                <!-- PRICE SETTINGS -->
+                <div class="panel">
+                    <h2>Price Settings</h2>
+                    <p class="sub">Sets the sitewide price for each bottle size.</p>
+                    <div class="fld-row">
+                        <div class="fld"><label>10ml Price (RM)</label><input type="number" id="pr-10" min="1" step="0.5"></div>
+                        <div class="fld"><label>35ml Price (RM)</label><input type="number" id="pr-35" min="1" step="0.5"></div>
+                    </div>
+                    <button class="btn btn-dark" onclick="savePricing()" style="width:100%;">Save Prices</button>
+                    <p class="form-msg" id="prMsg"></p>
                 </div>
-                <button class="btn btn-gold" onclick="launchDiscount()" style="margin-bottom:0.7rem;">🚀 Launch Discount</button>
-                <button class="btn btn-ghost" onclick="endDiscount()">End Current Discount</button>
-                <p class="form-msg" id="dMsg"></p>
+
+                <!-- DISCOUNT -->
+                <div class="panel">
+                    <h2>Discount</h2>
+                    <p class="sub">Sitewide percent off, applied at checkout with a gold banner.</p>
+                    <div class="disc-status" id="discStatus">Loading…</div>
+                    <div class="fld-row">
+                        <div class="fld"><label>Percent Off</label><input type="number" id="d-pct" min="1" max="90" placeholder="20"></div>
+                        <div class="fld"><label>Label</label><input type="text" id="d-label" placeholder="Raya Sale"></div>
+                    </div>
+                    <button class="btn btn-gold" onclick="launchDiscount()" style="width:100%;margin-bottom:0.6rem;">🚀 Launch</button>
+                    <button class="btn btn-ghost" onclick="endDiscount()" style="width:100%;">End Discount</button>
+                    <p class="form-msg" id="dMsg"></p>
+                </div>
             </div>
         </div>
     </div>
@@ -104,32 +143,68 @@ function msg(id, text, ok) {
     const el = document.getElementById(id);
     el.textContent = text; el.className = 'form-msg ' + (ok ? 'ok' : 'err');
 }
-
-function fillPicker() {
-    const sel = document.getElementById('p-pick');
-    window.DVAAW.CATALOG.forEach(p => {
-        const o = document.createElement('option');
-        o.value = p.id; o.textContent = p.name + ' (' + p.id + ')';
-        sel.appendChild(o);
-    });
+function friendly(e) {
+    const m = (e && e.message) || 'Failed.';
+    if (m.includes('permission') || m.includes('insufficient')) return 'Blocked by Firestore rules — check SECURITY.txt section 8 (admin UID).';
+    return m;
 }
 
-function pickProduct() {
-    const id = document.getElementById('p-pick').value;
+/* ── PRODUCTS TABLE ── */
+function renderTable() {
+    const rows = window.DVAAW.CATALOG.map(p => {
+        const stock = (typeof p.stock === 'number') ? p.stock : '';
+        const badge = stock === '' ? '<span class="stock-badge inf">∞</span>'
+                    : stock === 0 ? '<span class="stock-badge out">Out</span>'
+                    : '<span class="stock-badge ok">' + stock + '</span>';
+        return `<tr>
+            <td><div class="pname">${p.name}</div><div class="pid">${p.id}</div></td>
+            <td>${window.DVAAW.CAT_LABEL[p.cat] || p.cat}</td>
+            <td><input type="number" class="stock-in" min="0" value="${stock}" id="st-${p.id}"> ${badge}</td>
+            <td style="text-align:right;">
+                <button class="row-btn" onclick="applyStock('${p.id}')">✓ Stock</button>
+                <button class="row-btn" onclick="editProduct('${p.id}')">Edit</button>
+                <button class="row-btn danger" onclick="removeProduct('${p.id}','${p.name.replace(/'/g,"\\'")}')">Remove</button>
+            </td>
+        </tr>`;
+    }).join('');
+    document.getElementById('prodRows').innerHTML = rows || '<tr><td colspan="4">No products.</td></tr>';
+}
+
+async function applyStock(id) {
+    const val = document.getElementById('st-' + id).value;
+    try {
+        await window.DVFB.setStock(id, val === '' ? 999999 : parseInt(val));
+        const p = window.DVAAW.CATALOG.find(x => x.id === id);
+        if (p) p.stock = (val === '' ? undefined : parseInt(val));
+        renderTable();
+        window.DVAAW.showToast('Stock updated');
+    } catch (e) { window.DVAAW.showToast(friendly(e)); }
+}
+
+function editProduct(id) {
     const p = window.DVAAW.CATALOG.find(x => x.id === id);
-    document.getElementById('p-id').value = p ? p.id : '';
-    document.getElementById('p-name').value = p ? p.name : '';
-    document.getElementById('p-notes').value = p ? p.notes : '';
-    document.getElementById('p-cat').value = p ? p.cat : 'her';
-    const pv = document.getElementById('p-preview');
-    pv.innerHTML = p ? '<img src="' + p.img + '" onerror="this.parentElement.textContent=\'No image yet\'">' : 'No image';
+    if (!p) return;
+    document.getElementById('formTitle').textContent = 'Edit Product';
+    document.getElementById('p-id').value = p.id;
+    document.getElementById('p-name').value = p.name;
+    document.getElementById('p-notes').value = p.notes || '';
+    document.getElementById('p-cat').value = p.cat;
+    document.getElementById('p-stock').value = (typeof p.stock === 'number' && p.stock < 999999) ? p.stock : '';
+    document.getElementById('p-preview').innerHTML = '<img src="' + p.img + '" onerror="this.parentElement.textContent=\'No image yet\'">';
+    document.getElementById('p-id').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function clearForm() {
+    document.getElementById('formTitle').textContent = 'Add Product';
+    ['p-id','p-name','p-notes','p-stock'].forEach(i => document.getElementById(i).value = '');
+    document.getElementById('p-img').value = '';
+    document.getElementById('p-preview').textContent = 'No image';
+    msg('pMsg', '', true);
 }
 
 function previewImg() {
     const f = document.getElementById('p-img').files[0];
-    if (!f) return;
-    const pv = document.getElementById('p-preview');
-    pv.innerHTML = '<img src="' + URL.createObjectURL(f) + '">';
+    if (f) document.getElementById('p-preview').innerHTML = '<img src="' + URL.createObjectURL(f) + '">';
 }
 
 async function saveProduct() {
@@ -137,63 +212,98 @@ async function saveProduct() {
     const name = document.getElementById('p-name').value.trim();
     const cat = document.getElementById('p-cat').value;
     const notes = document.getElementById('p-notes').value.trim();
+    const stockRaw = document.getElementById('p-stock').value;
     const file = document.getElementById('p-img').files[0];
     if (!id || !name) return msg('pMsg', 'ID and Name are required.');
     try {
         msg('pMsg', 'Saving…', true);
-        const data = { id, name, cat, notes };
+        const data = { id, name, cat, notes, hidden: false };
+        if (stockRaw !== '') data.stock = Math.max(0, parseInt(stockRaw));
         if (file) {
-            msg('pMsg', 'Uploading picture…', true);
+            msg('pMsg', 'Compressing picture…', true);
             data.img = await window.DVFB.uploadProductImage(id, file);
         }
         await window.DVFB.saveProduct(data);
-        msg('pMsg', '✓ Saved! It\'s live on the shop now.', true);
+        // reflect locally
+        const i = window.DVAAW.CATALOG.findIndex(x => x.id === id);
+        if (i >= 0) window.DVAAW.CATALOG[i] = { ...window.DVAAW.CATALOG[i], ...data };
+        else window.DVAAW.CATALOG.push({ ...data, img: data.img || ('image/' + id + '.png') });
+        renderTable();
+        clearForm();
+        msg('pMsg', '✓ Saved — live on the shop now.', true);
         window.DVAAW.showToast('Product saved: ' + name);
-    } catch (e) { msg('pMsg', (e && e.message) || 'Failed to save.'); }
+    } catch (e) { msg('pMsg', friendly(e)); }
 }
 
+async function removeProduct(id, name) {
+    if (!confirm('Remove "' + name + '" from the shop?')) return;
+    try {
+        await window.DVFB.deleteProduct(id);
+        const i = window.DVAAW.CATALOG.findIndex(x => x.id === id);
+        if (i >= 0) window.DVAAW.CATALOG.splice(i, 1);
+        renderTable();
+        window.DVAAW.showToast('Removed: ' + name);
+    } catch (e) { window.DVAAW.showToast(friendly(e)); }
+}
+
+/* ── PRICING ── */
+async function loadPricing() {
+    document.getElementById('pr-10').value = window.DVAAW.SIZES[0].price;
+    document.getElementById('pr-35').value = window.DVAAW.SIZES[1].price;
+}
+async function savePricing() {
+    const p10 = parseFloat(document.getElementById('pr-10').value);
+    const p35 = parseFloat(document.getElementById('pr-35').value);
+    if (!p10 || !p35 || p10 <= 0 || p35 <= 0) return msg('prMsg', 'Enter valid prices for both sizes.');
+    try {
+        await window.DVFB.savePricing(p10, p35);
+        window.DVAAW.SIZES[0].price = p10;
+        window.DVAAW.SIZES[1].price = p35;
+        msg('prMsg', '✓ Prices updated sitewide.', true);
+        window.DVAAW.showToast('Prices saved');
+    } catch (e) { msg('prMsg', friendly(e)); }
+}
+
+/* ── DISCOUNT ── */
 async function refreshDiscount() {
     try {
         const d = await window.DVFB.fetchDiscount();
         const el = document.getElementById('discStatus');
         if (d && d.active) {
-            el.innerHTML = '🟢 <strong>' + (d.label || 'Sale') + '</strong> is LIVE — ' + d.percent + '% off sitewide.';
+            el.innerHTML = '🟢 <strong>' + (d.label || 'Sale') + '</strong> LIVE — ' + d.percent + '% off.';
             document.getElementById('d-pct').value = d.percent;
             document.getElementById('d-label').value = d.label || '';
-        } else {
-            el.textContent = '⚪ No discount running right now.';
-        }
-    } catch (e) {
-        document.getElementById('discStatus').textContent = 'Could not load status.';
-    }
+        } else el.textContent = '⚪ No discount running.';
+    } catch { document.getElementById('discStatus').textContent = 'Could not load status.'; }
 }
-
 async function launchDiscount() {
     const pct = parseInt(document.getElementById('d-pct').value);
     const label = document.getElementById('d-label').value.trim() || 'Sale';
-    if (!pct || pct < 1 || pct > 90) return msg('dMsg', 'Enter a percent between 1 and 90.');
+    if (!pct || pct < 1 || pct > 90) return msg('dMsg', 'Percent must be 1–90.');
     try {
         await window.DVFB.saveDiscount({ active: true, percent: pct, label });
-        msg('dMsg', '✓ ' + label + ' (' + pct + '% off) is live!', true);
+        msg('dMsg', '✓ ' + label + ' is live!', true);
         refreshDiscount();
         window.DVAAW.showToast('Discount launched 🚀');
-    } catch (e) { msg('dMsg', (e && e.message) || 'Failed.'); }
+    } catch (e) { msg('dMsg', friendly(e)); }
 }
-
 async function endDiscount() {
     try {
         await window.DVFB.saveDiscount({ active: false, percent: 0, label: '' });
         msg('dMsg', 'Discount ended.', true);
         refreshDiscount();
-    } catch (e) { msg('dMsg', (e && e.message) || 'Failed.'); }
+    } catch (e) { msg('dMsg', friendly(e)); }
 }
 
+/* ── GATE ── */
+let booted = false;
 window.addEventListener('dvaaw:auth', () => {
     const admin = window.DVFB && window.DVFB.isAdmin;
     document.getElementById('lockedView').style.display = admin ? 'none' : 'block';
     document.getElementById('adminView').style.display = admin ? 'block' : 'none';
-    if (admin) { fillPicker(); refreshDiscount(); }
+    if (admin && !booted) { booted = true; renderTable(); loadPricing(); refreshDiscount(); }
 });
+window.addEventListener('dvaaw:catalog', () => { if (booted) { renderTable(); loadPricing(); } });
 </script>
 </body>
 </html>
