@@ -188,6 +188,7 @@ function doLogout() { if (window.DVFB) window.DVFB.logout(); }
 
 function friendly(e) {
     const m = (e && e.message) || 'Something went wrong.';
+    if (m.includes('permission') || m.includes('insufficient')) return 'Database rules are blocking this — publish the rules from SECURITY.txt section 8 in Firebase Console.';
     if (m.includes('email-already-in-use')) return 'That email already has an account — try signing in.';
     if (m.includes('invalid-credential') || m.includes('wrong-password') || m.includes('user-not-found')) return 'Wrong details — check and try again.';
     if (m.includes('weak-password')) return 'Password too weak — use at least 6 characters.';
@@ -199,6 +200,9 @@ window.addEventListener('dvaaw:auth', (e) => {
     const { user, profile } = e.detail || {};
     document.getElementById('authArea').style.display = user ? 'none' : 'block';
     document.getElementById('profileArea').style.display = user ? 'block' : 'none';
+    if (user && !profile) {
+        msg('pfMsg', 'Couldn\'t load your saved details — check Firestore rules (SECURITY.txt section 8), then refresh.');
+    }
     if (user && profile) {
         document.getElementById('helloName').textContent = (profile.name || 'friend').split(' ')[0];
         document.getElementById('pf-name').value = profile.name || '';
