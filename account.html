@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account — D'Vaaw</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.acct { max-width: 520px; margin: 0 auto; padding: clamp(2.5rem,6vw,4.5rem) var(--pad-x); flex: 1; width: 100%; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 2rem; border: 1px solid var(--line); }
+.tabs button { padding: 1rem; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); transition: all 0.25s; }
+.tabs button.sel { background: var(--black); color: #fff; }
+.pane { display: none; }
+.pane.show { display: block; animation: fadeIn 0.35s var(--ease); }
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+.fld { margin-bottom: 1.1rem; }
+.fld-row { display: flex; gap: 0.8rem; }
+.fld-row .fld { flex: 1; }
+label { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+input, select { width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--line); background: #fff; font-family: var(--body); font-size: 0.9rem; transition: border-color 0.2s; }
+input:focus, select:focus { outline: none; border-color: var(--gold); }
+.prefs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.prefs label { display: inline-flex; align-items: center; gap: 0.45rem; border: 1px solid var(--line); padding: 0.55rem 0.9rem; cursor: pointer; font-size: 0.7rem; margin: 0; transition: all 0.2s; }
+.prefs label:has(input:checked) { background: var(--black); color: #fff; border-color: var(--black); }
+.prefs input { width: auto; }
+.pw-note { background: var(--mist); border-left: 2px solid var(--gold); padding: 0.8rem 1rem; font-size: 0.75rem; color: var(--text); line-height: 1.6; margin-bottom: 1.2rem; }
+.acct .btn { width: 100%; margin-top: 0.4rem; }
+.form-msg { font-size: 0.78rem; margin-top: 0.9rem; text-align: center; min-height: 1.2em; }
+.form-msg.err { color: #b3372f; }
+.form-msg.ok { color: #2e7d32; }
+.privacy-line { text-align: center; font-size: 0.72rem; color: var(--muted); margin-top: 1.4rem; }
+.privacy-line a { color: var(--gold); text-decoration: underline; }
+
+/* Logged-in view */
+.hello { text-align: center; margin-bottom: 2rem; }
+.hello .eyebrow { display: block; margin-bottom: 0.6rem; }
+.hello h2 { font-size: clamp(1.9rem,4.5vw,2.7rem); font-weight: 300; }
+.hello h2 em { font-style: italic; color: var(--gold); }
+.profile-card { border: 1px solid var(--line); padding: 1.6rem; margin-bottom: 1.4rem; }
+.profile-card h3 { font-family: var(--body); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; }
+.admin-cta { display: none; margin-bottom: 1rem; }
+.logout-btn { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+.logout-btn:hover { border-color: var(--text); color: var(--text); }
+</style>
+</head>
+<body>
+
+<section class="page-intro">
+    <span class="eyebrow">Members</span>
+    <h1>My Account</h1>
+</section>
+
+<section class="acct">
+    <!-- Logged OUT -->
+    <div id="authArea">
+        <div class="tabs">
+            <button id="tabLogin" class="sel" onclick="showPane('login')">Sign In</button>
+            <button id="tabReg" onclick="showPane('reg')">Create Account</button>
+        </div>
+
+        <div class="pane show" id="paneLogin">
+            <div class="fld"><label>Email / Username / Phone</label><input type="text" id="li-id" placeholder="you@email.com or your username"></div>
+            <div class="fld"><label>Password</label><input type="password" id="li-pw" placeholder="••••••••"></div>
+            <button class="btn btn-dark" onclick="doLogin()">Sign In</button>
+            <p class="form-msg" id="loginMsg"></p>
+        </div>
+
+        <div class="pane" id="paneReg">
+            <div class="fld"><label>Full Name</label><input type="text" id="rg-name" placeholder="Your name"></div>
+            <div class="fld-row">
+                <div class="fld"><label>Age</label><input type="number" id="rg-age" min="13" max="120" placeholder="e.g. 24"></div>
+                <div class="fld"><label>Username</label><input type="text" id="rg-user" placeholder="Pick a user ID"></div>
+            </div>
+            <div class="fld"><label>Email</label><input type="email" id="rg-email" placeholder="you@email.com"></div>
+            <div class="fld"><label>Phone (optional — can be used to sign in)</label><input type="tel" id="rg-phone" placeholder="011-1234 5678"></div>
+            <div class="fld">
+                <label>Fragrance Preferences</label>
+                <div class="prefs">
+                    <label><input type="checkbox" value="her">For Her</label>
+                    <label><input type="checkbox" value="him">For Him</label>
+                    <label><input type="checkbox" value="unisex">Unisex</label>
+                    <label><input type="checkbox" value="borneo">Borneo</label>
+                </div>
+            </div>
+            <div class="pw-note">🔒 <strong>Tip:</strong> please don't reuse the same password as your email account. Pick something unique for D'Vaaw.</div>
+            <div class="fld"><label>Password (min 6 characters)</label><input type="password" id="rg-pw" placeholder="Create a password"></div>
+            <button class="btn btn-gold" onclick="doRegister()">Create My Account</button>
+            <p class="form-msg" id="regMsg"></p>
+            <p class="privacy-line">Your details are kept private and secure. <a href="info.html#privacy">Privacy Policy</a></p>
+        </div>
+    </div>
+
+    <!-- Logged IN -->
+    <div id="profileArea" style="display:none;">
+        <div class="hello">
+            <span class="eyebrow">Welcome back</span>
+            <h2>Hello, <em id="helloName">friend</em>!</h2>
+        </div>
+        <a href="admin.html" class="btn btn-gold admin-cta" id="adminCta">⚙ Open Admin Panel</a>
+        <div class="profile-card">
+            <h3>My Details</h3>
+            <div class="fld"><label>Full Name</label><input type="text" id="pf-name"></div>
+            <div class="fld-row">
+                <div class="fld"><label>Age</label><input type="number" id="pf-age" min="13" max="120"></div>
+                <div class="fld"><label>Phone</label><input type="tel" id="pf-phone"></div>
+            </div>
+            <div class="fld">
+                <label>Fragrance Preferences</label>
+                <div class="prefs" id="pf-prefs">
+                    <label><input type="checkbox" value="her">For Her</label>
+                    <label><input type="checkbox" value="him">For Him</label>
+                    <label><input type="checkbox" value="unisex">Unisex</label>
+                    <label><input type="checkbox" value="borneo">Borneo</label>
+                </div>
+            </div>
+            <button class="btn btn-dark" onclick="saveProfile()">Save Changes</button>
+            <p class="form-msg" id="pfMsg"></p>
+        </div>
+        <button class="btn logout-btn" onclick="doLogout()">Sign Out</button>
+        <p class="privacy-line">Your details are kept private and secure. <a href="info.html#privacy">Privacy Policy</a></p>
+    </div>
+</section>
+
+<script src="app.js"></script>
+<script>
+function showPane(p) {
+    document.getElementById('paneLogin').classList.toggle('show', p === 'login');
+    document.getElementById('paneReg').classList.toggle('show', p === 'reg');
+    document.getElementById('tabLogin').classList.toggle('sel', p === 'login');
+    document.getElementById('tabReg').classList.toggle('sel', p === 'reg');
+}
+function msg(id, text, ok) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'form-msg ' + (ok ? 'ok' : 'err');
+}
+function fb() {
+    if (!window.DVFB) { window.DVAAW.showToast('Connecting… try again in a second'); return null; }
+    return window.DVFB;
+}
+
+async function doLogin() {
+    const f = fb(); if (!f) return;
+    const id = document.getElementById('li-id').value.trim();
+    const pw = document.getElementById('li-pw').value;
+    if (!id || !pw) return msg('loginMsg', 'Please fill in both fields.');
+    try {
+        msg('loginMsg', 'Signing in…', true);
+        await f.login(id, pw);
+        msg('loginMsg', 'Welcome back!', true);
+    } catch (e) { msg('loginMsg', friendly(e)); }
+}
+
+async function doRegister() {
+    const f = fb(); if (!f) return;
+    const name = document.getElementById('rg-name').value.trim();
+    const age = parseInt(document.getElementById('rg-age').value) || null;
+    const username = document.getElementById('rg-user').value.trim();
+    const email = document.getElementById('rg-email').value.trim();
+    const phone = document.getElementById('rg-phone').value.trim();
+    const pw = document.getElementById('rg-pw').value;
+    const prefs = [...document.querySelectorAll('#paneReg .prefs input:checked')].map(c => c.value);
+    if (!name || !email || !username || !pw) return msg('regMsg', 'Name, username, email and password are required.');
+    if (pw.length < 6) return msg('regMsg', 'Password must be at least 6 characters.');
+    try {
+        msg('regMsg', 'Creating your account…', true);
+        await f.register({ name, age, prefs, email, username, phone, password: pw });
+        msg('regMsg', 'Account created — welcome to D\'Vaaw!', true);
+    } catch (e) { msg('regMsg', friendly(e)); }
+}
+
+async function saveProfile() {
+    const f = fb(); if (!f) return;
+    const prefs = [...document.querySelectorAll('#pf-prefs input:checked')].map(c => c.value);
+    try {
+        await f.saveProfile({
+            name: document.getElementById('pf-name').value.trim(),
+            age: parseInt(document.getElementById('pf-age').value) || null,
+            phone: document.getElementById('pf-phone').value.trim(),
+            prefs
+        });
+        msg('pfMsg', 'Saved!', true);
+        window.DVAAW.showToast('Profile updated');
+    } catch (e) { msg('pfMsg', friendly(e)); }
+}
+
+function doLogout() { if (window.DVFB) window.DVFB.logout(); }
+
+function friendly(e) {
+    const m = (e && e.message) || 'Something went wrong.';
+    if (m.includes('email-already-in-use')) return 'That email already has an account — try signing in.';
+    if (m.includes('invalid-credential') || m.includes('wrong-password') || m.includes('user-not-found')) return 'Wrong details — check and try again.';
+    if (m.includes('weak-password')) return 'Password too weak — use at least 6 characters.';
+    if (m.includes('invalid-email')) return 'That email doesn\'t look right.';
+    return m.replace('Firebase: ', '').replace(/\(auth.*\)\.?/, '').trim();
+}
+
+window.addEventListener('dvaaw:auth', (e) => {
+    const { user, profile } = e.detail || {};
+    document.getElementById('authArea').style.display = user ? 'none' : 'block';
+    document.getElementById('profileArea').style.display = user ? 'block' : 'none';
+    if (user && profile) {
+        document.getElementById('helloName').textContent = (profile.name || 'friend').split(' ')[0];
+        document.getElementById('pf-name').value = profile.name || '';
+        document.getElementById('pf-age').value = profile.age || '';
+        document.getElementById('pf-phone').value = profile.phone || '';
+        document.querySelectorAll('#pf-prefs input').forEach(c => c.checked = (profile.prefs || []).includes(c.value));
+        document.getElementById('adminCta').style.display = window.DVFB && window.DVFB.isAdmin ? 'flex' : 'none';
+    }
+});
+</script>
+</body>
+</html>
