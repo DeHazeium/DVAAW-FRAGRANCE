@@ -114,9 +114,13 @@
 <script src="app.js"></script>
 <script>
 (function () {
-    const { CATALOG, SIZES, CAT_LABEL } = window.DVAAW;
+    const { CAT_LABEL } = window.DVAAW;
     const grid = document.getElementById('grid');
+    let currentFilter = 'all';
 
+    function renderGrid() {
+    const CATALOG = window.DVAAW.CATALOG;
+    const SIZES = window.DVAAW.SIZES;
     grid.innerHTML = CATALOG.map(p => `
         <article class="prod-card reveal" data-id="${p.id}" data-cat="${p.cat}">
             <div class="pc-img">
@@ -125,12 +129,12 @@
             <div class="pc-cat">${CAT_LABEL[p.cat]}</div>
             <div class="pc-name">${p.name}</div>
             <div class="pc-notes">${p.notes}</div>
-            <div class="pc-price" data-price>RM79.00</div>
+            <div class="pc-price" data-price>RM${window.DVAAW.price(SIZES[1].price).toFixed(2)}</div>
             <div class="pc-actions">
                 <div class="pc-size">
                     ${SIZES.map((s,i) => `<button data-size="${s.size}" data-price="${s.price}" class="${i===1?'sel':''}">${s.size}</button>`).join('')}
                 </div>
-                <button class="pc-add">Add to Cart</button>
+                <button class="pc-add" ${p.stock===0?'disabled style="opacity:0.45;cursor:not-allowed;"':''}>${p.stock===0?'Out of Stock':'Add to Cart'}</button>
             </div>
         </article>`).join('');
 
@@ -143,7 +147,7 @@
                 card.querySelectorAll('.pc-size button').forEach(b => b.classList.remove('sel'));
                 btn.classList.add('sel');
                 size = btn.dataset.size; price = +btn.dataset.price;
-                priceEl.textContent = 'RM' + price.toFixed(2);
+                priceEl.textContent = 'RM' + window.DVAAW.price(price).toFixed(2);
             });
         });
         card.querySelector('.pc-add').addEventListener('click', () => {
@@ -151,9 +155,13 @@
         });
         card.querySelector('.pc-img').addEventListener('click', () => window.DVAAW.trackViewed(card.dataset.id));
     });
+    applyFilter(currentFilter);
+    window.DVAAW.observeReveals();
+    }
 
     // Filtering
     function applyFilter(f) {
+        currentFilter = f;
         grid.querySelectorAll('.prod-card').forEach(c => {
             c.classList.toggle('pc-card-hidden', f !== 'all' && c.dataset.cat !== f);
         });
@@ -168,7 +176,10 @@
 
     // Honor ?cat= from URL
     const urlCat = new URLSearchParams(location.search).get('cat');
-    if (urlCat && ['her','him','unisex','borneo'].includes(urlCat)) applyFilter(urlCat);
+    if (urlCat && ['her','him','unisex','borneo'].includes(urlCat)) currentFilter = urlCat;
+
+    renderGrid();
+    window.addEventListener('dvaaw:catalog', renderGrid);   // re-render when admin data arrives
 
     // Recently viewed
     const viewed = window.DVAAW.getViewed();
