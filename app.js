@@ -87,6 +87,7 @@
     window.DVAAW.addToCart = function(prodId, size, price) {
         const prod = CATALOG.find(p => p.id === prodId);
         if (!prod) return;
+        price = window.DVAAW.price(price);   // apply active discount
         const cart = getCart();
         const key = prodId + '-' + size;
         const found = cart.find(i => i.key === key);
@@ -142,6 +143,7 @@
         <a href="index.html" class="brand">D'Vaaw</a>
         <div class="nav-right">
             ${navLink('contact.html','Contact')}
+            <a href="account.html" id="accountLink"${page==='account.html'?' class="active"':''}>Account</a>
             <a href="cart.html" class="cart-link">Cart<span class="cart-count"></span></a>
         </div>
         <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>`;
@@ -157,6 +159,7 @@
         <a href="about.html">Story</a>
         <a href="shipping.html">Shipping</a>
         <a href="contact.html">Contact</a>
+        <a href="account.html">Account</a>
         <a href="cart.html">Cart</a>`;
     document.body.insertBefore(drawer, nav.nextSibling);
 
@@ -253,6 +256,56 @@
     }, { threshold: 0.12 });
     function observeReveals() { document.querySelectorAll('.reveal:not(.in)').forEach(el => io.observe(el)); }
     window.DVAAW.observeReveals = observeReveals;
+
+    /* ───── FIREBASE (auth, products, discount) ───── */
+    let discount = null;                       // {active, percent, label}
+    window.DVAAW.price = function (base) {
+        if (discount && discount.active && discount.percent > 0) {
+            return Math.max(1, Math.round(base * (100 - discount.percent)) / 100);
+        }
+        return base;
+    };
+    window.DVAAW.discountInfo = () => discount;
+
+    window.addEventListener('dvaaw:auth', (e) => {
+        const { profile } = e.detail || {};
+        const link = document.getElementById('accountLink');
+        if (link) {
+            if (profile && profile.name) {
+                const first = profile.name.split(' ')[0];
+                link.textContent = 'Hello, ' + first;
+            } else if (e.detail && e.detail.user) {
+                link.textContent = 'My Account';
+            } else {
+                link.textContent = 'Account';
+            }
+        }
+    });
+
+    import('./firebase.js').then(async () => {
+        try {
+            // Merge admin products / overrides into catalog
+            const remote = await window.DVFB.fetchProducts();
+            if (remote.length) {
+                remote.forEach(rp => {
+                    const i = CATALOG.findIndex(p => p.id === rp.id);
+                    if (i >= 0) CATALOG[i] = { ...CATALOG[i], ...rp };
+                    else CATALOG.push({ id: rp.id, name: rp.name, cat: rp.cat || 'unisex',
+                                        notes: rp.notes || '', img: rp.img || ('image/' + rp.id + '.png') });
+                });
+            }
+            // Load discount + banner
+            discount = await window.DVFB.fetchDiscount();
+            if (discount && discount.active && discount.percent > 0) {
+                const bar = document.createElement('div');
+                bar.style.cssText = 'background:var(--gold);color:var(--black);text-align:center;' +
+                    'padding:0.55rem 1rem;font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;';
+                bar.textContent = (discount.label || 'Sale') + ' — ' + discount.percent + '% off, applied at checkout';
+                nav.after(bar);
+            }
+            window.dispatchEvent(new CustomEvent('dvaaw:catalog'));
+        } catch (e) { console.warn('Remote catalog unavailable:', e); }
+    }).catch(e => console.warn('Firebase unavailable — site works normally.', e));
 
     /* ───── INIT ───── */
     paintCount();
