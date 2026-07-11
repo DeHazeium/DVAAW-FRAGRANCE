@@ -87,6 +87,7 @@
     window.DVAAW.addToCart = function(prodId, size, price) {
         const prod = CATALOG.find(p => p.id === prodId);
         if (!prod) return;
+        if (prod.stock === 0) { showToast(prod.name + ' is out of stock'); return; }
         price = window.DVAAW.price(price);   // apply active discount
         const cart = getCart();
         const key = prodId + '-' + size;
@@ -300,10 +301,21 @@
             if (remote.length) {
                 remote.forEach(rp => {
                     const i = CATALOG.findIndex(p => p.id === rp.id);
+                    if (rp.hidden) {                       // removed by admin
+                        if (i >= 0) CATALOG.splice(i, 1);
+                        return;
+                    }
                     if (i >= 0) CATALOG[i] = { ...CATALOG[i], ...rp };
-                    else CATALOG.push({ id: rp.id, name: rp.name, cat: rp.cat || 'unisex',
-                                        notes: rp.notes || '', img: rp.img || ('image/' + rp.id + '.png') });
+                    else CATALOG.push({ id: rp.id, name: rp.name || rp.id, cat: rp.cat || 'unisex',
+                                        notes: rp.notes || '', stock: rp.stock,
+                                        img: rp.img || ('image/' + rp.id + '.png') });
                 });
+            }
+            // Global size pricing set by admin
+            const pricing = await window.DVFB.fetchPricing();
+            if (pricing && pricing.p10 > 0 && pricing.p35 > 0) {
+                SIZES[0].price = pricing.p10;
+                SIZES[1].price = pricing.p35;
             }
             // Load discount + banner
             discount = await window.DVFB.fetchDiscount();
