@@ -405,30 +405,5 @@ function cancelCheckout() {
 render();
 </script>
 
-<!-- Firebase — separate module, optional, never blocks cart -->
-<script type="module">
-try {
-    const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
-    const { getFirestore, collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
-    const app = initializeApp({
-        apiKey: "AIzaSyCxOigVTO2ZCeKYoVRJvU085fEiEL9EKOI",
-        authDomain: "d-vaaw-perfume.firebaseapp.com",
-        databaseURL: "https://d-vaaw-perfume-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "d-vaaw-perfume",
-        storageBucket: "d-vaaw-perfume.firebasestorage.app",
-        messagingSenderId: "176200300799",
-        appId: "1:176200300799:web:ee8893e3e3e6a4dd14b4ca"
-    });
-    const db = getFirestore(app);
-    window.dvaawSaveOrder = function(cart, subtotal, shipping, total) {
-        addDoc(collection(db, "orders"), {
-            orderItems: cart, subtotal, shippingFee: shipping, totalAmount: total,
-            status: "Pending WhatsApp Confirmation", timestamp: serverTimestamp()
-        }).catch(e => console.error("Firebase save failed:", e));
-    };
-} catch (e) {
-    console.warn("Firebase unavailable — orders still work via WhatsApp.", e);
-}
-</script>
 </body>
 </html>
