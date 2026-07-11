@@ -6,6 +6,43 @@
     'use strict';
 
     const WHATSAPP = '601118866239';
+
+    /* ═════ GREETING SPLASH ═════
+       Plays on: first visit, page refresh, and right after login/register.
+       Skips: normal link navigation between pages (no annoyance, no lag). */
+    function playSplash(title, name) {
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        let sp = document.getElementById('splash');
+        if (!sp) {
+            sp = document.createElement('div');
+            sp.id = 'splash';
+            document.body.appendChild(sp);
+        }
+        sp.classList.remove('hide');
+        sp.innerHTML =
+            '<div class="sp-eyebrow">' + title + '</div>' +
+            '<div class="sp-name">' + name + '</div>' +
+            '<div class="sp-line"></div>';
+        clearTimeout(window._spT);
+        window._spT = setTimeout(() => sp.classList.add('hide'), 2100);
+    }
+    window.DVAAW_GREET = playSplash;
+
+    (function autoSplash() {
+        const navEntry = performance.getEntriesByType('navigation')[0];
+        const isReload = navEntry && navEntry.type === 'reload';
+        const firstThisTab = !sessionStorage.getItem('dvaaw_tab_seen');
+        sessionStorage.setItem('dvaaw_tab_seen', '1');
+        if (!isReload && !firstThisTab) return;      // internal navigation → skip
+
+        let cached = null;
+        try { cached = JSON.parse(localStorage.getItem('dvaaw_profile')); } catch {}
+        if (cached && cached.name) {
+            playSplash('Welcome back', cached.name.split(' ')[0]);
+        } else {
+            playSplash('Where Value Meets Authenticity', "D'Vaaw");
+        }
+    })();
     const page = location.pathname.split('/').pop() || 'index.html';
 
     /* ───── PRODUCT CATALOG (single source of truth) ───── */
