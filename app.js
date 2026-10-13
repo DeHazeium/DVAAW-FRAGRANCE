@@ -8,6 +8,31 @@
     const WHATSAPP = '601118866239';
     const FALLBACK_IMAGE = 'image/perfume-bottle-ai.webp';
 
+    /* Storage may be disabled by strict privacy settings. Keep the storefront
+       usable with a temporary in-memory fallback instead of aborting startup. */
+    const volatileStorage = new Map();
+    function storageKey(key, session) { return (session ? 'session:' : 'local:') + key; }
+    function storageGet(key, session = false) {
+        const memoryKey = storageKey(key, session);
+        if (volatileStorage.has(memoryKey)) return volatileStorage.get(memoryKey);
+        try { return (session ? sessionStorage : localStorage).getItem(key); }
+        catch { return null; }
+    }
+    function storageSet(key, value, session = false) {
+        const memoryKey = storageKey(key, session);
+        try {
+            (session ? sessionStorage : localStorage).setItem(key, value);
+            volatileStorage.delete(memoryKey);
+        } catch {
+            volatileStorage.set(memoryKey, String(value));
+        }
+    }
+    function storageRemove(key, session = false) {
+        const memoryKey = storageKey(key, session);
+        try { (session ? sessionStorage : localStorage).removeItem(key); } catch {}
+        volatileStorage.delete(memoryKey);
+    }
+
     /* Shared rendering guards for Firebase and local-storage content. */
     function escapeHTML(value) {
         return String(value ?? '').replace(/[&<>"']/g, char => ({
@@ -49,12 +74,12 @@
     (function autoSplash() {
         const navEntry = performance.getEntriesByType('navigation')[0];
         const isReload = navEntry && navEntry.type === 'reload';
-        const firstThisTab = !sessionStorage.getItem('dvaaw_tab_seen');
-        sessionStorage.setItem('dvaaw_tab_seen', '1');
+        const firstThisTab = !storageGet('dvaaw_tab_seen', true);
+        storageSet('dvaaw_tab_seen', '1', true);
         if (!isReload && !firstThisTab) return;      // internal navigation → skip
 
         let cached = null;
-        try { cached = JSON.parse(localStorage.getItem('dvaaw_profile')); } catch {}
+        try { cached = JSON.parse(storageGet('dvaaw_profile')); } catch {}
         if (cached && cached.name) {
             playSplash('Welcome back', cached.name.split(' ')[0]);
         } else {
@@ -112,7 +137,7 @@
     /* ───── CART (safe, self-healing) ───── */
     function getCart() {
         try {
-            const c = JSON.parse(localStorage.getItem('dvaaw_cart'));
+            const c = JSON.parse(storageGet('dvaaw_cart'));
             if (!Array.isArray(c)) return [];
             let changed = false;
             const cleaned = c.map(i => {
@@ -130,11 +155,11 @@
                 i && i.name && i.size && Number.isFinite(i.price) && i.qty > 0
             );
             if (cleaned.length !== c.length) changed = true;
-            if (changed) localStorage.setItem('dvaaw_cart', JSON.stringify(cleaned));
+            if (changed) storageSet('dvaaw_cart', JSON.stringify(cleaned));
             return cleaned;
         } catch { return []; }
     }
-    function setCart(c) { localStorage.setItem('dvaaw_cart', JSON.stringify(c)); paintCount(); }
+    function setCart(c) { storageSet('dvaaw_cart', JSON.stringify(c)); paintCount(); }
     function cartCount() { return getCart().reduce((s,i) => s + i.qty, 0); }
     function paintCount() {
         const n = cartCount();
@@ -164,18 +189,18 @@
     function trackViewed(id) {
         let rv = [];
         try {
-            const stored = JSON.parse(localStorage.getItem('dvaaw_viewed') || '[]');
+            const stored = JSON.parse(storageGet('dvaaw_viewed') || '[]');
             if (Array.isArray(stored)) rv = stored;
         } catch {}
         rv = rv.filter(x => x !== id);
         rv.unshift(id);
         rv = rv.slice(0, 6);
-        localStorage.setItem('dvaaw_viewed', JSON.stringify(rv));
+        storageSet('dvaaw_viewed', JSON.stringify(rv));
     }
     window.DVAAW.trackViewed = trackViewed;
     window.DVAAW.getViewed = () => {
         try {
-            const stored = JSON.parse(localStorage.getItem('dvaaw_viewed') || '[]');
+            const stored = JSON.parse(storageGet('dvaaw_viewed') || '[]');
             return Array.isArray(stored) ? stored : [];
         } catch { return []; }
     };
@@ -223,7 +248,7 @@
     // Paint greeting INSTANTLY from cached profile — no flicker while Firebase wakes up
     (function instantGreeting() {
         try {
-            const p = JSON.parse(localStorage.getItem('dvaaw_profile'));
+            const p = JSON.parse(storageGet('dvaaw_profile'));
             if (p && p.name) {
                 const link = document.getElementById('accountLink');
                 if (link) link.textContent = 'Hello, ' + p.name.split(' ')[0];
@@ -327,7 +352,7 @@
     document.body.appendChild(waFloat);
 
     /* ───── COOKIE ───── */
-    if (!localStorage.getItem('dvaaw_cookie')) {
+    if (!storageGet('dvaaw_cookie')) {
         const ck = document.createElement('div');
         ck.id = 'cookie';
         ck.innerHTML = `
@@ -338,8 +363,8 @@
             </div>`;
         document.body.appendChild(ck);
         setTimeout(() => ck.classList.add('show'), 1400);
-        ck.querySelector('.cookie-ok').onclick = () => { localStorage.setItem('dvaaw_cookie','ok'); ck.classList.remove('show'); };
-        ck.querySelector('.cookie-no').onclick = () => { localStorage.setItem('dvaaw_cookie','no'); ck.classList.remove('show'); };
+        ck.querySelector('.cookie-ok').onclick = () => { storageSet('dvaaw_cookie','ok'); ck.classList.remove('show'); };
+        ck.querySelector('.cookie-no').onclick = () => { storageSet('dvaaw_cookie','no'); ck.classList.remove('show'); };
     }
 
     /* ───── REVEAL OBSERVER ───── */
