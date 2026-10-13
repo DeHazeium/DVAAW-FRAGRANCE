@@ -80,21 +80,24 @@ body { background: var(--black); }
     document.getElementById('oc-date').textContent = new Date().toLocaleDateString('en-MY', { day:'numeric', month:'short', year:'numeric' });
     let order;
     try { order = JSON.parse(localStorage.getItem('dvaaw_last_order')); } catch { order = null; }
-    if (order && order.items && order.items.length) {
+    if (order && Array.isArray(order.items) && order.items.length) {
         document.getElementById('oc-items').innerHTML = order.items.map(i => `
             <div class="oc-item">
-                <div><div class="n">${i.name}</div><div class="m">${i.size} × ${i.qty}</div></div>
+                <div><div class="n">${window.DVAAW.escapeHTML(i.name)}</div><div class="m">${window.DVAAW.escapeHTML(i.size)} × ${Number(i.qty) || 0}</div></div>
                 <div class="p">RM${(i.price*i.qty).toFixed(2)}</div>
             </div>`).join('');
-        document.getElementById('oc-sub').textContent = order.subtotal.toFixed(2);
+        const subtotal = Number.isFinite(Number(order.subtotal)) ? Number(order.subtotal) : 0;
+        const shipping = Number.isFinite(Number(order.shipping)) ? Number(order.shipping) : 0;
+        const total = Number.isFinite(Number(order.total)) ? Number(order.total) : subtotal + shipping;
+        document.getElementById('oc-sub').textContent = subtotal.toFixed(2);
         if (order.method === 'pickup') {
             document.getElementById('oc-ship-label').textContent = 'Pickup';
             document.getElementById('oc-ship').textContent = 'Free';
         } else {
             document.getElementById('oc-ship-label').textContent = 'Shipping';
-            document.getElementById('oc-ship').textContent = 'RM' + (order.shipping||0).toFixed(2);
+            document.getElementById('oc-ship').textContent = 'RM' + shipping.toFixed(2);
         }
-        document.getElementById('oc-tot').textContent = order.total.toFixed(2);
+        document.getElementById('oc-tot').textContent = total.toFixed(2);
         document.getElementById('oc-totals').style.display = 'block';
     }
 })();

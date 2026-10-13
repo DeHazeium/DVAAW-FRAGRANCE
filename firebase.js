@@ -27,13 +27,14 @@ const db = initializeFirestore(app, {
 
 const ADMIN_USERNAME = 'dvaaw_nick';          // temporary — see SECURITY.txt
 const norm = s => (s || '').trim().toLowerCase();
+const lookupKey = s => norm(s).replace(/[^a-z0-9+]/g, '');
 
 /* Identifier → email. Accepts email, username, or phone. */
 async function resolveEmail(identifier) {
     const id = norm(identifier);
     if (id.includes('@')) return id;
     try {
-        const snap = await getDoc(doc(db, 'lookups', id.replace(/[^a-z0-9+]/g, '')));
+        const snap = await getDoc(doc(db, 'lookups', lookupKey(id)));
         if (snap.exists()) return snap.data().email;
         throw new Error('No account found for that username / phone.');
     } catch (e) {
@@ -52,6 +53,15 @@ const DVFB = {
 
     async register({ name, age, prefs, email, username, phone, password }) {
         email = norm(email);
+        username = norm(username);
+        const usernameKey = lookupKey(username);
+        const phoneKey = lookupKey(phone);
+        if (!usernameKey) throw new Error('Choose a username using letters and numbers.');
+        const checks = [getDoc(doc(db, 'lookups', usernameKey))];
+        if (phoneKey) checks.push(getDoc(doc(db, 'lookups', phoneKey)));
+        const existing = await Promise.all(checks);
+        if (existing[0].exists()) throw new Error('That username is already in use.');
+        if (phoneKey && existing[1].exists()) throw new Error('That phone number is already linked to an account.');
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         const uid = cred.user.uid;
         const profile = { name, age: age || null, prefs: prefs || [], email,
@@ -59,8 +69,8 @@ const DVFB = {
         await setDoc(doc(db, 'users', uid), profile);
         localStorage.setItem('dvaaw_profile', JSON.stringify({ uid, ...profile }));
         // lookups so people can log in with username or phone
-        if (username) await setDoc(doc(db, 'lookups', norm(username).replace(/[^a-z0-9+]/g,'')), { email });
-        if (phone)    await setDoc(doc(db, 'lookups', norm(phone).replace(/[^a-z0-9+]/g,'')),    { email });
+        if (usernameKey) await setDoc(doc(db, 'lookups', usernameKey), { email });
+        if (phoneKey)    await setDoc(doc(db, 'lookups', phoneKey),    { email });
         this.user = cred.user; this.profile = profile;
         return profile;
     },
@@ -113,7 +123,7 @@ const DVFB = {
     async fetchProducts() {
         const out = [];
         const qs = await getDocs(collection(db, 'products'));
-        qs.forEach(d => out.push({ id: d.id, ...d.data() }));
+        qs.forEach(d => out.push({ ...d.data(), id: d.id }));
         return out;
     },
 
@@ -156,19 +166,20 @@ const DVFB = {
             const url = URL.createObjectURL(file);
             img.onload = () => {
                 URL.revokeObjectURL(url);
-                const MAX = 700;                          // longest side
+                const MAX = 640;                          // longest side; keeps Firestore reads light
                 let { width: w, height: h } = img;
                 if (w > h && w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
                 else if (h > MAX)     { w = Math.round(w * MAX / h); h = MAX; }
                 const c = document.createElement('canvas');
                 c.width = w; c.height = h;
                 c.getContext('2d').drawImage(img, 0, 0, w, h);
-                resolve(c.toDataURL('image/jpeg', 0.82));
+                resolve(c.toDataURL('image/jpeg', 0.78));
             };
             img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not read that image.')); };
             img.src = url;
         });
-        if (dataUrl.length > 900000) throw new Error('Image still too big after compression — try a smaller photo.');
+        // Leave comfortable room below Firestore's 1 MiB document limit for product fields.
+        if (dataUrl.length > 700000) throw new Error('Image still too big after compression — try a smaller photo.');
         return dataUrl;                                   // stored in the product doc's img field
     },
 

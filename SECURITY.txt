@@ -1,0 +1,33 @@
+D'VAAW FIREBASE SECURITY CHECKLIST
+==================================
+
+The Firebase web configuration in firebase.js is intentionally public. Security
+must be enforced by Firebase Authentication and Firestore rules, never by hiding
+the web config or by the admin.html screen.
+
+Before production launch:
+
+1. Create the real staff account in Firebase Authentication.
+2. Copy its Firebase Authentication UID.
+3. In Firestore Rules, authorize product/settings/order administration with that
+   UID (or, preferably, a server-issued custom admin claim).
+4. Allow customers to read/write only users/{their-own-uid}.
+5. Allow public reads for products and public settings only.
+6. Allow order creation, but allow order reads/updates only to the admin UID.
+7. Do not authorize writes based on the username stored in a profile document.
+   Client profile data is not an authorization boundary.
+8. Test the published rules with a signed-out visitor, a normal customer and the
+   staff account before enabling GitHub Pages for the public.
+
+Important architecture note
+---------------------------
+
+Username/phone sign-in currently uses the /lookups collection to map an identifier
+to an email address. That lookup has to be readable before authentication, which
+exposes the mapped email to anyone who already knows the identifier. For stronger
+privacy, replace resolveEmail() with a callable Cloud Function or sign in by email
+only, then disable public reads on /lookups.
+
+The client currently displays the admin interface when the profile username is
+"dvaaw_nick". That is a convenience gate only. Firestore rules must still use the
+real Authentication UID or a custom claim for every privileged write.

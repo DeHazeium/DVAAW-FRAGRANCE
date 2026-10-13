@@ -267,20 +267,20 @@ function render() {
     btn.disabled = false;
     wrap.innerHTML = cart.map((it, i) => `
         <div class="cart-row">
-            <div class="ci-img"><img src="${it.img}" alt="${it.name}" onerror="this.outerHTML='<div class=&quot;ph&quot;>${it.name}</div>'"></div>
+            <div class="ci-img"><img src="${window.DVAAW.safeImageSource(it.img)}" alt="${window.DVAAW.escapeHTML(it.name)}" loading="lazy" decoding="async" onerror="window.DVAAW.useFallbackImage(this)"></div>
             <div class="ci-info">
-                <h3>${it.name}</h3>
-                <div class="ci-meta">${it.cat}</div>
-                <span class="ci-size-tag">${it.size}</span>
+                <h3>${window.DVAAW.escapeHTML(it.name)}</h3>
+                <div class="ci-meta">${window.DVAAW.escapeHTML(it.cat)}</div>
+                <span class="ci-size-tag">${window.DVAAW.escapeHTML(it.size)}</span>
                 <div class="ci-qty">
-                    <button onclick="changeQty(${i},-1)">−</button>
+                    <button onclick="changeQty(${i},-1)" aria-label="Decrease ${window.DVAAW.escapeHTML(it.name)} quantity">−</button>
                     <span>${it.qty}</span>
-                    <button onclick="changeQty(${i},1)">+</button>
+                    <button onclick="changeQty(${i},1)" aria-label="Increase ${window.DVAAW.escapeHTML(it.name)} quantity">+</button>
                 </div>
             </div>
             <div class="ci-right">
                 <div class="ci-price">RM${(it.price * it.qty).toFixed(2)}</div>
-                <button class="ci-remove" onclick="removeRow(${i})">Remove</button>
+                <button class="ci-remove" onclick="removeRow(${i})" aria-label="Remove ${window.DVAAW.escapeHTML(it.name)}">Remove</button>
             </div>
         </div>`).join('');
 

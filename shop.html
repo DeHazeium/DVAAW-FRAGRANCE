@@ -86,6 +86,34 @@
     .pc-name { font-size: 1.1rem; }
     .recently-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Editorial collection layout */
+.shop-filters {
+    top: 62px;
+    background: rgba(248,243,233,0.94);
+    padding-block: 1rem;
+}
+.filter-btn { border: 1px solid transparent; }
+.filter-btn:hover { border-color: var(--line); }
+.filter-btn.active { background: var(--ink); color: var(--cream); }
+.shop-grid { max-width: 1600px; margin: 0 auto; align-items: start; }
+.prod-card { border: 0; background: var(--cream); padding: 0 0 1.5rem; text-align: left; box-shadow: 0 14px 40px rgba(61,43,31,0.055); }
+.prod-card:nth-child(4n + 2), .prod-card:nth-child(4n + 4) { margin-top: 2.25rem; }
+.pc-img { background: #efe2d1; margin: 0 0 1.3rem; cursor: pointer; }
+.pc-img img { width: 100%; height: 100%; object-fit: cover; }
+.pc-cat, .pc-name, .pc-notes, .pc-price, .pc-actions { margin-left: 1.3rem; margin-right: 1.3rem; }
+.pc-size button, .pc-add { border-radius: 999px; }
+.recently { background: var(--mist); }
+.rv-mini { background: var(--cream); border: 0; }
+.rv-mini img { object-fit: cover; }
+@media (max-width: 900px) {
+    .prod-card:nth-child(4n + 2), .prod-card:nth-child(4n + 4) { margin-top: 0; }
+    .prod-card:nth-child(even) { margin-top: 1.5rem; }
+}
+@media (max-width: 540px) {
+    .shop-grid { padding-left: 1rem; padding-right: 1rem; }
+    .pc-cat, .pc-name, .pc-notes, .pc-price, .pc-actions { margin-left: 0.9rem; margin-right: 0.9rem; }
+}
 </style>
 </head>
 <body>
@@ -116,19 +144,19 @@
 (function () {
     const { CAT_LABEL } = window.DVAAW;
     const grid = document.getElementById('grid');
+    const CATALOG = window.DVAAW.CATALOG;
+    const SIZES = window.DVAAW.SIZES;
     let currentFilter = 'all';
 
     function renderGrid() {
-    const CATALOG = window.DVAAW.CATALOG;
-    const SIZES = window.DVAAW.SIZES;
     grid.innerHTML = CATALOG.map(p => `
-        <article class="prod-card reveal" data-id="${p.id}" data-cat="${p.cat}">
+        <article class="prod-card reveal" data-id="${window.DVAAW.escapeHTML(p.id)}" data-cat="${window.DVAAW.escapeHTML(p.cat)}">
             <div class="pc-img">
-                <img src="${p.img}" alt="${p.name}" onerror="this.outerHTML='<div class=&quot;ph&quot;>${p.name}</div>'">
+                <img src="${window.DVAAW.safeImageSource(p.img)}" alt="${window.DVAAW.escapeHTML(p.name)}" loading="lazy" decoding="async" onerror="window.DVAAW.useFallbackImage(this)">
             </div>
-            <div class="pc-cat">${CAT_LABEL[p.cat]}</div>
-            <div class="pc-name">${p.name}</div>
-            <div class="pc-notes">${p.notes}</div>
+            <div class="pc-cat">${window.DVAAW.escapeHTML(CAT_LABEL[p.cat] || 'Collection')}</div>
+            <div class="pc-name">${window.DVAAW.escapeHTML(p.name)}</div>
+            <div class="pc-notes">${window.DVAAW.escapeHTML(p.notes)}</div>
             <div class="pc-price" data-price>RM${window.DVAAW.price(SIZES[1].price).toFixed(2)}</div>
             <div class="pc-actions">
                 <div class="pc-size">
@@ -140,7 +168,7 @@
 
     // Wire up each card
     grid.querySelectorAll('.prod-card').forEach(card => {
-        let size = '35ml', price = 79;
+        let size = SIZES[1].size, price = SIZES[1].price;
         const priceEl = card.querySelector('[data-price]');
         card.querySelectorAll('.pc-size button').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -179,22 +207,30 @@
     if (urlCat && ['her','him','unisex','borneo'].includes(urlCat)) currentFilter = urlCat;
 
     renderGrid();
-    window.addEventListener('dvaaw:catalog', renderGrid);   // re-render when admin data arrives
+    window.addEventListener('dvaaw:catalog', () => {
+        renderGrid();
+        renderRecently();
+    });
 
     // Recently viewed
-    const viewed = window.DVAAW.getViewed();
-    if (viewed.length) {
-        const sec = document.getElementById('recently');
+    function renderRecently() {
+      const viewed = window.DVAAW.getViewed();
+      const sec = document.getElementById('recently');
+      if (viewed.length) {
         const rg = document.getElementById('recentlyGrid');
         rg.innerHTML = viewed.map(id => {
             const p = CATALOG.find(x => x.id === id);
             if (!p) return '';
-            return `<div class="rv-mini" data-id="${p.id}">
-                <img src="${p.img}" alt="${p.name}" onerror="this.outerHTML='<div class=&quot;ph&quot;>${p.name}</div>'">
-                <div class="n">${p.name}</div></div>`;
+            return `<div class="rv-mini" data-id="${window.DVAAW.escapeHTML(p.id)}">
+                <img src="${window.DVAAW.safeImageSource(p.img)}" alt="${window.DVAAW.escapeHTML(p.name)}" loading="lazy" decoding="async" onerror="window.DVAAW.useFallbackImage(this)">
+                <div class="n">${window.DVAAW.escapeHTML(p.name)}</div></div>`;
         }).join('');
         sec.style.display = 'block';
+      } else {
+        sec.style.display = 'none';
+      }
     }
+    renderRecently();
 
     window.DVAAW.observeReveals();
 })();

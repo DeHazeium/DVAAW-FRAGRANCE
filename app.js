@@ -6,6 +6,24 @@
     'use strict';
 
     const WHATSAPP = '601118866239';
+    const FALLBACK_IMAGE = 'image/perfume-bottle-ai.webp';
+
+    /* Shared rendering guards for Firebase and local-storage content. */
+    function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;'
+        })[char]);
+    }
+    function safeImageSource(value) {
+        const src = String(value || '').trim();
+        if (/^image\/[a-z0-9._/-]+$/i.test(src) || /^data:image\/(?:png|jpe?g|webp);base64,/i.test(src)) return src;
+        return FALLBACK_IMAGE;
+    }
+    function useFallbackImage(img) {
+        img.onerror = null;
+        img.src = FALLBACK_IMAGE;
+        img.classList.add('fallback-bottle');
+    }
 
     /* ═════ GREETING SPLASH ═════
        Plays on: first visit, page refresh, and right after login/register.
@@ -86,7 +104,10 @@
     const CAT_LABEL = { her:'For Her', him:'For Him', unisex:'Unisex', borneo:'Borneo Edition' };
 
     // Expose for pages that render products
-    window.DVAAW = { CATALOG, SIZES, CAT_LABEL, WHATSAPP };
+    window.DVAAW = {
+        CATALOG, SIZES, CAT_LABEL, WHATSAPP, FALLBACK_IMAGE,
+        escapeHTML, safeImageSource, useFallbackImage
+    };
 
     /* ───── CART (safe, self-healing) ───── */
     function getCart() {
@@ -101,9 +122,12 @@
                 if (!i.size && i.variant) { i.size = i.variant; changed = true; }
                 if (!i.cat && i.category) { i.cat = i.category; changed = true; }
                 if (!i.key) { i.key = (i.id || i.name) + '-' + (i.size || ''); changed = true; }
+                const rawQty = Number(i.qty);
+                const cleanQty = Number.isFinite(rawQty) && rawQty > 0 ? Math.min(99, Math.floor(rawQty)) : 0;
+                if (cleanQty !== i.qty) { i.qty = cleanQty; changed = true; }
                 return i;
             }).filter(i =>
-                i && i.name && i.size && typeof i.price === 'number' && i.qty > 0
+                i && i.name && i.size && Number.isFinite(i.price) && i.qty > 0
             );
             if (cleaned.length !== c.length) changed = true;
             if (changed) localStorage.setItem('dvaaw_cart', JSON.stringify(cleaned));
@@ -138,14 +162,23 @@
 
     /* ───── RECENTLY VIEWED ───── */
     function trackViewed(id) {
-        let rv = JSON.parse(localStorage.getItem('dvaaw_viewed') || '[]');
+        let rv = [];
+        try {
+            const stored = JSON.parse(localStorage.getItem('dvaaw_viewed') || '[]');
+            if (Array.isArray(stored)) rv = stored;
+        } catch {}
         rv = rv.filter(x => x !== id);
         rv.unshift(id);
         rv = rv.slice(0, 6);
         localStorage.setItem('dvaaw_viewed', JSON.stringify(rv));
     }
     window.DVAAW.trackViewed = trackViewed;
-    window.DVAAW.getViewed = () => JSON.parse(localStorage.getItem('dvaaw_viewed') || '[]');
+    window.DVAAW.getViewed = () => {
+        try {
+            const stored = JSON.parse(localStorage.getItem('dvaaw_viewed') || '[]');
+            return Array.isArray(stored) ? stored : [];
+        } catch { return []; }
+    };
 
     /* ───── TOAST ───── */
     function showToast(msg) {
@@ -184,7 +217,7 @@
             <a href="account.html" id="accountLink"${page==='account.html'?' class="active"':''}>Account</a>
             <a href="cart.html" class="cart-link">Cart<span class="cart-count"></span></a>
         </div>
-        <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>`;
+        <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="drawer"><span></span><span></span><span></span></button>`;
     document.body.insertBefore(nav, document.body.firstChild);
 
     // Paint greeting INSTANTLY from cached profile — no flicker while Firebase wakes up
@@ -201,6 +234,8 @@
     const drawer = document.createElement('div');
     drawer.className = 'drawer';
     drawer.id = 'drawer';
+    drawer.setAttribute('aria-hidden', 'true');
+    drawer.inert = true;
     drawer.innerHTML = `
         <span class="eyebrow">D'Vaaw</span>
         <a href="index.html">Home</a>
@@ -216,15 +251,28 @@
     toggle.addEventListener('click', () => {
         const open = drawer.classList.toggle('open');
         toggle.classList.toggle('open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        drawer.setAttribute('aria-hidden', String(!open));
+        drawer.inert = !open;
         document.body.style.overflow = open ? 'hidden' : '';
     });
     drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
         drawer.classList.remove('open');
         toggle.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Open menu');
+        drawer.setAttribute('aria-hidden', 'true');
+        drawer.inert = true;
         document.body.style.overflow = '';
     }));
 
-    let lastY = 0;
+    document.addEventListener('keydown', e => {
+        if (e.key !== 'Escape' || !drawer.classList.contains('open')) return;
+        toggle.click();
+        toggle.focus();
+    });
+
     window.addEventListener('scroll', () => {
         nav.classList.toggle('shrink', window.scrollY > 50);
     }, { passive: true });
@@ -261,7 +309,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <span>© 2026 D'Vaaw Perfume · Kota Samarahan, Sarawak</span>
+            <span>© ${new Date().getFullYear()} D'Vaaw Perfume · Kota Samarahan, Sarawak</span>
             <span>Made in Borneo 🇲🇾</span>
         </div>`;
     document.body.appendChild(footer);
@@ -333,8 +381,13 @@
 
     import('./firebase.js').then(async () => {
         try {
+            // These reads are independent; fetching them together makes Firebase startup faster.
+            const [remote, pricing, remoteDiscount] = await Promise.all([
+                window.DVFB.fetchProducts().catch(() => []),
+                window.DVFB.fetchPricing().catch(() => null),
+                window.DVFB.fetchDiscount().catch(() => null)
+            ]);
             // Merge admin products / overrides into catalog
-            const remote = await window.DVFB.fetchProducts();
             if (remote.length) {
                 remote.forEach(rp => {
                     const i = CATALOG.findIndex(p => p.id === rp.id);
@@ -349,13 +402,12 @@
                 });
             }
             // Global size pricing set by admin
-            const pricing = await window.DVFB.fetchPricing();
             if (pricing && pricing.p10 > 0 && pricing.p35 > 0) {
                 SIZES[0].price = pricing.p10;
                 SIZES[1].price = pricing.p35;
             }
             // Load discount + banner
-            discount = await window.DVFB.fetchDiscount();
+            discount = remoteDiscount;
             if (discount && discount.active && discount.percent > 0) {
                 const bar = document.createElement('div');
                 bar.style.cssText = 'background:var(--gold);color:var(--black);text-align:center;' +

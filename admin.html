@@ -151,19 +151,22 @@ function friendly(e) {
 
 /* ── PRODUCTS TABLE ── */
 function renderTable() {
-    const rows = window.DVAAW.CATALOG.map(p => {
+    const rows = window.DVAAW.CATALOG.filter(p => /^[a-z0-9-]+$/.test(p.id)).map(p => {
+        const safeId = p.id;
+        const safeName = window.DVAAW.escapeHTML(p.name);
+        const encodedName = encodeURIComponent(p.name).replace(/'/g, '%27');
         const stock = (typeof p.stock === 'number') ? p.stock : '';
         const badge = stock === '' ? '<span class="stock-badge inf">∞</span>'
                     : stock === 0 ? '<span class="stock-badge out">Out</span>'
                     : '<span class="stock-badge ok">' + stock + '</span>';
         return `<tr>
-            <td><div class="pname">${p.name}</div><div class="pid">${p.id}</div></td>
-            <td>${window.DVAAW.CAT_LABEL[p.cat] || p.cat}</td>
-            <td><input type="number" class="stock-in" min="0" value="${stock}" id="st-${p.id}"> ${badge}</td>
+            <td><div class="pname">${safeName}</div><div class="pid">${safeId}</div></td>
+            <td>${window.DVAAW.escapeHTML(window.DVAAW.CAT_LABEL[p.cat] || p.cat)}</td>
+            <td><input type="number" class="stock-in" min="0" value="${stock}" id="st-${safeId}"> ${badge}</td>
             <td style="text-align:right;">
-                <button class="row-btn" onclick="applyStock('${p.id}')">✓ Stock</button>
-                <button class="row-btn" onclick="editProduct('${p.id}')">Edit</button>
-                <button class="row-btn danger" onclick="removeProduct('${p.id}','${p.name.replace(/'/g,"\\'")}')">Remove</button>
+                <button class="row-btn" onclick="applyStock('${safeId}')">✓ Stock</button>
+                <button class="row-btn" onclick="editProduct('${safeId}')">Edit</button>
+                <button class="row-btn danger" onclick="removeProduct('${safeId}',decodeURIComponent('${encodedName}'))">Remove</button>
             </td>
         </tr>`;
     }).join('');
@@ -190,7 +193,7 @@ function editProduct(id) {
     document.getElementById('p-notes').value = p.notes || '';
     document.getElementById('p-cat').value = p.cat;
     document.getElementById('p-stock').value = (typeof p.stock === 'number' && p.stock < 999999) ? p.stock : '';
-    document.getElementById('p-preview').innerHTML = '<img src="' + p.img + '" onerror="this.parentElement.textContent=\'No image yet\'">';
+    document.getElementById('p-preview').innerHTML = '<img src="' + window.DVAAW.safeImageSource(p.img) + '" alt="Product preview" onerror="window.DVAAW.useFallbackImage(this)">';
     document.getElementById('p-id').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
@@ -270,7 +273,7 @@ async function refreshDiscount() {
         const d = await window.DVFB.fetchDiscount();
         const el = document.getElementById('discStatus');
         if (d && d.active) {
-            el.innerHTML = '🟢 <strong>' + (d.label || 'Sale') + '</strong> LIVE — ' + d.percent + '% off.';
+            el.textContent = '🟢 ' + (d.label || 'Sale') + ' LIVE — ' + d.percent + '% off.';
             document.getElementById('d-pct').value = d.percent;
             document.getElementById('d-label').value = d.label || '';
         } else el.textContent = '⚪ No discount running.';

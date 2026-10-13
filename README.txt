@@ -1,72 +1,88 @@
-═══════════════════════════════════════════════════════
-   D'VAAW PERFUME — WEBSITE (v2)
-═══════════════════════════════════════════════════════
+D'VAAW FRAGRANCE — STOREFRONT
+================================
 
-A faster, cleaner rebuild. 9 pages instead of 14, sharing
-one stylesheet and one script. Modern minimal black + gold.
-
-SETUP (GitHub Pages or any host)
---------------------------------
-1. Upload every file in this folder to your repo root
-   (the .nojekyll file is included — it prevents GitHub
-   Pages build failures, so make sure it uploads too).
-2. Add your product photos to the "image" folder
-   (see IMAGE NAMES below). Missing images show a clean
-   text placeholder, so the site looks finished without them.
-3. In GitHub repo Settings > Pages, set Source to
-   "Deploy from a branch" > main > / (root).
-
-That's it. Static site — no build step, no server.
+A dependency-free, multi-page storefront for GitHub Pages. The visual system is
+warm editorial luxury: ivory, cocoa and terracotta, with D'Vaaw's Sarawak and
+Gula Apong identity at the centre.
 
 
-PAGES (9)
----------
-  index.html         Home (hero, categories, featured, story)
-  shop.html          All 25 products + filter tabs + recently viewed
-  cart.html          Cart + WhatsApp checkout + Firebase logging
-  shipping.html      Rates + address form with live zone calculator
-  about.html         Brand story
-  contact.html       Contact methods + WhatsApp form
-  info.html          Privacy, cookies, terms, returns (combined)
-  confirmation.html  Order thank-you (after checkout)
-  404.html           Not-found page
+ARCHITECTURE
+------------
 
-SHARED (edit once, changes everywhere)
-  styles.css   All design + layout
-  app.js       Nav, footer, cart, catalog, toast, cookie banner
+Static shell
+  - Each route is a standalone HTML file.
+  - styles.css contains shared design tokens, navigation, footer and utilities.
+  - app.js injects shared navigation/footer UI and owns catalog/cart state.
+
+Commerce state
+  - The built-in 25-product catalog lives in app.js.
+  - Firebase product records can add, hide or override built-in products.
+  - Size pricing and the active discount are fetched from Firebase in parallel.
+  - Cart, recently viewed products and the last order use browser localStorage.
+  - Checkout creates a WhatsApp order message; Firestore order logging is
+    best-effort and never blocks the customer.
+
+Accounts and admin
+  - firebase.js owns Firebase Authentication and Firestore access.
+  - account.html handles registration, login, preferences and delivery details.
+  - admin.html manages products, stock, prices and the sitewide discount.
+  - Firebase security rules are the real security boundary. The client-side
+    admin screen must never be treated as authorization by itself.
 
 
-CHANGE THINGS
+ROUTES
+------
+
+  index.html          Home
+  shop.html           Catalog and category filters
+  cart.html           Cart, delivery details and WhatsApp checkout
+  confirmation.html   Saved order summary
+  shipping.html       Rates and delivery calculator
+  about.html          Brand story
+  contact.html        Contact form and channels
+  info.html           Privacy, cookies, terms and returns
+  account.html        Customer authentication and profile
+  admin.html          Staff catalog/settings interface
+  404.html            Not-found page
+
+
+IMAGES
+------
+
+Original D'Vaaw files in /image are intentionally kept unchanged. Products with
+real photography use their matching file. Products whose photo is not yet in the
+repository reuse image/perfume-bottle-ai.webp as a single neutral fallback.
+
+To add a real product photo later, save it as image/<product-id>.png. The existing
+catalog path will begin using it automatically without a code change.
+
+
+LOCAL PREVIEW
 -------------
-WhatsApp number:  In app.js, line ~9: const WHATSAPP = '601118866239';
-                  (Also appears in contact.html and confirmation.html links.)
 
-Products:         All 25 live in app.js in the CATALOG array.
-                  Add/edit/remove there — every page updates.
+Run any static file server from the repository root. Example:
 
-Prices:           In app.js, the SIZES array (10ml = 18, 35ml = 79).
+  python -m http.server 4174
 
-Shipping rates:   Sarawak RM10, Semenanjung RM15/kg.
-                  Edit in shipping.html and cart.html.
-
-Firebase:         Configured in cart.html. Orders log automatically.
-                  If Firebase is ever down, orders STILL go through
-                  WhatsApp — it never blocks checkout.
+Then open http://127.0.0.1:4174/.
 
 
-IMAGE NAMES (put in /image folder)
-----------------------------------
-Hero & sections:
-  hero.png, gula-apong.png, community.png
-  cat-her.png, cat-him.png, cat-unisex.png, cat-borneo.png
+DEPLOYMENT
+----------
 
-Products (match the id in app.js), e.g.:
-  red-gorgeous.png, candy.png, the-goddess.png, hottest-guy.png,
-  obsession.png, rentap-ridge.png, borneo-luxe.png ... etc.
+This repository needs no build step. In GitHub repository settings, enable Pages
+from the main branch and the repository root. Keep .nojekyll in the root.
+
+Before production launch, verify Firestore rules for users, products, settings,
+orders and admin-only writes. Also replace the placeholder social links in app.js
+with D'Vaaw's official profile URLs.
 
 
-NOTES
------
-- Cart auto-repairs bad data and updates the counter live.
-- Fully responsive (desktop, tablet, phone).
-- Respects "reduce motion" accessibility setting.
+STORE SETTINGS
+--------------
+
+  WhatsApp number   app.js (WHATSAPP)
+  Built-in products app.js (CATALOG)
+  Default prices    app.js (SIZES)
+  Shipping rates    cart.html and shipping.html
+  Firebase project  firebase.js
