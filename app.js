@@ -41,7 +41,7 @@
     }
     function safeImageSource(value) {
         const src = String(value || '').trim();
-        if (/^image\/[a-z0-9._/-]+$/i.test(src) || /^data:image\/(?:png|jpe?g|webp);base64,/i.test(src)) return src;
+        if (/^image\/[a-z0-9._/-]+(?:\?v=[a-z0-9._-]+)?$/i.test(src) || /^data:image\/(?:png|jpe?g|webp);base64,/i.test(src)) return src;
         return FALLBACK_IMAGE;
     }
     function useFallbackImage(img) {
