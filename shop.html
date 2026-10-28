@@ -57,6 +57,16 @@
 .pc-cat { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem; }
 .pc-name { font-family: var(--display); font-size: 1.3rem; margin-bottom: 0.4rem; }
 .pc-notes { font-size: 0.72rem; color: var(--muted); margin-bottom: 1rem; min-height: 2rem; }
+.pc-details { margin: 0 1.3rem 1.1rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.pc-details summary { padding: 0.75rem 0; cursor: pointer; list-style: none; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase; color: var(--gold); }
+.pc-details summary::-webkit-details-marker { display: none; }
+.pc-details summary::after { content: '+'; float: right; font-size: 1rem; line-height: 0.8; color: var(--text); }
+.pc-details[open] summary::after { content: '−'; }
+.pc-details p { font-size: 0.74rem; color: var(--muted); line-height: 1.7; padding-bottom: 0.8rem; }
+.pc-profile { display: grid; gap: 0.35rem; padding-bottom: 0.9rem; }
+.pc-profile div { display: grid; grid-template-columns: 4.25rem 1fr; gap: 0.5rem; font-size: 0.7rem; }
+.pc-profile dt { color: var(--gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+.pc-profile dd { color: var(--text); }
 .pc-price { font-size: 0.85rem; font-weight: 500; margin-bottom: 1.1rem; }
 .pc-actions { margin-top: auto; display: flex; flex-direction: column; gap: 0.6rem; }
 .pc-size { display: flex; gap: 0.4rem; }
@@ -105,7 +115,7 @@
 .prod-card { border: 0; background: var(--cream); padding: 0 0 1.5rem; text-align: left; box-shadow: 0 14px 40px rgba(0,0,0,0.055); }
 .prod-card:nth-child(4n + 2), .prod-card:nth-child(4n + 4) { margin-top: 2.25rem; }
 .pc-img { background: var(--soft-sand); margin: 0 0 1.3rem; cursor: pointer; }
-.pc-img img { width: 100%; height: 100%; object-fit: cover; }
+.pc-img img { display: block; width: 100%; height: 100%; max-height: none; object-fit: cover; object-position: center center; }
 .pc-cat, .pc-name, .pc-notes, .pc-price, .pc-actions { margin-left: 1.3rem; margin-right: 1.3rem; }
 .pc-size button, .pc-add { border-radius: 999px; }
 .recently { background: var(--mist); }
@@ -118,13 +128,14 @@
 @media (max-width: 540px) {
     .shop-grid { padding-left: 1rem; padding-right: 1rem; }
     .pc-cat, .pc-name, .pc-notes, .pc-price, .pc-actions { margin-left: 0.9rem; margin-right: 0.9rem; }
+    .pc-details { margin-left: 0.9rem; margin-right: 0.9rem; }
 }
 </style>
 </head>
 <body>
 
 <section class="page-intro">
-    <span class="eyebrow">25 Fragrances</span>
+    <span class="eyebrow" id="collectionCount">33 Fragrances</span>
     <h1>The Collection</h1>
     <p>Every scent is Halal-certified, crafted with Gula Apong, and made to last. Available in 10ml and 35ml.</p>
 </section>
@@ -149,11 +160,26 @@
 (function () {
     const { CAT_LABEL } = window.DVAAW;
     const grid = document.getElementById('grid');
+    const collectionCount = document.getElementById('collectionCount');
     const CATALOG = window.DVAAW.CATALOG;
     const SIZES = window.DVAAW.SIZES;
     let currentFilter = 'all';
 
+    function renderScentProfile(p) {
+        if (!p.description) return '';
+        return `<details class="pc-details">
+            <summary>Discover the scent</summary>
+            <p>${window.DVAAW.escapeHTML(p.description)}</p>
+            <dl class="pc-profile">
+                <div><dt>Top</dt><dd>${window.DVAAW.escapeHTML(p.top || '—')}</dd></div>
+                <div><dt>Middle</dt><dd>${window.DVAAW.escapeHTML(p.middle || '—')}</dd></div>
+                <div><dt>Base</dt><dd>${window.DVAAW.escapeHTML(p.base || '—')}</dd></div>
+            </dl>
+        </details>`;
+    }
+
     function renderGrid() {
+    collectionCount.textContent = CATALOG.length + ' Fragrances';
     grid.innerHTML = CATALOG.map(p => `
         <article class="prod-card reveal" data-id="${window.DVAAW.escapeHTML(p.id)}" data-cat="${window.DVAAW.escapeHTML(p.cat)}">
             <div class="pc-img">
@@ -162,6 +188,7 @@
             <div class="pc-cat">${window.DVAAW.escapeHTML(CAT_LABEL[p.cat] || 'Collection')}</div>
             <div class="pc-name">${window.DVAAW.escapeHTML(p.name)}</div>
             <div class="pc-notes">${window.DVAAW.escapeHTML(p.notes)}</div>
+            ${renderScentProfile(p)}
             <div class="pc-price" data-price>RM${window.DVAAW.price(SIZES[1].price).toFixed(2)}</div>
             <div class="pc-actions">
                 <div class="pc-size">

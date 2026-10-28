@@ -228,7 +228,7 @@
 .prod-card { border: 0; background: var(--cream); padding: 0 0 1.5rem; text-align: left; box-shadow: 0 14px 40px rgba(0,0,0,0.06); }
 .prod-card:nth-child(even) { margin-top: 2.5rem; }
 .prod-card .pc-img { background: var(--soft-sand); margin: 0 0 1.3rem; }
-.prod-card .pc-img img { width: 100%; height: 100%; object-fit: cover; }
+.prod-card .pc-img img { display: block; width: 100%; height: 100%; max-height: none; object-fit: cover; object-position: center center; }
 .prod-card .pc-cat, .prod-card .pc-name, .prod-card .pc-notes, .prod-card .pc-price, .prod-card .pc-actions { margin-left: 1.3rem; margin-right: 1.3rem; }
 .pc-size button { border-radius: 999px; }
 .pc-add { border-radius: 999px; }
@@ -313,7 +313,7 @@
     </div>
     <div class="prod-grid" id="featured"></div>
     <div style="text-align:center; margin-top:3rem;" class="reveal">
-        <a href="shop.html" class="btn btn-ghost">View All 25 Fragrances</a>
+        <a href="shop.html" class="btn btn-ghost" id="collectionLink">View All 33 Fragrances</a>
     </div>
 </section>
 
@@ -337,10 +337,12 @@
     const { CAT_LABEL } = window.DVAAW;
     const featured = ['red-gorgeous','hottest-guy','obsession','rentap-ridge'];
     const grid = document.getElementById('featured');
+    const collectionLink = document.getElementById('collectionLink');
 
     function renderFeatured() {
     const CATALOG = window.DVAAW.CATALOG;
     const SIZES = window.DVAAW.SIZES;
+    collectionLink.textContent = 'View All ' + CATALOG.length + ' Fragrances';
     grid.innerHTML = featured.map(id => {
         const p = CATALOG.find(x => x.id === id);
         if (!p) return '';

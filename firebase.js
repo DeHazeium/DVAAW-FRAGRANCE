@@ -132,7 +132,7 @@ const DVFB = {
     },
 
     async deleteProduct(id) {                    // admin-added → gone; built-in → hidden
-        const builtIn = ['red-gorgeous','candy','the-goddess','selena-secret','lady-boss','demure-opium','miss-bloom','love-sick','sweet-vanilla','glamorous','roses-potion','ms-classy','sweet-dew','hottest-guy','the-zillion','great-man','vip-scent','perfect-men','the-gentleman','the-eros-men','titan-x','obsession','valora','rentap-ridge','borneo-luxe'];
+        const builtIn = ['red-gorgeous','candy','the-goddess','selena-secret','lady-boss','demure-opium','miss-bloom','love-sick','sweet-vanilla','glamorous','roses-potion','ms-classy','sweet-dew','mia-bubblelush','phylish-aurella','elara-velvet','tarava-aura','hottest-guy','the-zillion','great-man','vip-scent','perfect-men','the-gentleman','the-eros-men','titan-x','ignis-black','bad-boy','dark-alpha','prince-charming','obsession','valora','rentap-ridge','borneo-luxe'];
         if (builtIn.includes(id)) {
             await setDoc(doc(db, 'products', id), { id, hidden: true, updated: Date.now() }, { merge: true });
         } else {
