@@ -145,6 +145,14 @@
         { id:'borneo-luxe', name:'Borneo Luxe', cat:'borneo', notes:'Sweet Woody · Vanilla Powdery · Borneo Nut', img:'image/borneo-luxe.webp' },
     ];
 
+    // Keep long-lived browser caches from showing an older product photo after an asset refresh.
+    const PRODUCT_IMAGE_REVISION = 'f0667b4';
+    CATALOG.forEach(product => {
+        if (product.img && product.img.startsWith('image/') && product.img.endsWith('.webp')) {
+            product.img += '?v=' + PRODUCT_IMAGE_REVISION;
+        }
+    });
+
     const SIZES = [
         { size:'10ml', price:18 },
         { size:'35ml', price:79 },
