@@ -12,20 +12,18 @@ import {
     getDocs, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 const app = initializeApp({
-    apiKey: "AIzaSyCxOigVTO2ZCeKYoVRJvU085fEiEL9EKOI",
-    authDomain: "d-vaaw-perfume.firebaseapp.com",
-    databaseURL: "https://d-vaaw-perfume-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "d-vaaw-perfume",
-    storageBucket: "d-vaaw-perfume.firebasestorage.app",
-    messagingSenderId: "176200300799",
-    appId: "1:176200300799:web:ee8893e3e3e6a4dd14b4ca"
+    apiKey: "AIzaSyBiNXEGKxvf87RgDJp3dgX67FxRMC2Chr8",
+    authDomain: "dvaaw-fragrance-my.firebaseapp.com",
+    projectId: "dvaaw-fragrance-my",
+    storageBucket: "dvaaw-fragrance-my.firebasestorage.app",
+    messagingSenderId: "328211139837",
+    appId: "1:328211139837:web:3861bd14148bd2228f4294"
 });
 const auth = getAuth(app);
 const db = initializeFirestore(app, {
     experimentalAutoDetectLongPolling: true   // fixes "client is offline" on strict networks
 });
 
-const ADMIN_USERNAME = 'dvaaw_nick';          // temporary — see SECURITY.txt
 const norm = s => (s || '').trim().toLowerCase();
 const lookupKey = s => norm(s).replace(/[^a-z0-9+]/g, '');
 
@@ -48,8 +46,19 @@ async function resolveEmail(identifier) {
 const DVFB = {
     user: null,
     profile: null,
+    _isAdmin: false,
 
-    get isAdmin() { return !!this.profile && norm(this.profile.username) === ADMIN_USERNAME; },
+    get isAdmin() { return this._isAdmin === true; },
+
+    async loadAdminStatus(uid) {
+        try {
+            const snap = await getDoc(doc(db, 'admins', uid));
+            this._isAdmin = snap.exists() && snap.data().active === true;
+        } catch {
+            this._isAdmin = false;
+        }
+        return this._isAdmin;
+    },
 
     async register({ name, age, prefs, email, username, phone, password }) {
         email = norm(email);
@@ -83,6 +92,7 @@ const DVFB = {
 
     logout() {
         localStorage.removeItem('dvaaw_profile');
+        this._isAdmin = false;
         return signOut(auth);
     },
 
@@ -205,6 +215,7 @@ const DVFB = {
 onAuthStateChanged(auth, async (user) => {
     DVFB.user = user;
     DVFB.profile = user ? await DVFB.loadProfile(user.uid).catch(() => null) : null;
+    DVFB._isAdmin = user ? await DVFB.loadAdminStatus(user.uid) : false;
     window.dispatchEvent(new CustomEvent('dvaaw:auth', { detail: { user, profile: DVFB.profile } }));
 });
 

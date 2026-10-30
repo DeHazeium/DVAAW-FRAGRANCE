@@ -1,7 +1,7 @@
 D'VAAW FRAGRANCE — STOREFRONT
 ================================
 
-A dependency-free, multi-page storefront for GitHub Pages. The visual system is
+A dependency-free, multi-page storefront deployed with Firebase Hosting. The visual system is
 warm editorial luxury: ivory, cocoa and terracotta, with D'Vaaw's Sarawak and
 Gula Apong identity at the centre.
 
@@ -70,12 +70,16 @@ Then open http://127.0.0.1:4174/.
 DEPLOYMENT
 ----------
 
-This repository needs no build step. In GitHub repository settings, enable Pages
-from the main branch and the repository root. Keep .nojekyll in the root.
+Run `node scripts/build.mjs` to prepare the static site in dist/, then deploy with
+Firebase Hosting. firebase.json publishes only dist/ and includes the Firestore
+rules and indexes needed by the storefront.
 
-Before production launch, verify Firestore rules for users, products, settings,
-orders and admin-only writes. Also replace the placeholder social links in app.js
-with D'Vaaw's official profile URLs.
+The first administrator is created by registering a normal site account, then
+creating admins/<their-auth-uid> in Firestore with the field `active: true` from
+the Firebase console. Client code cannot create or modify administrator records.
+
+Before production launch, replace the placeholder social links in app.js with
+D'Vaaw's official profile URLs.
 
 
 STORE SETTINGS

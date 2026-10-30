@@ -7,17 +7,17 @@ the web config or by the admin.html screen.
 
 Before production launch:
 
-1. Create the real staff account in Firebase Authentication.
+1. Create the real staff account through the storefront.
 2. Copy its Firebase Authentication UID.
-3. In Firestore Rules, authorize product/settings/order administration with that
-   UID (or, preferably, a server-issued custom admin claim).
+3. In the Firebase console, create admins/<staff-uid> with `active: true`.
+   Firestore rules use that protected record for every privileged operation.
 4. Allow customers to read/write only users/{their-own-uid}.
 5. Allow public reads for products and public settings only.
 6. Allow order creation, but allow order reads/updates only to the admin UID.
 7. Do not authorize writes based on the username stored in a profile document.
    Client profile data is not an authorization boundary.
 8. Test the published rules with a signed-out visitor, a normal customer and the
-   staff account before enabling GitHub Pages for the public.
+   staff account before sharing the Firebase Hosting URL.
 
 Important architecture note
 ---------------------------
@@ -28,6 +28,6 @@ exposes the mapped email to anyone who already knows the identifier. For stronge
 privacy, replace resolveEmail() with a callable Cloud Function or sign in by email
 only, then disable public reads on /lookups.
 
-The client currently displays the admin interface when the profile username is
-"dvaaw_nick". That is a convenience gate only. Firestore rules must still use the
-real Authentication UID or a custom claim for every privileged write.
+The client displays the admin interface only after it reads the signed-in user's
+protected admins/<uid> record. Firestore rules repeat the same check for every
+privileged write.

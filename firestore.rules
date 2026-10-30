@@ -1,0 +1,64 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+
+    match /admins/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow write: if false;
+    }
+
+    match /users/{uid} {
+      allow read, create, update: if signedIn() && request.auth.uid == uid;
+      allow delete: if false;
+    }
+
+    match /lookups/{key} {
+      allow read: if true;
+      allow create: if signedIn()
+        && !exists(/databases/$(database)/documents/lookups/$(key))
+        && request.resource.data.keys().hasOnly(['email'])
+        && request.resource.data.email == request.auth.token.email;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow create: if request.resource.data.keys().hasOnly([
+          'orderItems', 'subtotal', 'shippingFee', 'totalAmount',
+          'user', 'status', 'timestamp'
+        ])
+        && request.resource.data.orderItems is list
+        && request.resource.data.orderItems.size() > 0
+        && request.resource.data.orderItems.size() <= 50
+        && request.resource.data.subtotal is number
+        && request.resource.data.shippingFee is number
+        && request.resource.data.totalAmount is number
+        && request.resource.data.subtotal >= 0
+        && request.resource.data.shippingFee >= 0
+        && request.resource.data.totalAmount >= 0
+        && request.resource.data.status == 'Pending WhatsApp Confirmation'
+        && request.resource.data.timestamp == request.time;
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}

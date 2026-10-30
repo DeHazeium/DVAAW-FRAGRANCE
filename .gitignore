@@ -1,0 +1,6 @@
+dist/
+.firebase/
+node_modules/
+firebase-tools.exe
+firepit-log.txt
+firebase-debug.log
