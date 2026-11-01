@@ -78,8 +78,9 @@ The first administrator is created by registering a normal site account, then
 creating admins/<their-auth-uid> in Firestore with the field `active: true` from
 the Firebase console. Client code cannot create or modify administrator records.
 
-Before production launch, replace the placeholder social links in app.js with
-D'Vaaw's official profile URLs.
+The footer and Contact page identify the official TikTok account as D'VAAW PERFUME
+and the Facebook page as D'VAAW PERFUME HQ. The current links open each platform's
+search results; replace them with the exact profile URLs when those are available.
 
 
 STORE SETTINGS

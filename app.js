@@ -7,6 +7,10 @@
 
     const WHATSAPP = '601118866239';
     const FALLBACK_IMAGE = 'image/perfume-bottle-ai.webp';
+    const FACEBOOK_NAME = "D'VAAW PERFUME HQ";
+    const FACEBOOK_URL = "https://www.facebook.com/search/pages/?q=D%27VAAW%20PERFUME%20HQ";
+    const TIKTOK_NAME = "D'VAAW PERFUME";
+    const TIKTOK_URL = "https://www.tiktok.com/search?q=D%27VAAW%20PERFUME";
 
     /* Storage may be disabled by strict privacy settings. Keep the storefront
        usable with a temporary in-memory fallback instead of aborting startup. */
@@ -360,13 +364,12 @@
             <div class="footer-col">
                 <h4>Connect</h4>
                 <a href="https://wa.me/${WHATSAPP}" target="_blank" rel="noopener">WhatsApp</a>
-                <a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a>
-                <a href="https://facebook.com" target="_blank" rel="noopener">Facebook</a>
-                <a href="https://tiktok.com" target="_blank" rel="noopener">TikTok</a>
+                <a href="${FACEBOOK_URL}" target="_blank" rel="noopener" aria-label="Facebook page: ${FACEBOOK_NAME}">Facebook · ${FACEBOOK_NAME}</a>
+                <a href="${TIKTOK_URL}" target="_blank" rel="noopener" aria-label="TikTok account: ${TIKTOK_NAME}">TikTok · ${TIKTOK_NAME}</a>
             </div>
         </div>
         <div class="footer-bottom">
-            <span>© ${new Date().getFullYear()} D'Vaaw Perfume · Kota Samarahan, Sarawak</span>
+            <span>© ${new Date().getFullYear()} D'Vaaw Perfume · Kuching, Sarawak</span>
             <span>Made in Borneo 🇲🇾</span>
         </div>`;
     document.body.appendChild(footer);
