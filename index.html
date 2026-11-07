@@ -6,6 +6,7 @@
 <title>D'Vaaw — Halal Luxury Fragrances from Borneo</title>
 <meta name="description" content="Halal luxury lifestyle fragrances crafted with Gula Apong, rooted in the soul of Sarawak, Borneo.">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="experience.css">
 <style>
 /* ── HERO ── */
 .hero {
@@ -236,24 +237,79 @@
 .story { background: var(--mist); }
 .story-img { aspect-ratio: 1/1; margin: clamp(1.2rem, 3vw, 3rem); border-radius: 50% 50% 1.5rem 1.5rem; }
 
+/* Discovery and the everyday ritual. */
+.hero-find { display: inline-flex; align-items: center; gap: .65rem; margin-top: 1.3rem; color: var(--text); font-size: .78rem; border-bottom: 1px solid var(--line); padding: .35rem 0; }
+.hero-find:hover { border-color: var(--gold); }
+.finder-story { margin: 1rem var(--pad-x) 0; padding: clamp(2rem, 6vw, 5rem); background: var(--black); color: var(--paper); position: relative; overflow: hidden; display: grid; grid-template-columns: 1.3fr .8fr; gap: clamp(2rem, 6vw, 5rem); align-items: center; border-radius: 2rem; }
+.finder-story::before { content: ''; position: absolute; width: 38rem; height: 38rem; border: 1px solid rgba(200,170,111,.14); border-radius: 50%; right: -19rem; top: -17rem; pointer-events: none; }
+.finder-story .eyebrow { color: var(--wheat); display: block; margin-bottom: 1.4rem; }
+.finder-story h2 { font-size: clamp(2.5rem, 5.4vw, 4.8rem); font-weight: 300; max-width: 13ch; margin-bottom: 1.3rem; line-height: 1; }
+.finder-story h2 em { color: var(--wheat); font-weight: 300; }
+.finder-story p { color: rgba(242,236,221,.76); max-width: 43ch; font-size: .9rem; margin-bottom: 1.7rem; }
+.finder-story .btn { background: var(--wheat); color: var(--black); }
+.finder-story .btn:hover { background: var(--gold-lt); }
+.finder-steps { list-style: none; position: relative; }
+.finder-steps li { display: flex; align-items: center; gap: 1.2rem; padding: 1.5rem 0; border-bottom: 1px solid rgba(242,236,221,.18); }
+.finder-steps li:first-child { border-top: 1px solid rgba(242,236,221,.18); }
+.finder-steps span { color: var(--wheat); font-family: var(--display); font-size: 1.55rem; font-style: italic; }
+.finder-steps strong { font-weight: 400; font-size: .92rem; }
+.finder-note { display: block; color: rgba(242,236,221,.6); margin-top: 1rem; font-size: .72rem; }
+.size-story { display: grid; grid-template-columns: .9fr 1.2fr; gap: clamp(2rem,6vw,6rem); align-items: center; }
+.size-story h2, .home-faq h2 { font-size: clamp(2.4rem,4.5vw,3.8rem); margin: 1rem 0; max-width: 15ch; font-weight: 300; }
+.size-story p { max-width: 40ch; color: var(--muted); font-size: .9rem; }
+.size-options { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.size-option { padding: 2rem 1.5rem; }
+.size-option + .size-option { border-left: 1px solid var(--line); }
+.size-option .size-volume { display: block; font-family: var(--display); font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1; margin-bottom: 1.1rem; }
+.size-option h3 { font-family: var(--body); font-size: .78rem; line-height: 1.5; font-weight: 600; margin-bottom: .6rem; }
+.size-option p { font-size: .78rem; line-height: 1.8; }
+.size-option a { display: inline-block; font-size: .72rem; margin-top: 1.3rem; padding-bottom: .2rem; border-bottom: 1px solid var(--text); }
+.home-faq { background: var(--mist); display: grid; grid-template-columns: .9fr 1.2fr; gap: clamp(2rem,6vw,6rem); }
+.home-faq-intro p { color: var(--muted); font-size: .9rem; max-width: 32ch; margin-bottom: 1.5rem; }
+.home-faq-list details { border-bottom: 1px solid var(--line); }
+.home-faq-list details:first-child { border-top: 1px solid var(--line); }
+.home-faq-list summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 1rem; padding: 1.3rem 0; font-size: .87rem; font-weight: 500; }
+.home-faq-list summary::-webkit-details-marker { display: none; }
+.home-faq-list summary::after { content: '+'; font-size: 1.2rem; line-height: 1; flex-shrink: 0; }
+.home-faq-list details[open] summary::after { content: '−'; }
+.home-faq-list details p { padding: 0 2rem 1.4rem 0; font-size: .83rem; line-height: 1.8; color: var(--muted); }
+.home-faq-list a { text-decoration: underline; text-underline-offset: .2rem; }
+.home-faq-list summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+.hero-content { min-width: 0; }
+.hero-visual { aspect-ratio: 1 / 1.05; min-height: 0; }
+.hero-visual img { position: absolute; inset: 0; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+
 @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; padding-top: 2.5rem; text-align: left; }
+    .hero { grid-template-columns: 1fr; padding-top: 2.5rem; text-align: left; min-height: auto; }
     .hero-content { margin: 0; }
     .hero-cta { justify-content: flex-start; }
-    .hero-visual { order: 0; min-height: 480px; }
+    .hero-visual { order: 0; min-height: 0; width: 100%; max-width: 600px; justify-self: center; }
     .hero-visual img { max-height: none; }
     .hero::before { display: none; }
+    .finder-story { grid-template-columns: 1fr; }
+    .finder-story h2 { max-width: 19ch; }
+    .finder-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .finder-steps li { border-top: 1px solid rgba(242,236,221,.18); align-items: flex-start; flex-direction: column; gap: .6rem; }
+    .size-story, .home-faq { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
     .hero { padding-left: 1.25rem; padding-right: 1.25rem; }
     .hero-content h1 { font-size: clamp(3.25rem, 16vw, 5rem); }
-    .hero-visual { min-height: 390px; border-radius: 9rem 9rem 1.6rem 1.6rem; }
+    .hero-visual { min-height: 0; border-radius: 9rem 9rem 1.6rem 1.6rem; }
     .cats { grid-template-columns: 1fr 1fr; gap: 0.7rem; padding-left: 1rem; padding-right: 1rem; }
     .cat-tile { border-radius: 6rem 6rem 1rem 1rem; padding: 1rem; }
     .cat-tile:nth-child(even) { transform: translateY(1.3rem); }
     .cat-tile-label h3 { font-size: 1.3rem; }
     .prod-card:nth-child(even) { margin-top: 1.5rem; }
     .prod-card .pc-cat, .prod-card .pc-name, .prod-card .pc-notes, .prod-card .pc-price, .prod-card .pc-actions { margin-left: 0.9rem; margin-right: 0.9rem; }
+    .finder-story { margin: 1rem 1rem 0; border-radius: 1.2rem; padding: 2.2rem 1.4rem; }
+    .finder-steps strong { font-size: .76rem; }
+    .size-option { padding: 1.5rem 1rem; }
+    .size-option:first-child { padding-left: 0; }
+    .size-option:last-child { padding-right: 0; }
+    .hero-cta { gap: .7rem; }
+    .hero-cta .btn { padding: .9rem 1.3rem; font-size: .65rem; }
 }
 </style>
 </head>
@@ -269,6 +325,7 @@
             <a href="shop.html" class="btn btn-gold">Shop the Collection</a>
             <a href="about.html" class="btn btn-ghost-light">Our Story</a>
         </div>
+        <button type="button" class="hero-find" data-open-finder>Not sure where to start? Find your scent <span aria-hidden="true">↗</span></button>
     </div>
     <div class="hero-visual">
         <img src="image/perfume-bottle-ai.webp" alt="Minimal fragrance bottle in warm natural light" fetchpriority="high" decoding="async">
@@ -293,17 +350,32 @@
         <div class="cat-tile-label"><span class="eyebrow">01</span><h3>For <span>Her</span></h3></div>
     </a>
     <a href="shop.html?cat=him" class="cat-tile">
-        <img src="image/perfume-bottle-ai.webp" alt="D'Vaaw fragrance bottle" loading="lazy" decoding="async">
+        <img src="image/hottest-guy.webp?v=f0667b4" alt="Hottest Guy by D'Vaaw" loading="lazy" decoding="async">
         <div class="cat-tile-label"><span class="eyebrow">02</span><h3>For <span>Him</span></h3></div>
     </a>
     <a href="shop.html?cat=unisex" class="cat-tile">
-        <img src="image/the-goddess.png" alt="The Goddess by D'Vaaw" loading="lazy" decoding="async">
+        <img src="image/obsession.webp?v=f0667b4" alt="Obsession by D'Vaaw" loading="lazy" decoding="async">
         <div class="cat-tile-label"><span class="eyebrow">03</span><h3><span>Unisex</span></h3></div>
     </a>
     <a href="shop.html?cat=borneo" class="cat-tile">
         <img class="gula-apong-image" src="image/gula-apong.jpg" alt="Sarawak Gula Apong and nipa palm fruit" loading="lazy" decoding="async">
         <div class="cat-tile-label"><span class="eyebrow">04</span><h3><span>Borneo</span></h3></div>
     </a>
+</section>
+
+<section class="finder-story" aria-labelledby="finderHeading">
+    <div>
+        <span class="eyebrow">The Scent Finder</span>
+        <h2 id="finderHeading">A little more <em>you.</em></h2>
+        <p>A few simple choices. A collection of possibilities. Find fragrances that speak to your taste, then make one your own.</p>
+        <button type="button" class="btn" data-open-finder>Find My Scent <span aria-hidden="true">↗</span></button>
+        <small class="finder-note">Explore at your own pace. No account needed.</small>
+    </div>
+    <ol class="finder-steps">
+        <li><span>01</span><strong>Tell us what you love.</strong></li>
+        <li><span>02</span><strong>Meet your scent matches.</strong></li>
+        <li><span>03</span><strong>Discover the details.</strong></li>
+    </ol>
 </section>
 
 <section class="section">
@@ -332,7 +404,57 @@
     </div>
 </section>
 
+<section class="section size-story" aria-labelledby="sizeHeading">
+    <div>
+        <span class="eyebrow">Your Everyday Ritual</span>
+        <h2 id="sizeHeading">One scent.<br>Two ways to carry it.</h2>
+        <p>From a small everyday companion to a place on your dressing table, choose the size that fits your routine.</p>
+    </div>
+    <div class="size-options">
+        <article class="size-option">
+            <span class="size-volume">10<small>ml</small></span>
+            <h3>Take it with you</h3>
+            <p>A compact way to meet a new favourite and keep it close throughout your day.</p>
+            <a href="shop.html">Explore the collection <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="size-option">
+            <span class="size-volume">35<small>ml</small></span>
+            <h3>Make it your signature</h3>
+            <p>A larger bottle for the fragrance you reach for, day after day.</p>
+            <a href="shop.html?saved=1">Revisit your favourites <span aria-hidden="true">↗</span></a>
+        </article>
+    </div>
+</section>
+
+<section class="section home-faq" aria-labelledby="faqHeading">
+    <div class="home-faq-intro">
+        <span class="eyebrow">A Few Good Questions</span>
+        <h2 id="faqHeading">Before your first spray.</h2>
+        <p>Getting to know D'Vaaw should feel as easy as finding your favourite scent.</p>
+        <a href="contact.html" class="btn btn-ghost">Talk to Us</a>
+    </div>
+    <div class="home-faq-list">
+        <details>
+            <summary>How do I find a fragrance I will like?</summary>
+            <p>Start with our Scent Finder or search the collection for notes you enjoy, such as vanilla, rose, citrus, or woods. Open a fragrance to explore its notes and save your favourites while you decide.</p>
+        </details>
+        <details>
+            <summary>Which bottle sizes are available?</summary>
+            <p>The collection comes in 10ml and 35ml. You can select either size on a product card or in its quick view; the price updates before you add it to your bag.</p>
+        </details>
+        <details>
+            <summary>How do I place an order?</summary>
+            <p>Add your chosen fragrances to your bag, then follow checkout to prepare your order. You will continue to WhatsApp to discuss payment and delivery with the D'Vaaw team. <a href="shipping.html">Read our shipping information.</a></p>
+        </details>
+        <details>
+            <summary>What makes Gula Apong part of the story?</summary>
+            <p>Gula Apong is Nypa palm sugar from Sarawak, the inspiration at the heart of D'Vaaw. Our collection celebrates that connection to Borneo. <a href="about.html">Discover our story.</a></p>
+        </details>
+    </div>
+</section>
+
 <script src="app.js?v=bd2ff2e"></script>
+<script src="experience.js"></script>
 <script>
 (function () {
     const { CAT_LABEL } = window.DVAAW;
@@ -349,7 +471,7 @@
         if (!p) return '';
         return `
         <article class="prod-card reveal" data-id="${window.DVAAW.escapeHTML(p.id)}">
-            <a href="shop.html" class="pc-img">
+            <a href="shop.html?product=${encodeURIComponent(p.id)}" class="pc-img" data-open-product="${window.DVAAW.escapeHTML(p.id)}" aria-label="Discover ${window.DVAAW.escapeHTML(p.name)}">
                 <img src="${window.DVAAW.safeImageSource(p.img)}" alt="${window.DVAAW.escapeHTML(p.name)}" loading="lazy" decoding="async" onerror="window.DVAAW.useFallbackImage(this)">
             </a>
             <div class="pc-cat">${CAT_LABEL[p.cat]}</div>
@@ -358,7 +480,7 @@
             <div class="pc-price" data-price>RM${window.DVAAW.price(SIZES[1].price).toFixed(2)}</div>
             <div class="pc-actions">
                 <div class="pc-size">
-                    ${SIZES.map((s,i) => `<button data-size="${s.size}" data-price="${s.price}" class="${i===1?'sel':''}">${s.size}</button>`).join('')}
+                    ${SIZES.map((s,i) => `<button data-size="${s.size}" data-price="${s.price}" aria-label="${window.DVAAW.escapeHTML(p.name)} ${s.size}" aria-pressed="${i===1}" class="${i===1?'sel':''}">${s.size}</button>`).join('')}
                 </div>
                 <button class="pc-add" ${p.stock===0?'disabled style="opacity:0.45;cursor:not-allowed;"':''}>${p.stock===0?'Out of Stock':'Add to Cart'}</button>
             </div>
@@ -371,8 +493,9 @@
         const priceEl = card.querySelector('[data-price]');
         card.querySelectorAll('.pc-size button').forEach(btn => {
             btn.addEventListener('click', () => {
-                card.querySelectorAll('.pc-size button').forEach(b => b.classList.remove('sel'));
+                card.querySelectorAll('.pc-size button').forEach(b => { b.classList.remove('sel'); b.setAttribute('aria-pressed', 'false'); });
                 btn.classList.add('sel');
+                btn.setAttribute('aria-pressed', 'true');
                 size = btn.dataset.size;
                 price = +btn.dataset.price;
                 priceEl.textContent = 'RM' + window.DVAAW.price(price).toFixed(2);

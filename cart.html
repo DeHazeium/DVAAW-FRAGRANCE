@@ -121,6 +121,8 @@
 .cd-ring .prog { fill: none; stroke: var(--gold); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
 .cd-ring .num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-size: 3.2rem; color: var(--gold); }
 .cd-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+.order-review { width: min(100%, 34rem); max-height: 40vh; overflow: auto; text-align: left; white-space: pre-wrap; padding: 1.2rem; margin: 0 0 1.5rem; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.18); font: .85rem/1.7 var(--body); }
+.cd-overlay.show { overflow-y: auto; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; border: 0; }
 
 @media (max-width: 900px) {
     .cart-wrap { grid-template-columns: 1fr; }
@@ -135,7 +137,7 @@
 <body>
 
 <section class="page-intro">
-    <span class="eyebrow">Step 1 of 2</span>
+    <span class="eyebrow">Your selection</span>
     <h1>Your Cart</h1>
 </section>
 
@@ -145,21 +147,21 @@
         <h2>Summary</h2>
 
         <div class="method-toggle">
-            <button id="m-ship" class="sel" onclick="setMethod('ship')"><span class="ic">📦</span>Shipping</button>
-            <button id="m-pickup" onclick="setMethod('pickup')"><span class="ic">🏬</span>Pickup</button>
+            <button id="m-ship" class="sel" aria-pressed="true" onclick="setMethod('ship')"><span class="ic" data-icon="box"></span>Shipping</button>
+            <button id="m-pickup" aria-pressed="false" onclick="setMethod('pickup')"><span class="ic" data-icon="shop"></span>Pickup</button>
         </div>
 
         <!-- Shipping address form -->
         <div class="ship-form show" id="shipForm">
-            <div class="fld"><label>Full Name</label><input type="text" id="f-name" placeholder="Recipient name"></div>
-            <div class="fld"><label>WhatsApp Number</label><input type="tel" id="f-phone" placeholder="011-1234 5678"></div>
-            <div class="fld"><label>Address</label><input type="text" id="f-addr" placeholder="House no., street, taman"></div>
+            <div class="fld"><label for="f-name">Full Name</label><input type="text" id="f-name" autocomplete="name" placeholder="Recipient name"></div>
+            <div class="fld"><label for="f-phone">WhatsApp Number</label><input type="tel" id="f-phone" autocomplete="tel" placeholder="011-1234 5678"></div>
+            <div class="fld"><label for="f-addr">Address</label><input type="text" id="f-addr" autocomplete="street-address" placeholder="House no., street, taman"></div>
             <div class="fld-row">
-                <div class="fld"><label>Postcode</label><input type="text" id="f-postcode" maxlength="5" placeholder="94300"></div>
-                <div class="fld"><label>City</label><input type="text" id="f-city" placeholder="Kota Samarahan"></div>
+                <div class="fld"><label for="f-postcode">Postcode</label><input type="text" id="f-postcode" inputmode="numeric" autocomplete="postal-code" maxlength="5" placeholder="93050"></div>
+                <div class="fld"><label for="f-city">City</label><input type="text" id="f-city" autocomplete="address-level2" placeholder="Kuching"></div>
             </div>
             <div class="fld">
-                <label>State</label>
+                <label for="f-state">State</label>
                 <select id="f-state" onchange="render()">
                     <option value="">Select state…</option>
                     <option value="sarawak">Sarawak</option>
@@ -184,7 +186,7 @@
 
         <!-- Pickup note -->
         <div class="pickup-note" id="pickupNote">
-            🏬 Self-pickup — we'll arrange the time and place with you on WhatsApp. No shipping fee.
+            <span data-icon="shop"></span> Self-pickup — we'll arrange the time and place with you on WhatsApp. No shipping fee.
         </div>
 
         <div class="sum-row"><span>Subtotal</span><span>RM<span id="subtotal">0.00</span></span></div>
@@ -194,39 +196,35 @@
 
         <button class="btn btn-wa checkout-btn" id="checkoutBtn" onclick="startCheckout()">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.6.1-.2.3-.7.9-.8 1-.1.2-.3.2-.5.1-.7-.3-1.4-.6-2-1.1-.5-.5-.9-1-1.3-1.6-.1-.2 0-.4.1-.5.1-.1.2-.3.4-.4.1-.1.2-.2.2-.4.1-.1 0-.3 0-.4-.1-.1-.6-1.4-.8-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.7.7-.9 1.5-.9 2.5 0 1.5 1.1 2.9 1.2 3.1.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.1-1.4-.1-.1-.3-.2-.6-.3M12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2"/></svg>
-            Order via WhatsApp
+            Review WhatsApp Order
         </button>
         <p class="secure">No online payment — confirmed personally via WhatsApp</p>
     </aside>
 </section>
 
 <!-- Countdown overlay -->
-<div class="cd-overlay" id="cdOverlay">
-    <span class="eyebrow">Order Ready</span>
-    <h2>Sending you to <em>WhatsApp</em></h2>
-    <p>Your order details are prepared. Just tap send when WhatsApp opens.</p>
-    <div class="cd-ring">
-        <svg viewBox="0 0 100 100">
-            <circle class="track" cx="50" cy="50" r="46"></circle>
-            <circle class="prog" id="cdProg" cx="50" cy="50" r="46"></circle>
-        </svg>
-        <div class="num" id="cdNum">5</div>
-    </div>
+<dialog class="cd-overlay" id="cdOverlay" aria-labelledby="reviewTitle">
+    <span class="eyebrow">One last look</span>
+    <h2 id="reviewTitle">Your fragrance, <em>almost yours.</em></h2>
+    <p>Check your selection below. Continue to WhatsApp and tap Send to request your order. Our team will confirm availability, delivery and payment.</p>
+    <pre class="order-review" id="orderReview"></pre>
     <div class="cd-btns">
-        <button class="btn btn-gold" onclick="goNow()">Go to WhatsApp Now</button>
-        <button class="btn btn-ghost-light" onclick="cancelCheckout()">Cancel</button>
+        <button class="btn btn-gold" id="continueOrder" onclick="goNow()">Continue to WhatsApp</button>
+        <button class="btn btn-ghost-light" onclick="cancelCheckout()" autofocus>Keep Editing</button>
     </div>
-</div>
+</dialog>
 
 <script src="app.js?v=bd2ff2e"></script>
 <script>
 let method = 'ship';
-let cdTimer = null, cdInterval = null, waUrl = '';
+let waUrl = '', preparedOrder = null;
 
 function setMethod(m) {
     method = m;
     document.getElementById('m-ship').classList.toggle('sel', m === 'ship');
     document.getElementById('m-pickup').classList.toggle('sel', m === 'pickup');
+    document.getElementById('m-ship').setAttribute('aria-pressed', String(m === 'ship'));
+    document.getElementById('m-pickup').setAttribute('aria-pressed', String(m === 'pickup'));
     document.getElementById('shipForm').classList.toggle('show', m === 'ship');
     document.getElementById('pickupNote').classList.toggle('show', m === 'pickup');
     render();
@@ -253,7 +251,7 @@ function render() {
     if (!cart.length) {
         wrap.innerHTML = `
             <div class="cart-empty">
-                <div class="ce-icon">🛍️</div>
+                <div class="ce-icon">${window.DVAAW.icon('bag')}</div>
                 <p>Your cart is empty.</p>
                 <a href="shop.html" class="btn btn-dark">Browse Fragrances</a>
             </div>`;
@@ -288,8 +286,8 @@ function render() {
     const ship = shippingCost(subtotal);
     document.getElementById('subtotal').textContent = subtotal.toFixed(2);
     document.getElementById('ship-label').textContent = ship.label;
-    document.getElementById('ship-val').textContent = ship.quote ? 'Quote' : ('RM' + ship.fee.toFixed(2));
-    document.getElementById('total-display').textContent = ship.quote ? '—' : ('RM' + (subtotal + ship.fee).toFixed(2) + (ship.exact ? '' : '+'));
+    document.getElementById('ship-val').textContent = ship.missing ? 'Select state' : ship.quote ? 'Quote' : ('RM' + ship.fee.toFixed(2));
+    document.getElementById('total-display').textContent = ship.quote || ship.missing ? '—' : ('RM' + (subtotal + ship.fee).toFixed(2) + (ship.exact ? '' : '+'));
     document.getElementById('sum-note').textContent = ship.note;
 }
 
@@ -313,8 +311,8 @@ function buildMessage() {
     const subtotal = cart.reduce((s, it) => s + it.price * it.qty, 0);
     const ship = shippingCost(subtotal);
 
-    let msg = "*NEW ORDER — D'VAAW PERFUME* ✨\n\n*ITEMS*\n";
-    cart.forEach(it => { msg += `▪️ ${it.qty}× ${it.name} (${it.size}) — RM${(it.price*it.qty).toFixed(2)}\n`; });
+    let msg = "*NEW ORDER — D'VAAW PERFUME*\n\n*ITEMS*\n";
+    cart.forEach(it => { msg += `- ${it.qty}× ${it.name} (${it.size}) — RM${(it.price*it.qty).toFixed(2)}\n`; });
 
     msg += `\n*DELIVERY*\n`;
     if (method === 'pickup') {
@@ -348,59 +346,69 @@ function validateShipping() {
             return false;
         }
     }
+    if (!/^\d{5}$/.test(document.getElementById('f-postcode').value.trim())) {
+        window.DVAAW.showToast('Please enter a valid 5-digit postcode');
+        document.getElementById('f-postcode').focus();
+        return false;
+    }
+    const phone = document.getElementById('f-phone').value.trim();
+    if (!/^\+?[\d\s()-]+$/.test(phone) || phone.replace(/\D/g, '').length < 9 || phone.replace(/\D/g, '').length > 15) {
+        window.DVAAW.showToast('Please enter a valid WhatsApp phone number');
+        document.getElementById('f-phone').focus();
+        return false;
+    }
     return true;
 }
 
 function startCheckout() {
     const cart = window.DVAAW.getCart();
     if (!cart.length) return;
+    const unavailable = cart.find(item => {
+        const product = window.DVAAW.CATALOG.find(p => p.id === item.id);
+        return !product || !window.DVAAW.SIZES.some(s => s.size === item.size) || product.stock === 0 ||
+            (Number.isFinite(product.stock) && cart.filter(i => i.id === item.id).reduce((n,i) => n + i.qty, 0) > product.stock);
+    });
+    if (unavailable) { window.DVAAW.showToast('Please adjust ' + unavailable.name + ': the selected quantity is no longer available.'); return; }
     if (!validateShipping()) return;
 
     const { msg, subtotal, ship } = buildMessage();
     waUrl = 'https://wa.me/' + window.DVAAW.WHATSAPP + '?text=' + encodeURIComponent(msg);
 
-    // Save order for confirmation page
-    localStorage.setItem('dvaaw_last_order', JSON.stringify({
+    preparedOrder = {
         items: cart, subtotal, shipping: ship.fee, total: subtotal + ship.fee,
-        method: method, date: new Date().toISOString()
-    }));
-    if (window.dvaawSaveOrder) window.dvaawSaveOrder(cart, subtotal, ship.fee, subtotal + ship.fee);
+        method: method, estimated: !ship.exact, date: new Date().toISOString()
+    };
 
-    // Start countdown overlay
     const overlay = document.getElementById('cdOverlay');
-    const numEl = document.getElementById('cdNum');
-    const prog = document.getElementById('cdProg');
-    const C = 2 * Math.PI * 46;
-    prog.style.strokeDasharray = C;
-    prog.style.strokeDashoffset = 0;
+    document.getElementById('orderReview').textContent = msg.replace(/\*/g, '');
     overlay.classList.add('show');
-
-    let n = 5;
-    numEl.textContent = n;
-    // kick off ring animation
-    requestAnimationFrame(() => { prog.style.strokeDashoffset = C; });
-
-    cdInterval = setInterval(() => {
-        n--;
-        if (n >= 0) numEl.textContent = n;
-    }, 1000);
-
-    cdTimer = setTimeout(goNow, 5000);
+    if (!overlay.open) overlay.showModal();
 }
 
 function goNow() {
-    clearTimeout(cdTimer);
-    clearInterval(cdInterval);
-    localStorage.removeItem('dvaaw_cart');
-    window.location.href = waUrl;
-    setTimeout(() => { window.location.href = 'confirmation.html'; }, 1200);
+    if (!preparedOrder || !waUrl) return;
+    try { localStorage.setItem('dvaaw_last_order', JSON.stringify(preparedOrder)); } catch {}
+    // Record only an intentional handoff; cancelled reviews never create orders.
+    if (window.dvaawSaveOrder) window.dvaawSaveOrder(preparedOrder.items, preparedOrder.subtotal, preparedOrder.shipping, preparedOrder.total);
+    const destination = waUrl;
+    preparedOrder = null;
+    cancelCheckout();
+    // Keep the cart available if WhatsApp cannot open or the customer returns.
+    window.location.assign(destination);
 }
 
 function cancelCheckout() {
-    clearTimeout(cdTimer);
-    clearInterval(cdInterval);
-    document.getElementById('cdOverlay').classList.remove('show');
+    const overlay = document.getElementById('cdOverlay');
+    overlay.classList.remove('show');
+    if (overlay.open) overlay.close();
+    preparedOrder = null;
+    waUrl = '';
+    document.getElementById('checkoutBtn').focus();
 }
+
+document.getElementById('cdOverlay').addEventListener('cancel', e => { e.preventDefault(); cancelCheckout(); });
+window.addEventListener('dvaaw:catalog', render);
+window.addEventListener('storage', e => { if (e.key === 'dvaaw_cart') render(); });
 
 render();
 

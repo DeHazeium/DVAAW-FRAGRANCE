@@ -12,6 +12,28 @@
     const TIKTOK_NAME = "D'VAAW PERFUME";
     const TIKTOK_URL = "https://www.tiktok.com/search?q=D%27VAAW%20PERFUME";
 
+    // Original solid 24px icon set. CurrentColor keeps every icon on brand.
+    const ICONS = {
+        bag: 'M7 7V6a5 5 0 0 1 10 0v1h3l1 15H3L4 7h3Zm2 0h6V6a3 3 0 0 0-6 0v1Z',
+        box: 'm12 1 10 5-10 5L2 6l10-5ZM2 8l9 4.5V23l-9-5V8Zm20 0v10l-9 5V12.5L22 8Z',
+        shop: 'M4 2h16l3 7a4 4 0 0 1-7 2 5 5 0 0 1-8 0 4 4 0 0 1-7-2l3-7ZM3 13a6 6 0 0 0 5 0 7 7 0 0 0 8 0 6 6 0 0 0 5 0v9h-7v-7h-4v7H3v-9Z',
+        heart: 'M12 22 3 13C-4 6 6-3 12 5c6-8 16 1 9 8l-9 9Z',
+        check: 'm9 19-7-7 3-3 4 4L19 3l3 3L9 19Z',
+        leaf: 'M21 2C7 1 1 6 3 14l10-6-8 9-3 4 2 1 3-5C17 22 23 12 21 2Z',
+        community: 'M9 11a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm9-1a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM1 22v-4a8 6 0 0 1 16 0v4H1Zm18 0v-4a7 7 0 0 0-2-5c4-1 6 1 6 4v5h-4Z',
+        sparkle: 'm12 1 3 7 7 4-7 3-3 8-3-8-8-3 8-4 3-7Z',
+        pin: 'M12 1a9 9 0 0 0-9 9c0 6 9 13 9 13s9-7 9-13a9 9 0 0 0-9-9Zm0 5a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z',
+        chat: 'M12 2C6 2 1 6 1 11c0 3 2 6 5 8l-1 4 6-3h1c6 0 11-4 11-9S18 2 12 2Z',
+        camera: 'M8 2h8l2 4h4v16H2V6h4l2-4Zm4 6a6 6 0 1 0 0 12 6 6 0 0 0 0-12Zm0 2a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z',
+        lock: 'M6 10V7a6 6 0 0 1 12 0v3h3v13H3V10h3Zm3 0h6V7a3 3 0 0 0-6 0v3Zm2 5v4h2v-4h-2Z',
+        settings: 'm9 1 6 0 1 4 4-1 3 5-3 3 3 3-3 5-4-1-1 4H9l-1-4-4 1-3-5 3-3-3-3 3-5 4 1 1-4Zm3 6a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z',
+        globe: 'M12 1a11 11 0 1 0 0 22 11 11 0 0 0 0-22ZM5 5l5 2-1 4-4 1-2-3 2-4Zm8 6 6 1-1 5-4 4-2-5 1-5Zm2-7 4 3-4 2-1-3 1-2Z',
+        alert: 'M12 1 0 23h24L12 1Zm-1 7h2v8h-2V8Zm0 10h2v2h-2v-2Z',
+        launch: 'M22 2c-8-1-14 4-15 10l5 5c6-1 11-7 10-15ZM15 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6ZM5 9 1 10v7l5-3-1-5Zm5 10 4-1-3 5H4l6-4ZM5 17l2 2-6 4 4-6Z'
+    };
+    function icon(name) { return `<svg class="icon icon-${name}" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor" fill-rule="evenodd"><path d="${ICONS[name] || ICONS.sparkle}"/></svg>`; }
+    document.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = icon(el.dataset.icon); });
+
     /* Storage may be disabled by strict privacy settings. Keep the storefront
        usable with a temporary in-memory fallback instead of aborting startup. */
     const volatileStorage = new Map();
@@ -67,8 +89,8 @@
         }
         sp.classList.remove('hide');
         sp.innerHTML =
-            '<div class="sp-eyebrow">' + title + '</div>' +
-            '<div class="sp-name">' + name + '</div>' +
+            '<div class="sp-eyebrow">' + escapeHTML(title) + '</div>' +
+            '<div class="sp-name">' + escapeHTML(name) + '</div>' +
             '<div class="sp-line"></div>';
         clearTimeout(window._spT);
         window._spT = setTimeout(() => sp.classList.add('hide'), 2100);
@@ -167,7 +189,7 @@
     // Expose for pages that render products
     window.DVAAW = {
         CATALOG, SIZES, CAT_LABEL, WHATSAPP, FALLBACK_IMAGE,
-        escapeHTML, safeImageSource, useFallbackImage
+        escapeHTML, safeImageSource, useFallbackImage, storageGet, storageSet, icon
     };
 
     /* ───── CART (safe, self-healing) ───── */
@@ -183,19 +205,29 @@
                 if (!i.size && i.variant) { i.size = i.variant; changed = true; }
                 if (!i.cat && i.category) { i.cat = i.category; changed = true; }
                 if (!i.key) { i.key = (i.id || i.name) + '-' + (i.size || ''); changed = true; }
+                const product = CATALOG.find(p => p.id === i.id || (!i.id && p.name === i.name));
+                const variant = SIZES.find(s => s.size === i.size);
+                if (product && variant) {
+                    const fresh = { id: product.id, key: product.id + '-' + variant.size,
+                        name: product.name, cat: CAT_LABEL[product.cat], img: product.img,
+                        price: window.DVAAW.price(variant.price) };
+                    for (const [key, value] of Object.entries(fresh)) {
+                        if (i[key] !== value) { i[key] = value; changed = true; }
+                    }
+                }
                 const rawQty = Number(i.qty);
                 const cleanQty = Number.isFinite(rawQty) && rawQty > 0 ? Math.min(99, Math.floor(rawQty)) : 0;
                 if (cleanQty !== i.qty) { i.qty = cleanQty; changed = true; }
                 return i;
             }).filter(i =>
-                i && i.name && i.size && Number.isFinite(i.price) && i.qty > 0
+                i && i.name && i.size && Number.isFinite(i.price) && i.price > 0 && i.qty > 0
             );
             if (cleaned.length !== c.length) changed = true;
             if (changed) storageSet('dvaaw_cart', JSON.stringify(cleaned));
             return cleaned;
         } catch { return []; }
     }
-    function setCart(c) { storageSet('dvaaw_cart', JSON.stringify(c)); paintCount(); }
+    function setCart(c) { storageSet('dvaaw_cart', JSON.stringify(c)); paintCount(); window.dispatchEvent(new CustomEvent('dvaaw:cart')); }
     function cartCount() { return getCart().reduce((s,i) => s + i.qty, 0); }
     function paintCount() {
         const n = cartCount();
@@ -208,17 +240,24 @@
     window.DVAAW.setCart = setCart;
     window.DVAAW.addToCart = function(prodId, size, price) {
         const prod = CATALOG.find(p => p.id === prodId);
-        if (!prod) return;
-        if (prod.stock === 0) { showToast(prod.name + ' is out of stock'); return; }
-        price = window.DVAAW.price(price);   // apply active discount
+        if (!prod) return false;
+        const variant = SIZES.find(s => s.size === size);
+        if (!variant) return false;
+        if (prod.stock === 0) { showToast(prod.name + ' is out of stock'); return false; }
+        price = window.DVAAW.price(variant.price); // Use current catalog pricing.
         const cart = getCart();
+        if (Number.isFinite(prod.stock) && cart.filter(i => i.id === prodId).reduce((sum, i) => sum + i.qty, 0) >= prod.stock) {
+            showToast('You have reached the available quantity for ' + prod.name); return false;
+        }
         const key = prodId + '-' + size;
         const found = cart.find(i => i.key === key);
-        if (found) found.qty++;
+        if (found && found.qty >= 99) { showToast('Maximum 99 per size. Contact us for bulk orders.'); return false; }
+        if (found) { found.qty++; found.price = price; }
         else cart.push({ key, id:prodId, name:prod.name, cat:CAT_LABEL[prod.cat], size, price, img:prod.img, qty:1 });
         setCart(cart);
         showToast(prod.name + ' (' + size + ') added');
         trackViewed(prodId);
+        return true;
     };
 
     /* ───── RECENTLY VIEWED ───── */
@@ -232,6 +271,7 @@
         rv.unshift(id);
         rv = rv.slice(0, 6);
         storageSet('dvaaw_viewed', JSON.stringify(rv));
+        window.dispatchEvent(new CustomEvent('dvaaw:viewed'));
     }
     window.DVAAW.trackViewed = trackViewed;
     window.DVAAW.getViewed = () => {
@@ -247,7 +287,9 @@
         if (!t) {
             t = document.createElement('div');
             t.id = 'toast';
-            t.innerHTML = '<span class="tick">✓</span><span class="toast-msg"></span>';
+            t.setAttribute('role', 'status');
+            t.setAttribute('aria-live', 'polite');
+            t.innerHTML = '<span class="tick">' + icon('check') + '</span><span class="toast-msg"></span>';
             document.body.appendChild(t);
         }
         t.querySelector('.toast-msg').textContent = msg;
@@ -269,8 +311,8 @@
     nav.innerHTML = `
         <nav class="nav-links">
             ${navLink('shop.html','Shop')}
+            <a href="shop.html?finder=1">Scent Finder</a>
             ${navLink('about.html','Story')}
-            ${navLink('shipping.html','Shipping')}
         </nav>
         <a href="index.html" class="brand">D'Vaaw</a>
         <div class="nav-right">
@@ -301,6 +343,7 @@
         <span class="eyebrow">D'Vaaw</span>
         <a href="index.html">Home</a>
         <a href="shop.html">Shop</a>
+        <a href="shop.html?finder=1">Scent Finder</a>
         <a href="about.html">Story</a>
         <a href="shipping.html">Shipping</a>
         <a href="contact.html">Contact</a>
@@ -370,7 +413,7 @@
         </div>
         <div class="footer-bottom">
             <span>© ${new Date().getFullYear()} D'Vaaw Perfume · Kuching, Sarawak</span>
-            <span>Made in Borneo 🇲🇾</span>
+            <span class="made-in-borneo">${icon('leaf')} Made in Borneo</span>
         </div>`;
     document.body.appendChild(footer);
 
@@ -391,7 +434,7 @@
         const ck = document.createElement('div');
         ck.id = 'cookie';
         ck.innerHTML = `
-            <p>We remember your cart for a smoother experience. No tracking cookies. <a href="info.html">Privacy</a></p>
+            <p>Your cart and saved scents stay on this device. No tracking cookies. <a href="info.html">Privacy</a></p>
             <div class="cookie-btns">
                 <button class="cookie-ok">Got it</button>
                 <button class="cookie-no">Dismiss</button>

@@ -1,8 +1,8 @@
-D'VAAW FRAGRANCE — STOREFRONT
+D'VAAW PERFUME — STOREFRONT
 ================================
 
 A dependency-free, multi-page storefront deployed with Firebase Hosting. The visual system is
-warm editorial luxury: ivory, cocoa and terracotta, with D'Vaaw's Sarawak and
+warm editorial luxury: parchment, black, charcoal and gold, with D'Vaaw's Sarawak and
 Gula Apong identity at the centre.
 
 
@@ -13,14 +13,21 @@ Static shell
   - Each route is a standalone HTML file.
   - styles.css contains shared design tokens, navigation, footer and utilities.
   - app.js injects shared navigation/footer UI and owns catalog/cart state.
+  - app.js also provides the shared, original solid SVG icon set.
+  - experience.js/css provide favourites, product dialogs and a scent finder.
+  - shop.js handles search, sorting, filters and product-card interactions.
 
 Commerce state
-  - The built-in 25-product catalog lives in app.js.
+  - The built-in 33-product catalog lives in app.js.
   - Firebase product records can add, hide or override built-in products.
   - Size pricing and the active discount are fetched from Firebase in parallel.
-  - Cart, recently viewed products and the last order use browser localStorage.
-  - Checkout creates a WhatsApp order message; Firestore order logging is
-    best-effort and never blocks the customer.
+  - Cart, saved scents, recently viewed products and the last request use localStorage.
+  - The scent finder ranks available products using listed notes; no AI service,
+    tracking service or account is required. Quiz answers remain in page memory.
+  - Checkout first shows an editable review. Continuing prepares a WhatsApp order
+    message and attempts to log the request. Cancelling does not create an order.
+  - The bag remains available after handoff. Sending the message, stock, payment
+    and fulfilment are confirmed personally; the site does not verify payment.
 
 Accounts and admin
   - firebase.js owns Firebase Authentication and Firestore access.
@@ -34,9 +41,9 @@ ROUTES
 ------
 
   index.html          Home
-  shop.html           Catalog and category filters
+  shop.html           Searchable catalog, saved scents, filters and quick views
   cart.html           Cart, delivery details and WhatsApp checkout
-  confirmation.html   Saved order summary
+  confirmation.html   Saved request summary (not a payment receipt)
   shipping.html       Rates and delivery calculator
   about.html          Brand story
   contact.html        Contact form and channels
@@ -53,8 +60,8 @@ Original D'Vaaw files in /image are intentionally kept unchanged. Products with
 real photography use their matching file. Products whose photo is not yet in the
 repository reuse image/perfume-bottle-ai.webp as a single neutral fallback.
 
-To add a real product photo later, save it as image/<product-id>.png. The existing
-catalog path will begin using it automatically without a code change.
+Product composition images use image/<product-id>.webp. To change a photo,
+replace that asset or update its catalog path. Existing brand images are retained.
 
 
 LOCAL PREVIEW
@@ -70,9 +77,12 @@ Then open http://127.0.0.1:4174/.
 DEPLOYMENT
 ----------
 
-Run `node scripts/build.mjs` to prepare the static site in dist/, then deploy with
-Firebase Hosting. firebase.json publishes only dist/ and includes the Firestore
-rules and indexes needed by the storefront.
+Run `node scripts/build.mjs` to prepare the static site in dist/, then deploy with:
+
+  firebase deploy --only hosting --project dvaaw-fragrance-my
+
+firebase.json publishes only dist/. A hosting-only release does not deploy
+Firestore rules/indexes or alter stored customer, administrator or product records.
 
 The first administrator is created by registering a normal site account, then
 creating admins/<their-auth-uid> in Firestore with the field `active: true` from
@@ -91,3 +101,18 @@ STORE SETTINGS
   Default prices    app.js (SIZES)
   Shipping rates    cart.html and shipping.html
   Firebase project  firebase.js
+
+
+REGRESSION CHECKS
+-----------------
+
+Install development dependencies with npm install, then install a test browser
+with npx playwright install chromium. Run a static server on port 4176 and run
+npm run test:smoke. TEST_URL can point to another local preview address.
+PLAYWRIGHT_PATH can identify an existing Playwright module and BROWSER_PATH can
+identify an existing Chromium-compatible executable instead of downloading one.
+
+The smoke check uses an isolated browser. Firebase is stubbed and WhatsApp is
+intercepted, so it creates no real accounts, orders or messages. It covers search,
+sorting, favourites, dialogs, scent matching, cart pricing, review/cancel,
+validation, mobile routes, image loading and solid icon rendering.

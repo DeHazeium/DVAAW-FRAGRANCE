@@ -85,7 +85,7 @@ select { appearance: none; -webkit-appearance: none; background-image: url("data
 </section>
 
 <div class="my-only">
-    <span class="flag">🇲🇾</span>
+    <span class="flag" data-icon="globe" aria-label="Malaysia"></span>
     <p>D'Vaaw ships <strong>within Malaysia only</strong>. No international delivery at this time.</p>
 </div>
 
@@ -198,11 +198,11 @@ function submitAddress() {
     const subtotal = cart.reduce((s,i) => s + i.price*i.qty, 0);
     const shipText = zone==='sarawak' ? 'RM10 (Sarawak)' : zone==='semenanjung' ? 'RM15/kg (Semenanjung, to confirm)' : 'Quote needed (Sabah/Labuan)';
 
-    let msg = "*SHIPPING DETAILS — D'VAAW* 📦\n\n";
+    let msg = "*SHIPPING DETAILS — D'VAAW*\n\n";
     msg += `Name: ${name}\nPhone: ${phone}\nAddress: ${addr}, ${postcode} ${city}, ${state}\n\n`;
     if (cart.length) {
         msg += "*ORDER*\n";
-        cart.forEach(i => { msg += `▪️ ${i.qty}× ${i.name} (${i.size}) — RM${(i.price*i.qty).toFixed(2)}\n`; });
+        cart.forEach(i => { msg += `- ${i.qty}× ${i.name} (${i.size}) — RM${(i.price*i.qty).toFixed(2)}\n`; });
         msg += `\nSubtotal: RM${subtotal.toFixed(2)}\nShipping: ${shipText}\n\n`;
     }
     msg += "Please confirm my shipping and total. Thank you!";

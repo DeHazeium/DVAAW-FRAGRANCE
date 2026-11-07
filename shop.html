@@ -6,6 +6,7 @@
 <title>Shop All Fragrances — D'Vaaw</title>
 <meta name="description" content="Browse the full D'Vaaw collection — For Her, For Him, Unisex, and the Borneo Edition.">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="experience.css">
 <style>
 .shop-filters {
     position: sticky;
@@ -121,11 +122,41 @@
 .recently { background: var(--mist); }
 .rv-mini { background: var(--cream); border: 0; }
 .rv-mini img { object-fit: cover; }
+.collection-tools { max-width: 1600px; margin: 0 auto; padding: 2rem var(--pad-x) 0; }
+.collection-controls { display: flex; align-items: end; gap: 1rem; }
+.collection-search { flex: 1; }
+.collection-tools label { display: block; font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.55rem; color: var(--muted); }
+.collection-search input, .collection-sort select { width: 100%; min-height: 48px; border: 1px solid var(--line); background: var(--cream); padding: 0.8rem 1rem; border-radius: 6px; color: var(--text); font: inherit; font-size: 0.85rem; }
+.collection-search input:focus, .collection-sort select:focus { outline: 2px solid var(--gold); outline-offset: 3px; }
+.collection-sort { min-width: 190px; }
+.saved-filter { min-height: 48px; border: 1px solid var(--line); padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.78rem; white-space: nowrap; }
+.saved-filter[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.collection-status { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; min-height: 2rem; color: var(--muted); font-size: 0.78rem; }
+.collection-reset { text-decoration: underline; text-underline-offset: 4px; }
+.shop-grid { padding-top: 1.5rem; }
+.pc-visual { position: relative; }
+button.pc-img { display: block; width: 100%; padding: 0; text-align: inherit; }
+.pc-quick-label { position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%); padding: 0.6rem 1rem; border-radius: 999px; background: var(--paper); color: var(--ink); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; box-shadow: 0 4px 16px #0001; }
+.pc-save { position: absolute; top: 0.75rem; right: 0.75rem; width: 40px; height: 40px; border-radius: 50%; background: var(--paper); color: var(--ink); display: grid; place-items: center; border: 1px solid var(--line); box-shadow: 0 4px 12px #0001; }
+.pc-save svg { width: 18px; height: 18px; fill: currentColor; opacity: .45; }
+.pc-save[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.pc-save[aria-pressed="true"] svg { opacity: 1; }
+.pc-name button { text-align: left; font: inherit; color: inherit; }
+.pc-img:focus-visible, .pc-save:focus-visible, .pc-name button:focus-visible, .saved-filter:focus-visible, .collection-reset:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+.collection-empty { grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; }
+.collection-empty h2 { font-family: var(--display); font-weight: 400; font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 1rem; }
+.collection-empty p { color: var(--muted); max-width: 40ch; margin: 0 auto 1.5rem; }
+.rv-mini { width: 100%; color: inherit; }
 @media (max-width: 900px) {
     .prod-card:nth-child(4n + 2), .prod-card:nth-child(4n + 4) { margin-top: 0; }
     .prod-card:nth-child(even) { margin-top: 1.5rem; }
 }
 @media (max-width: 540px) {
+    .collection-tools { padding: 1.5rem 1rem 0; }
+    .collection-controls { flex-wrap: wrap; gap: 0.8rem; }
+    .collection-search { flex-basis: 100%; }
+    .collection-sort { flex: 1; min-width: 0; }
+    .saved-filter { flex: 1; }
     .shop-grid { padding-left: 1rem; padding-right: 1rem; }
     .pc-cat, .pc-name, .pc-notes, .pc-price, .pc-actions { margin-left: 0.9rem; margin-right: 0.9rem; }
     .pc-details { margin-left: 0.9rem; margin-right: 0.9rem; }
@@ -138,9 +169,10 @@
     <span class="eyebrow" id="collectionCount">33 Fragrances</span>
     <h1>The Collection</h1>
     <p>Every scent is Halal-certified, crafted with Gula Apong, and made to last. Available in 10ml and 35ml.</p>
+    <button type="button" class="btn btn-gold" data-open-finder style="margin-top:1.5rem">Find my signature scent <span aria-hidden="true">↗</span></button>
 </section>
 
-<div class="shop-filters" id="filters">
+<div class="shop-filters" id="filters" role="group" aria-label="Fragrance collection">
     <button class="filter-btn active" data-filter="all">All</button>
     <button class="filter-btn" data-filter="her">For Her</button>
     <button class="filter-btn" data-filter="him">For Him</button>
@@ -148,7 +180,29 @@
     <button class="filter-btn" data-filter="borneo">Borneo Edition</button>
 </div>
 
-<div class="shop-grid" id="grid"></div>
+<section class="collection-tools" aria-label="Find a fragrance">
+    <div class="collection-controls">
+        <div class="collection-search">
+            <label for="scentSearch">A name, a note, a feeling</label>
+            <input id="scentSearch" type="search" placeholder="Try vanilla, rose or Dark Alpha…" autocomplete="off" maxlength="120" aria-controls="grid">
+        </div>
+        <div class="collection-sort">
+            <label for="scentSort">Sort collection</label>
+            <select id="scentSort" aria-controls="grid">
+                <option value="featured">House order</option>
+                <option value="az">Name: A–Z</option>
+                <option value="za">Name: Z–A</option>
+            </select>
+        </div>
+        <button type="button" class="saved-filter" id="savedFilter" aria-pressed="false" aria-controls="grid"><span data-icon="heart"></span> Saved scents <span id="savedCount">0</span></button>
+    </div>
+    <div class="collection-status">
+        <p id="resultCount" role="status" aria-live="polite" aria-atomic="true"></p>
+        <button type="button" class="collection-reset" id="resetFilters" hidden>Reset filters</button>
+    </div>
+</section>
+
+<div class="shop-grid" id="grid" aria-label="Fragrances"></div>
 
 <section class="recently" id="recently" style="display:none;">
     <h3>Recently Viewed</h3>
@@ -156,116 +210,7 @@
 </section>
 
 <script src="app.js?v=bd2ff2e"></script>
-<script>
-(function () {
-    const { CAT_LABEL } = window.DVAAW;
-    const grid = document.getElementById('grid');
-    const collectionCount = document.getElementById('collectionCount');
-    const CATALOG = window.DVAAW.CATALOG;
-    const SIZES = window.DVAAW.SIZES;
-    let currentFilter = 'all';
-
-    function renderScentProfile(p) {
-        if (!p.description) return '';
-        return `<details class="pc-details">
-            <summary>Discover the scent</summary>
-            <p>${window.DVAAW.escapeHTML(p.description)}</p>
-            <dl class="pc-profile">
-                <div><dt>Top</dt><dd>${window.DVAAW.escapeHTML(p.top || '—')}</dd></div>
-                <div><dt>Middle</dt><dd>${window.DVAAW.escapeHTML(p.middle || '—')}</dd></div>
-                <div><dt>Base</dt><dd>${window.DVAAW.escapeHTML(p.base || '—')}</dd></div>
-            </dl>
-        </details>`;
-    }
-
-    function renderGrid() {
-    collectionCount.textContent = CATALOG.length + ' Fragrances';
-    grid.innerHTML = CATALOG.map(p => `
-        <article class="prod-card reveal" data-id="${window.DVAAW.escapeHTML(p.id)}" data-cat="${window.DVAAW.escapeHTML(p.cat)}">
-            <div class="pc-img">
-                <img src="${window.DVAAW.safeImageSource(p.img)}" alt="${window.DVAAW.escapeHTML(p.name)}" loading="lazy" decoding="async" onerror="window.DVAAW.useFallbackImage(this)">
-            </div>
-            <div class="pc-cat">${window.DVAAW.escapeHTML(CAT_LABEL[p.cat] || 'Collection')}</div>
-            <div class="pc-name">${window.DVAAW.escapeHTML(p.name)}</div>
-            <div class="pc-notes">${window.DVAAW.escapeHTML(p.notes)}</div>
-            ${renderScentProfile(p)}
-            <div class="pc-price" data-price>RM${window.DVAAW.price(SIZES[1].price).toFixed(2)}</div>
-            <div class="pc-actions">
-                <div class="pc-size">
-                    ${SIZES.map((s,i) => `<button data-size="${s.size}" data-price="${s.price}" class="${i===1?'sel':''}">${s.size}</button>`).join('')}
-                </div>
-                <button class="pc-add" ${p.stock===0?'disabled style="opacity:0.45;cursor:not-allowed;"':''}>${p.stock===0?'Out of Stock':'Add to Cart'}</button>
-            </div>
-        </article>`).join('');
-
-    // Wire up each card
-    grid.querySelectorAll('.prod-card').forEach(card => {
-        let size = SIZES[1].size, price = SIZES[1].price;
-        const priceEl = card.querySelector('[data-price]');
-        card.querySelectorAll('.pc-size button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                card.querySelectorAll('.pc-size button').forEach(b => b.classList.remove('sel'));
-                btn.classList.add('sel');
-                size = btn.dataset.size; price = +btn.dataset.price;
-                priceEl.textContent = 'RM' + window.DVAAW.price(price).toFixed(2);
-            });
-        });
-        card.querySelector('.pc-add').addEventListener('click', () => {
-            window.DVAAW.addToCart(card.dataset.id, size, price);
-        });
-        card.querySelector('.pc-img').addEventListener('click', () => window.DVAAW.trackViewed(card.dataset.id));
-    });
-    applyFilter(currentFilter);
-    window.DVAAW.observeReveals();
-    }
-
-    // Filtering
-    function applyFilter(f) {
-        currentFilter = f;
-        grid.querySelectorAll('.prod-card').forEach(c => {
-            c.classList.toggle('pc-card-hidden', f !== 'all' && c.dataset.cat !== f);
-        });
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
-    }
-    document.querySelectorAll('.filter-btn').forEach(b => {
-        b.addEventListener('click', () => {
-            applyFilter(b.dataset.filter);
-            history.replaceState(null, '', b.dataset.filter === 'all' ? 'shop.html' : 'shop.html?cat=' + b.dataset.filter);
-        });
-    });
-
-    // Honor ?cat= from URL
-    const urlCat = new URLSearchParams(location.search).get('cat');
-    if (urlCat && ['her','him','unisex','borneo'].includes(urlCat)) currentFilter = urlCat;
-
-    renderGrid();
-    window.addEventListener('dvaaw:catalog', () => {
-        renderGrid();
-        renderRecently();
-    });
-
-    // Recently viewed
-    function renderRecently() {
-      const viewed = window.DVAAW.getViewed();
-      const sec = document.getElementById('recently');
-      if (viewed.length) {
-        const rg = document.getElementById('recentlyGrid');
-        rg.innerHTML = viewed.map(id => {
-            const p = CATALOG.find(x => x.id === id);
-            if (!p) return '';
-            return `<div class="rv-mini" data-id="${window.DVAAW.escapeHTML(p.id)}">
-                <img src="${window.DVAAW.safeImageSource(p.img)}" alt="${window.DVAAW.escapeHTML(p.name)}" loading="lazy" decoding="async" onerror="window.DVAAW.useFallbackImage(this)">
-                <div class="n">${window.DVAAW.escapeHTML(p.name)}</div></div>`;
-        }).join('');
-        sec.style.display = 'block';
-      } else {
-        sec.style.display = 'none';
-      }
-    }
-    renderRecently();
-
-    window.DVAAW.observeReveals();
-})();
-</script>
+<script src="experience.js"></script>
+<script src="shop.js"></script>
 </body>
 </html>

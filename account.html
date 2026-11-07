@@ -70,8 +70,8 @@ select { appearance: none; -webkit-appearance: none; background-image: url("data
             <button id="tabReg" onclick="showPane('reg')">Create Account</button>
         </div>
         <div class="pane show" id="paneLogin">
-            <div class="fld"><label>Email / Username / Phone</label><input type="text" id="li-id" placeholder="you@email.com or your username"></div>
-            <div class="fld"><label>Password</label><input type="password" id="li-pw" placeholder="••••••••"></div>
+            <div class="fld"><label for="li-id">Email / Username / Phone</label><input type="text" id="li-id" autocomplete="username" placeholder="you@email.com or your username"></div>
+            <div class="fld"><label for="li-pw">Password</label><input type="password" id="li-pw" autocomplete="current-password" placeholder="••••••••"></div>
             <button class="btn btn-dark" onclick="doLogin()">Sign In</button>
             <p class="form-msg" id="loginMsg"></p>
         </div>
@@ -92,7 +92,7 @@ select { appearance: none; -webkit-appearance: none; background-image: url("data
                     <label><input type="checkbox" value="borneo">Borneo</label>
                 </div>
             </div>
-            <div class="pw-note">🔒 <strong>Tip:</strong> please don't reuse the same password as your email account. Pick something unique for D'Vaaw.</div>
+            <div class="pw-note"><span data-icon="lock"></span> <strong>Tip:</strong> please don't reuse the same password as your email account. Pick something unique for D'Vaaw.</div>
             <div class="fld"><label>Password (min 6 characters)</label><input type="password" id="rg-pw" placeholder="Create a password"></div>
             <button class="btn btn-gold" onclick="doRegister()">Create My Account</button>
             <p class="form-msg" id="regMsg"></p>
@@ -107,7 +107,7 @@ select { appearance: none; -webkit-appearance: none; background-image: url("data
             <h2>Hello, <em id="helloName">friend</em>!</h2>
         </div>
 
-        <a href="admin.html" class="btn btn-gold admin-cta" id="adminCta">⚙ Open Admin Panel</a>
+        <a href="admin.html" class="btn btn-gold admin-cta" id="adminCta"><span data-icon="settings"></span> Open Admin Panel</a>
 
         <!-- MY DETAILS -->
         <div class="card" id="detailsCard">
@@ -253,7 +253,9 @@ function fb() {
 }
 function friendly(e) {
     const m = (e && e.message) || 'Something went wrong.';
-    if (m.includes('permission') || m.includes('insufficient')) return 'Database rules are blocking this — publish the rules from SECURITY.txt section 8.';
+    if (m.includes('permission') || m.includes('insufficient')) return 'We could not save or load your details. Please try again, or contact us for help.';
+    if (m.includes('network') || m.includes('offline')) return 'Connection interrupted. Please check your internet connection and try again.';
+    if (m.includes('too-many-requests')) return 'Too many attempts. Please wait a few minutes before trying again.';
     if (m.includes('email-already-in-use')) return 'That email already has an account — try signing in.';
     if (m.includes('invalid-credential') || m.includes('wrong-password') || m.includes('user-not-found')) return 'Wrong details — check and try again.';
     if (m.includes('weak-password')) return 'Password too weak — use at least 6 characters.';
@@ -261,19 +263,28 @@ function friendly(e) {
     return m.replace('Firebase: ', '').replace(/\(auth.*\)\.?/, '').trim();
 }
 
+let accountBusy = false;
+function setAccountBusy(busy) {
+    accountBusy = busy;
+    document.querySelectorAll('#authArea button').forEach(button => button.disabled = busy);
+}
 async function doLogin() {
+    if (accountBusy) return;
     const f = fb(); if (!f) return;
     const id = document.getElementById('li-id').value.trim();
     const pw = document.getElementById('li-pw').value;
     if (!id || !pw) return msg('loginMsg', 'Please fill in both fields.');
+    setAccountBusy(true);
     try {
         msg('loginMsg', 'Signing in…', true);
+        window._greetOnAuth = true;
         await f.login(id, pw);
-        window._greetOnAuth = true;               // cinematic welcome once profile loads
-    } catch (e) { msg('loginMsg', friendly(e)); }
+    } catch (e) { window._greetOnAuth = false; msg('loginMsg', friendly(e)); }
+    finally { setAccountBusy(false); }
 }
 
 async function doRegister() {
+    if (accountBusy) return;
     const f = fb(); if (!f) return;
     const name = document.getElementById('rg-name').value.trim();
     const age = parseInt(document.getElementById('rg-age').value) || null;
@@ -284,15 +295,21 @@ async function doRegister() {
     const prefs = [...document.querySelectorAll('#paneReg .prefs input:checked')].map(c => c.value);
     if (!name || !email || !username || !pw) return msg('regMsg', 'Name, username, email and password are required.');
     if (pw.length < 6) return msg('regMsg', 'Password must be at least 6 characters.');
+    if (document.getElementById('rg-age').value && (!Number.isInteger(age) || age < 13 || age > 120)) return msg('regMsg', 'Please enter an age from 13 to 120, or leave it blank.');
+    if (!document.getElementById('rg-email').checkValidity()) return msg('regMsg', 'Please enter a valid email address.');
+    setAccountBusy(true);
     try {
         msg('regMsg', 'Creating your account…', true);
         await f.register({ name, age, prefs, email, username, phone, password: pw });
         if (window.DVAAW_GREET) window.DVAAW_GREET('Welcome to D\'Vaaw', name.split(' ')[0]);
     } catch (e) { msg('regMsg', friendly(e)); }
+    finally { setAccountBusy(false); }
 }
 
 async function saveDetails() {
     const f = fb(); if (!f) return;
+    if (!document.getElementById('e-name').value.trim()) return msg('dMsg', 'Please enter your name.');
+    if (!document.getElementById('e-age').checkValidity()) return msg('dMsg', 'Please enter an age from 13 to 120, or leave it blank.');
     const prefs = [...document.querySelectorAll('#e-prefs input:checked')].map(c => c.value);
     try {
         const p = await f.saveProfile({
@@ -309,6 +326,8 @@ async function saveDetails() {
 
 async function saveAddress() {
     const f = fb(); if (!f) return;
+    const postcode = document.getElementById('e-postcode').value.trim();
+    if (postcode && !/^\d{5}$/.test(postcode)) return msg('aMsg', 'Please enter a valid 5-digit postcode.');
     const sel = document.getElementById('e-state');
     const opt = sel.options[sel.selectedIndex];
     try {
@@ -327,7 +346,25 @@ async function saveAddress() {
     } catch (e) { msg('aMsg', friendly(e)); }
 }
 
-function doLogout() { if (window.DVFB) window.DVFB.logout(); }
+async function doLogout() {
+    if (!window.DVFB) return;
+    try { await window.DVFB.logout(); }
+    catch { window.DVAAW.showToast('Could not sign out. Please try again.'); }
+}
+
+document.querySelectorAll('.fld').forEach(field => {
+    const input = field.querySelector('input[id], select[id]');
+    const label = field.querySelector('label');
+    if (input && label && !label.querySelector('input')) label.htmlFor = input.id;
+});
+document.querySelectorAll('.form-msg').forEach(el => el.setAttribute('role', 'status'));
+document.querySelectorAll('#paneLogin input').forEach(input => input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); doLogin(); }
+}));
+document.getElementById('rg-pw').autocomplete = 'new-password';
+document.getElementById('rg-pw').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); doRegister(); }
+});
 
 /* Firebase confirms/corrects the instant state */
 window.addEventListener('dvaaw:auth', (e) => {
@@ -342,7 +379,11 @@ window.addEventListener('dvaaw:auth', (e) => {
             if (window.DVAAW_GREET) window.DVAAW_GREET('Welcome back', (profile.name || 'friend').split(' ')[0]);
         }
     }
-    if (user && !profile) msg('dMsg', 'Couldn\'t load saved details — check Firestore rules, then refresh.');
+    if (user && !profile) {
+        document.getElementById('helloName').textContent = 'friend';
+        document.getElementById('adminCta').style.display = window.DVFB && window.DVFB.isAdmin ? 'flex' : 'none';
+        window.DVAAW.showToast('Your account is signed in. Saved details could not be loaded yet.');
+    }
 });
 </script>
 </body>

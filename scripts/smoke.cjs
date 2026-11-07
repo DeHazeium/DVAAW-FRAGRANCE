@@ -1,0 +1,138 @@
+/* Run against a local static server. Firebase is stubbed: no real accounts/orders. */
+const { chromium } = require(process.env.PLAYWRIGHT_PATH || 'playwright');
+const assert = require('node:assert/strict');
+const { mkdir } = require('node:fs/promises');
+const path = require('node:path');
+const origin = process.env.TEST_URL || 'http://127.0.0.1:4176';
+const output = path.resolve(__dirname, '../../../outputs/presentation-qa');
+(async () => {
+    await mkdir(output, { recursive: true });
+    const browser = await chromium.launch({ headless: true, ...(process.env.BROWSER_PATH ? { executablePath: process.env.BROWSER_PATH } : {}) });
+    try {
+        const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
+        await context.route('**/firebase.js', route => route.fulfill({ contentType: 'text/javascript', body: `
+            window.DVFB = { fetchProducts: async()=>[], fetchPricing:async()=>null, fetchDiscount:async()=>null, isAdmin:false };
+            window.dvaawSaveOrder = () => { sessionStorage.setItem('qa-orders', String(Number(sessionStorage.getItem('qa-orders') || 0)+1)); };
+            window.dispatchEvent(new CustomEvent('dvaaw:auth',{detail:{user:null,profile:null}}));` }));
+        await context.addInitScript(() => { localStorage.setItem('dvaaw_cookie','ok'); });
+        const page = await context.newPage();
+        const errors = []; page.on('pageerror', error => errors.push(error.message));
+        const capture = async (file, fullPage = false) => {
+            await page.evaluate(async () => {
+                await document.fonts.ready;
+                document.querySelectorAll('img').forEach(img => { img.loading = 'eager'; });
+                await Promise.all([...document.images].map(img => img.decode().catch(() => {})));
+            });
+            assert.deepEqual(await page.evaluate(() => [...document.images].filter(img => !img.complete || !img.naturalWidth).map(img => img.src)), [], 'Images must load before capture');
+            if (fullPage) await page.evaluate(() => window.scrollTo(0, 0));
+            await page.screenshot({ path: path.join(output, file), fullPage });
+        };
+        const expectCount = async (selector, n) => { await page.waitForFunction(([s,n]) => document.querySelectorAll(s).length === n, [selector,n]); };
+        await page.goto(origin + '/shop.html');
+        await expectCount('#grid .prod-card', 33);
+        await page.locator('#scentSearch').fill('roselle');
+        await expectCount('#grid .prod-card', 1);
+        assert.match(await page.locator('.pc-name').textContent(), /Mia Bubblelush/);
+        await page.locator('#scentSearch').fill('no such fragrance xyz');
+        await expectCount('#grid .prod-card', 0);
+        assert.equal(await page.locator('[data-reset-collection]').isVisible(), true);
+        await page.locator('[data-reset-collection]').click();
+        await page.locator('[data-filter="unisex"]').click();
+        await expectCount('#grid .prod-card', 2);
+        await page.locator('#scentSort').selectOption('za');
+        assert.match(await page.locator('.pc-name').first().textContent(), /Valora/);
+        await page.locator('[data-shop-save="valora"]').click();
+        await page.locator('#savedFilter').click();
+        await expectCount('#grid .prod-card', 1);
+        await page.reload(); await expectCount('#grid .prod-card', 1);
+        await page.locator('[data-shop-product="valora"]').first().click();
+        assert.equal(await page.locator('.discovery-dialog').isVisible(), true);
+        await page.locator('[data-variant="10ml"]').click();
+        assert.match(await page.locator('.discovery-purchase').textContent(), /RM18.00/);
+        await page.locator('.discovery-add').click();
+        assert.equal(await page.evaluate(() => DVAAW.getCart()[0].size), '10ml');
+        await page.keyboard.press('Escape');
+        assert.equal(await page.locator('.discovery-dialog').isVisible(), false);
+        await page.goto(origin + '/shop.html?product=mia-bubblelush');
+        assert.match(await page.locator('#discovery-title').textContent(), /Mia Bubblelush/);
+        assert.match(await page.locator('.note-pyramid').textContent(), /Roselle/);
+        await page.locator('.discovery-close').click();
+        await page.locator('[data-open-finder]').click();
+        await page.locator('[data-answer="him"]').click();
+        await page.locator('[data-answer="woody"]').click();
+        await page.locator('[data-answer="evening"]').click();
+        await expectCount('.finder-matches article', 3);
+        const matched = await page.evaluate(() => DVAAW.rankScents({collection:'him',family:'woody',occasion:'evening'}));
+        assert.ok(matched.every(r => r.product.cat === 'him'));
+        const fixture = [{id:'a',name:'A',cat:'her',stock:0,notes:'Woody Amber'},{id:'b',name:'B',cat:'him',notes:'Woody Amber'}, {id:'c',name:'C',cat:'him',notes:'Fresh Citrus'}];
+        const ranked = await page.evaluate(fixture => DVAAW.rankScents({collection:'all',family:'woody',occasion:'evening'}, fixture), fixture);
+        assert.equal(ranked[0].product.id, 'b'); assert.equal(ranked.length, 2);
+        await capture('scent-finder-desktop.png');
+        await page.locator('.finder-matches [data-open-product]').first().click();
+        assert.equal(await page.locator('.discovery-product').isVisible(), true);
+        await page.keyboard.press('Escape');
+        await page.evaluate(() => { localStorage.setItem('dvaaw_saved','invalid json'); });
+        await page.reload(); await expectCount('#grid .prod-card',33);
+        assert.equal(await page.evaluate(() => DVAAW.isSaved('valora')), false);
+        await page.evaluate(() => { DVAAW.SIZES[0].price=20; window.dispatchEvent(new CustomEvent('dvaaw:catalog')); });
+        assert.equal(await page.evaluate(() => DVAAW.getCart()[0].price),20);
+        await page.goto(origin + '/cart.html');
+        assert.equal(await page.locator('#total-display').textContent(), '—');
+        await page.locator('#checkoutBtn').click();
+        assert.equal(await page.locator('#cdOverlay').isVisible(), false);
+        await page.locator('#m-pickup').click();
+        await page.locator('#checkoutBtn').click();
+        assert.match(await page.locator('#orderReview').textContent(), /Valora/);
+        assert.equal(await page.evaluate(() => sessionStorage.getItem('qa-orders')),null);
+        await page.getByRole('button',{name:'Keep Editing'}).click();
+        assert.equal(await page.evaluate(() => DVAAW.getCart().length),1);
+        await page.locator('#m-ship').click();
+        for (const [id,value] of Object.entries({'f-name':'QA Test','f-phone':'01112345678','f-addr':'Test address','f-city':'Kuching','f-postcode':'abcde'})) await page.locator('#'+id).fill(value);
+        await page.locator('#f-state').selectOption('sarawak');
+        await page.locator('#checkoutBtn').click();
+        assert.equal(await page.locator('#cdOverlay').isVisible(),false);
+        await page.locator('#f-postcode').fill('93050');
+        await page.locator('#checkoutBtn').click();
+        assert.equal(await page.locator('#cdOverlay').isVisible(),true);
+        await page.keyboard.press('Escape');
+        await capture('cart-desktop.png', true);
+        // Handoff stays isolated: the WhatsApp request is fulfilled locally.
+        await context.route('https://wa.me/**', route => route.fulfill({contentType:'text/html', body:'<h1>Test intercepted WhatsApp handoff</h1>'}));
+        await page.locator('#checkoutBtn').click();
+        await page.locator('#continueOrder').click();
+        await page.waitForURL('https://wa.me/**');
+        await page.goto(origin+'/cart.html');
+        assert.equal(await page.evaluate(() => DVAAW.getCart().length),1);
+        assert.equal(await page.evaluate(() => sessionStorage.getItem('qa-orders')),'1');
+        await page.goto(origin+'/index.html');
+        await page.locator('#faqHeading').scrollIntoViewIfNeeded();
+        await page.locator('.home-faq summary').first().click();
+        assert.equal(await page.locator('.home-faq details').first().getAttribute('open'),'');
+        await page.evaluate(() => document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in')));
+        await capture('home-desktop.png', true);
+        await page.setViewportSize({width:390,height:844});
+        for (const route of ['index.html','shop.html','cart.html','about.html','shipping.html','contact.html','account.html','admin.html']) {
+            await page.goto(origin+'/'+route); await page.locator('#nav').waitFor();
+            assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),true, 'horizontal overflow '+route);
+            const missing = await page.evaluate(() => [...document.querySelectorAll('[data-icon]')].filter(el=>!el.querySelector('svg')).length);
+            assert.equal(missing,0,'unrendered icons '+route);
+            assert.equal(await page.evaluate(() => /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(document.body.innerText)),false,'emoji remains '+route);
+            if (route==='index.html') await capture('home-mobile.png', true);
+            if (route==='shop.html') {
+                await page.locator('#scentSearch').fill('mia');
+                await capture('shop-mobile.png', true);
+                await page.locator('[data-shop-product="mia-bubblelush"]').first().click();
+                assert.equal(await page.locator('.discovery-dialog').isVisible(),true);
+                await capture('product-mobile.png');
+                await page.keyboard.press('Escape');
+                await page.locator('#navToggle').click();
+                assert.equal(await page.locator('#drawer').getAttribute('aria-hidden'),'false');
+                await page.locator('#navToggle').click();
+                assert.equal(await page.locator('#drawer').getAttribute('aria-hidden'),'true');
+            }
+        }
+        assert.deepEqual(errors, []);
+        console.log('PASS: search, sort, categories, favourites persistence/corruption, quick view, sizes, cart repricing, note matching, out-of-stock ranking, review/cancel, validation, isolated WhatsApp handoff, FAQs, eight mobile routes, solid icons, mobile menu; zero page exceptions.');
+        console.log('Screenshots: ' + output);
+    } finally { await browser.close(); }
+})().catch(e => { console.error(e); process.exitCode = 1; });

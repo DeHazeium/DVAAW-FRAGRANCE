@@ -7,7 +7,8 @@ if (resolve(output) !== resolve(root, 'dist')) throw new Error('Unsafe build out
 const files = [
   '404.html', 'about.html', 'account.html', 'admin.html', 'app.js',
   'cart.html', 'confirmation.html', 'contact.html', 'firebase.js',
-  'index.html', 'info.html', 'shipping.html', 'shop.html', 'styles.css'
+  'index.html', 'info.html', 'shipping.html', 'shop.html', 'styles.css',
+  'experience.js', 'experience.css', 'shop.js'
 ];
 
 await rm(output, { recursive: true, force: true });

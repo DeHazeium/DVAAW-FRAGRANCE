@@ -56,18 +56,18 @@ select { appearance: none; -webkit-appearance: none; background-image: url("data
 
 <section class="admin">
     <div class="locked" id="lockedView">
-        <div class="ic">🔐</div>
+        <div class="ic" data-icon="lock"></div>
         <p>This area is for D'Vaaw staff.<br>Sign in with an admin account to continue.</p>
         <a href="account.html" class="btn btn-dark" style="width:auto;">Go to Sign In</a>
     </div>
 
     <div id="adminView" style="display:none;">
-        <div class="temp-warn">⚠ <strong>Temporary admin login</strong> is for testing. Before launch: set a strong password and lock the Firestore rules to your admin UID (SECURITY.txt section 8).</div>
+        <div class="temp-warn"><span data-icon="settings"></span> <strong>Store management</strong> — changes to products, stock and pricing appear on the live storefront.</div>
 
         <!-- PRODUCTS TABLE -->
         <div class="panel">
             <h2>Products</h2>
-            <p class="sub">Stock: set a number and press ✓. Leave stock empty = unlimited. Edit loads a product into the form below. Remove takes it off the shop.</p>
+            <p class="sub">Stock: set a number and press Save stock. Leave stock empty = unlimited. Edit loads a product into the form below. Remove takes it off the shop.</p>
             <div class="table-scroll">
                 <table class="ptable">
                     <thead><tr><th>Product</th><th>Category</th><th>Stock</th><th style="text-align:right;">Actions</th></tr></thead>
@@ -128,7 +128,7 @@ select { appearance: none; -webkit-appearance: none; background-image: url("data
                         <div class="fld"><label>Percent Off</label><input type="number" id="d-pct" min="1" max="90" placeholder="20"></div>
                         <div class="fld"><label>Label</label><input type="text" id="d-label" placeholder="Raya Sale"></div>
                     </div>
-                    <button class="btn btn-gold" onclick="launchDiscount()" style="width:100%;margin-bottom:0.6rem;">🚀 Launch</button>
+                    <button class="btn btn-gold" onclick="launchDiscount()" style="width:100%;margin-bottom:0.6rem;"><span data-icon="launch"></span> Launch</button>
                     <button class="btn btn-ghost" onclick="endDiscount()" style="width:100%;">End Discount</button>
                     <p class="form-msg" id="dMsg"></p>
                 </div>
@@ -141,7 +141,8 @@ select { appearance: none; -webkit-appearance: none; background-image: url("data
 <script>
 function msg(id, text, ok) {
     const el = document.getElementById(id);
-    el.textContent = text; el.className = 'form-msg ' + (ok ? 'ok' : 'err');
+    el.innerHTML = window.DVAAW.icon(ok ? 'check' : 'alert') + ' ' + window.DVAAW.escapeHTML(text); el.className = 'form-msg ' + (ok ? 'ok' : 'err');
+    el.setAttribute('role', 'status');
 }
 function friendly(e) {
     const m = (e && e.message) || 'Failed.';
@@ -164,7 +165,7 @@ function renderTable() {
             <td>${window.DVAAW.escapeHTML(window.DVAAW.CAT_LABEL[p.cat] || p.cat)}</td>
             <td><input type="number" class="stock-in" min="0" value="${stock}" id="st-${safeId}"> ${badge}</td>
             <td style="text-align:right;">
-                <button class="row-btn" onclick="applyStock('${safeId}')">✓ Stock</button>
+                <button class="row-btn" onclick="applyStock('${safeId}')">${window.DVAAW.icon('check')} Save stock</button>
                 <button class="row-btn" onclick="editProduct('${safeId}')">Edit</button>
                 <button class="row-btn danger" onclick="removeProduct('${safeId}',decodeURIComponent('${encodedName}'))">Remove</button>
             </td>
@@ -233,7 +234,7 @@ async function saveProduct() {
         else window.DVAAW.CATALOG.push({ ...data, img: data.img || ('image/' + id + '.png') });
         renderTable();
         clearForm();
-        msg('pMsg', '✓ Saved — live on the shop now.', true);
+        msg('pMsg', 'Saved — live on the shop now.', true);
         window.DVAAW.showToast('Product saved: ' + name);
     } catch (e) { msg('pMsg', friendly(e)); }
 }
@@ -262,7 +263,7 @@ async function savePricing() {
         await window.DVFB.savePricing(p10, p35);
         window.DVAAW.SIZES[0].price = p10;
         window.DVAAW.SIZES[1].price = p35;
-        msg('prMsg', '✓ Prices updated sitewide.', true);
+        msg('prMsg', 'Prices updated sitewide.', true);
         window.DVAAW.showToast('Prices saved');
     } catch (e) { msg('prMsg', friendly(e)); }
 }
@@ -273,10 +274,10 @@ async function refreshDiscount() {
         const d = await window.DVFB.fetchDiscount();
         const el = document.getElementById('discStatus');
         if (d && d.active) {
-            el.textContent = '🟢 ' + (d.label || 'Sale') + ' LIVE — ' + d.percent + '% off.';
+            el.innerHTML = window.DVAAW.icon('check') + ' ' + window.DVAAW.escapeHTML(d.label || 'Sale') + ' LIVE — ' + Number(d.percent) + '% off.';
             document.getElementById('d-pct').value = d.percent;
             document.getElementById('d-label').value = d.label || '';
-        } else el.textContent = '⚪ No discount running.';
+        } else el.textContent = 'No discount running.';
     } catch { document.getElementById('discStatus').textContent = 'Could not load status.'; }
 }
 async function launchDiscount() {
@@ -285,9 +286,9 @@ async function launchDiscount() {
     if (!pct || pct < 1 || pct > 90) return msg('dMsg', 'Percent must be 1–90.');
     try {
         await window.DVFB.saveDiscount({ active: true, percent: pct, label });
-        msg('dMsg', '✓ ' + label + ' is live!', true);
+        msg('dMsg', label + ' is live!', true);
         refreshDiscount();
-        window.DVAAW.showToast('Discount launched 🚀');
+        window.DVAAW.showToast('Discount launched');
     } catch (e) { msg('dMsg', friendly(e)); }
 }
 async function endDiscount() {
