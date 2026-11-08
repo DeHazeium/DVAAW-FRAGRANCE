@@ -213,16 +213,17 @@
     font-family: var(--display);
     font-size: 1rem;
     font-style: italic;
-    color: rgba(47,47,47,0.72);
+    color: var(--cream);
+    text-shadow: 0 1px 8px rgba(11,11,11,0.8);
 }
-.hero-visual img { width: 100%; height: 100%; max-height: none; object-fit: cover; animation: none; }
+.hero-visual img { width: 100%; height: 100%; max-height: none; object-fit: cover; object-position: 50% 45%; animation: none; }
 .hero-scroll { color: var(--muted); bottom: 1.5rem; }
 .marquee { background: var(--ink); color: var(--cream); padding: 0.8rem 0; }
 .cats { padding: clamp(4rem, 8vw, 7rem) var(--pad-x); gap: 1rem; background: var(--paper); }
 .cat-tile { aspect-ratio: 4/5; padding: 1.5rem; background: var(--mist); border-radius: 13rem 13rem 1.5rem 1.5rem; }
 .cat-tile:nth-child(even) { transform: translateY(2.2rem); }
 .cat-tile::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 46%, rgba(11,11,11,0.76)); }
-.cat-tile img { opacity: 0.9; }
+.cat-tile img { opacity: 0.9; object-position: 50% 45%; }
 .cat-tile:hover img { opacity: 1; }
 .cat-tile-label { z-index: 2; }
 .cat-tile-label .eyebrow { color: rgba(255,255,255,0.72); }
@@ -328,7 +329,7 @@
         <button type="button" class="hero-find" data-open-finder>Not sure where to start? Find your scent <span aria-hidden="true">↗</span></button>
     </div>
     <div class="hero-visual">
-        <img src="image/perfume-bottle-ai.webp" alt="Minimal fragrance bottle in warm natural light" fetchpriority="high" decoding="async">
+        <img src="image/hero-ritual.jpg" alt="A man applying Dark Alpha perfume to his wrist in warm afternoon light" width="1254" height="1254" fetchpriority="high" decoding="async">
     </div>
     <div class="hero-scroll">Scroll</div>
 </section>
@@ -346,19 +347,19 @@
 
 <section class="cats">
     <a href="shop.html?cat=her" class="cat-tile">
-        <img src="image/red-gorgeous.png" alt="Red Gorgeous by D'Vaaw" loading="lazy" decoding="async">
+        <img src="image/category-her-ritual.jpg" alt="A woman applying Mia Bubblelush perfume to her wrist" width="1122" height="1402" loading="lazy" decoding="async">
         <div class="cat-tile-label"><span class="eyebrow">01</span><h3>For <span>Her</span></h3></div>
     </a>
     <a href="shop.html?cat=him" class="cat-tile">
-        <img src="image/hottest-guy.webp?v=f0667b4" alt="Hottest Guy by D'Vaaw" loading="lazy" decoding="async">
+        <img src="image/category-him-ritual.jpg" alt="A man holding Hottest Guy perfume against a charcoal linen shirt" width="1122" height="1402" loading="lazy" decoding="async">
         <div class="cat-tile-label"><span class="eyebrow">02</span><h3>For <span>Him</span></h3></div>
     </a>
     <a href="shop.html?cat=unisex" class="cat-tile">
-        <img src="image/obsession.webp?v=f0667b4" alt="Obsession by D'Vaaw" loading="lazy" decoding="async">
+        <img src="image/category-unisex-ritual.jpg" alt="Obsession perfume with ivory and charcoal linen by a sunlit window" width="1122" height="1402" loading="lazy" decoding="async">
         <div class="cat-tile-label"><span class="eyebrow">03</span><h3><span>Unisex</span></h3></div>
     </a>
     <a href="shop.html?cat=borneo" class="cat-tile">
-        <img class="gula-apong-image" src="image/gula-apong.jpg" alt="Sarawak Gula Apong and nipa palm fruit" loading="lazy" decoding="async">
+        <img src="image/category-borneo-palms.jpg" alt="Sunlit nipa palms reflected in a quiet tidal creek" width="1122" height="1402" loading="lazy" decoding="async">
         <div class="cat-tile-label"><span class="eyebrow">04</span><h3><span>Borneo</span></h3></div>
     </a>
 </section>
